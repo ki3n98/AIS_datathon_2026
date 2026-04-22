@@ -496,7 +496,7 @@ export async function getDashboardData(): Promise<DashboardData> {
         {
           label: "Pressure point",
           value: "Housing and education pulled away",
-          note: "Higher education and housing-related measures were the weakest affordability categories in 2024.",
+          note: "Higher education and the housing-related price indexes were the weakest affordability readings in 2024.",
         },
         {
           label: "Ownership read",
@@ -548,7 +548,7 @@ export async function getDashboardData(): Promise<DashboardData> {
         },
         {
           title: "Mobility-linked categories did worse",
-          body: "The weakest affordability readings come from higher education and housing, not groceries or aggregate spending.",
+          body: "The weakest affordability readings come from higher education and housing-related price indexes, not groceries or aggregate spending.",
         },
       ],
       stateIncomeContext: {
@@ -718,7 +718,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       summary: [
         {
           title: "Ownership is where the dream fractures",
-          body: `Housing affordability within the repo's measures remains weak in 2024 at ${affordability2024?.formattedValue ?? "n/a"}, while single-family construction costs rose much faster than income.`,
+          body: `Within the dashboard's broad housing-services affordability measure, 2024 sits at ${affordability2024?.formattedValue ?? "n/a"}, while single-family construction costs rose much faster than income and better capture the ownership-entry squeeze.`,
         },
         {
           title: "Supply context matters",
@@ -730,7 +730,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       sources: [
         "All values are drawn from CSVs in `data/cleaned`, using the same BEA-backed repo datasets already prepared for analysis.",
         "Income is constructed as total personal income divided by total population from `cleaned_income_with_state.csv`.",
-        "Indexed charts rebase each series to 2000 = 100 so growth rates can be compared directly.",
+        "Indexed charts rebase each series to 2000 = 100 so growth rates can be compared directly; several widgets use BEA price indexes rather than market-price series.",
       ],
       caveats: [
         "This is a national and industry-level dashboard. It does not model taxes, debt, household composition, or local housing markets.",

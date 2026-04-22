@@ -38,6 +38,23 @@ const toneRowStyles: Record<Tone, string> = {
   neutral: "bg-[#f7f8fa]",
 };
 
+const sidebarStyles = {
+  shell: "border-b border-[#c4c6cd] bg-[#041627] text-white lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r",
+  inner: "flex h-full flex-col gap-5 px-4 py-5 lg:px-5 lg:py-6",
+  eyebrow: "inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-[#9db2cc]",
+  titleBlock: "space-y-2 border-b border-white/8 pb-4",
+  subtitle: "max-w-[22rem] text-[13px] leading-5 text-[#b7c8de]",
+  verdict: "rounded-md bg-white/[0.06] px-3.5 py-3 text-[#e6eef8]",
+  verdictLabel: "text-[10px] font-medium uppercase tracking-[0.14em] text-[#9db2cc]",
+  nav: "grid gap-0.5",
+  navItem: "block min-w-0 overflow-hidden border-l-2 px-3 py-2.5 transition-colors",
+  navItemActive: "border-[#7ca6d6] bg-white/[0.07] text-white",
+  navItemIdle: "border-transparent text-[#b7c8de] hover:bg-white/[0.04] hover:text-white",
+  navMeta: "text-[10px] font-medium uppercase tracking-[0.14em] text-current/65",
+  navLabel: "mt-1 text-[13px] font-semibold leading-5 text-current",
+  navSummary: "mt-0.5 block overflow-hidden text-ellipsis whitespace-nowrap text-[11px] leading-4 text-current/70",
+};
+
 function formatAxisValue(value: number) {
   return value.toLocaleString("en-US");
 }
@@ -203,9 +220,15 @@ function SummaryCard({ label, value, note }: DashboardData["overview"]["summaryC
   );
 }
 
-function InsightCards({ items }: { items: DashboardData["industryDivide"]["summary"] }) {
+function InsightCards({
+  items,
+  columns = 1,
+}: {
+  items: DashboardData["industryDivide"]["summary"];
+  columns?: 1 | 2;
+}) {
   return (
-    <div className="grid gap-3">
+    <div className={cn("grid gap-3", columns === 2 && "md:grid-cols-2")}>
       {items.map((item) => (
         <div key={item.title} className="rounded-md border border-[#d9dde3] bg-[#f5f3f4] p-4">
           <div className="text-sm font-semibold text-[#1b1c1d]">{item.title}</div>
@@ -219,14 +242,16 @@ function InsightCards({ items }: { items: DashboardData["industryDivide"]["summa
 function RankedList({
   items,
   valueLabel = "Index",
+  itemLabel,
 }: {
   items: RankedMetric[];
   valueLabel?: string;
+  itemLabel?: string;
 }) {
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 border-b border-[#e4e2e3] pb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">
-        <div>{valueLabel === "Index" ? "Category" : "Label"}</div>
+        <div>{itemLabel ?? (valueLabel === "Index" ? "Category" : "Label")}</div>
         <div>{valueLabel}</div>
       </div>
       {items.map((item) => (
@@ -358,27 +383,27 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
 
   return (
     <main className="min-h-screen bg-[#fbf9fa] text-[#1b1c1d]">
-      <div className="mx-auto max-w-[1600px] lg:grid lg:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="border-b border-[#c4c6cd] bg-[#041627] text-white lg:sticky lg:top-0 lg:h-screen lg:border-b-0 lg:border-r">
-          <div className="flex h-full flex-col gap-6 px-5 py-6">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 rounded-sm border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.12em] text-[#b7c8de]">
+      <div className="lg:grid lg:min-h-screen lg:grid-cols-[280px_minmax(0,1fr)]">
+        <aside className={sidebarStyles.shell}>
+          <div className={sidebarStyles.inner}>
+            <div className={sidebarStyles.titleBlock}>
+              <div className={sidebarStyles.eyebrow}>
                 <BarChart3 className="h-3.5 w-3.5" />
                 Analytics dashboard
               </div>
-              <div>
-                <h1 className="text-[22px] font-semibold leading-7">{data.title}</h1>
-                <p className="mt-2 text-sm leading-6 text-[#b7c8de]">{data.subtitle}</p>
+              <div className="space-y-1.5">
+                <h1 className="text-[21px] font-semibold leading-7">{data.title}</h1>
+                <p className={sidebarStyles.subtitle}>{data.subtitle}</p>
               </div>
             </div>
 
-            <div className="rounded-md border border-white/10 bg-white/5 p-4">
-              <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#b7c8de]">Verdict</div>
-              <div className="mt-2 text-xl font-semibold">{data.verdict.label}</div>
-              <p className="mt-2 text-sm leading-6 text-[#d2e4fb]">{data.verdict.summary}</p>
+            <div className={sidebarStyles.verdict}>
+              <div className={sidebarStyles.verdictLabel}>Verdict</div>
+              <div className="mt-1.5 text-lg font-semibold leading-6 text-white">{data.verdict.label}</div>
+              <p className="mt-1.5 text-[13px] leading-5 text-[#cfe0f4]">{data.verdict.summary}</p>
             </div>
 
-            <nav className="grid gap-1">
+            <nav className={sidebarStyles.nav}>
               {data.sidebar.map((item, index) => {
                 const isActive = activeSection === item.id;
                 return (
@@ -386,13 +411,13 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                     key={item.id}
                     href={`#${item.id}`}
                     className={cn(
-                      "border-l-2 px-3 py-3 transition-colors",
-                      isActive ? "border-[#0b7a75] bg-white/8 text-white" : "border-transparent text-[#b7c8de] hover:bg-white/5 hover:text-white"
+                      sidebarStyles.navItem,
+                      isActive ? sidebarStyles.navItemActive : sidebarStyles.navItemIdle
                     )}
                   >
-                    <div className="text-[11px] font-medium uppercase tracking-[0.12em]">Section {index + 1}</div>
-                    <div className="mt-1 text-sm font-semibold">{item.label}</div>
-                    <div className="mt-1 text-xs leading-5 text-inherit/80">{item.summary}</div>
+                    <div className={sidebarStyles.navMeta}>Section {index + 1}</div>
+                    <div className={sidebarStyles.navLabel}>{item.label}</div>
+                    <div className={sidebarStyles.navSummary}>{item.summary}</div>
                   </a>
                 );
               })}
@@ -401,175 +426,189 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
         </aside>
 
         <div className="min-w-0">
-          <div className="border-b border-[#d9dde3] bg-[#efedef] px-4 py-4 sm:px-6 lg:px-8">
-            <div className="grid gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-              <div className="grid gap-3 md:grid-cols-3">
-                {data.overview.summaryCards.map((item) => (
-                  <SummaryCard key={item.label} {...item} />
-                ))}
-              </div>
-              <div className="rounded-md border border-[#d9dde3] bg-white px-4 py-3">
-                <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#5f6978]">Readout</div>
-                <div className="mt-2 flex items-start gap-3">
-                  <CircleDollarSign className="mt-0.5 h-5 w-5 text-[#0b7a75]" />
-                  <p className="text-sm leading-6 text-[#44474c]">{data.verdict.summary}</p>
+          <div className="border-b border-[#d9dde3] bg-[#efedef]">
+            <div className="mx-auto max-w-[1320px] px-4 py-4 sm:px-6 lg:px-8">
+              <div className="grid gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+                <div className="grid gap-3 md:grid-cols-3">
+                  {data.overview.summaryCards.map((item) => (
+                    <SummaryCard key={item.label} {...item} />
+                  ))}
+                </div>
+                <div className="rounded-md border border-[#d9dde3] bg-white px-4 py-3">
+                  <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#5f6978]">Readout</div>
+                  <div className="mt-2 flex items-start gap-3">
+                    <CircleDollarSign className="mt-0.5 h-5 w-5 text-[#0b7a75]" />
+                    <p className="text-sm leading-6 text-[#44474c]">{data.verdict.summary}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="space-y-8 px-4 py-6 sm:px-6 lg:px-8">
-            <SectionBlock
-              id="overview"
-              kicker="Overview"
-              title="Macro affordability improved in aggregate, but the important categories did not."
-              description="The national read is not a collapse story. Per-capita income beat broad inflation. The split shows up once the dashboard narrows from total consumption to housing, education, and ownership access."
-            >
-              <div className="grid gap-3 xl:grid-cols-4">
-                {data.overview.kpis.map((item) => (
-                  <KpiCard key={item.label} {...item} />
-                ))}
-              </div>
-              <div className="grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.7fr)]">
-                <div className="min-w-0">
-                  <WidgetCard
-                    title="Income versus major cost categories"
-                    description="Indexed to 2000 = 100 across national income and major cost buckets."
-                  >
-                    <MultiLineChart data={data.overview.comparisonChart} lines={data.overview.comparisonLines} height={340} />
-                  </WidgetCard>
+          <div className="mx-auto max-w-[1320px] px-4 py-6 sm:px-6 lg:px-8">
+            <div className="space-y-8">
+              <SectionBlock
+                id="overview"
+                kicker="Overview"
+                title="Macro affordability improved in aggregate, but the important categories did not."
+                description="The national read is not a collapse story. Per-capita income beat broad inflation. The split shows up once the dashboard narrows from total consumption to housing, education, and ownership access."
+              >
+                <div className="grid gap-3 xl:grid-cols-4">
+                  {data.overview.kpis.map((item) => (
+                    <KpiCard key={item.label} {...item} />
+                  ))}
                 </div>
-                <div className="min-w-0">
-                  <WidgetCard
-                    title="2024 affordability ranking"
-                    description="Values above 100 mean income buys more than it did in 2000."
-                    action="2024"
-                  >
-                    <RankedList items={data.overview.affordabilityRankings} />
-                  </WidgetCard>
-                </div>
-              </div>
-            </SectionBlock>
-
-            <SectionBlock
-              id="cost-of-living"
-              kicker="Cost of Living"
-              title="Broad inflation was manageable. Specific categories were not."
-              description="This section keeps the repo-backed indexed comparison intact, but adds context for what the national average hides and what it still supports."
-            >
-              <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-                <div className="min-w-0">
-                  <WidgetCard
-                    title="Indexed cost-of-living comparison"
-                    description="Per-capita income versus overall PCE, housing, rent, healthcare, higher education, and groceries."
-                  >
-                    <MultiLineChart data={data.costOfLiving.chart} lines={data.costOfLiving.lines} height={360} />
-                  </WidgetCard>
-                </div>
-                <div className="grid min-w-0 gap-4">
-                  <WidgetCard title="Affordability interpretation" description="What the chart does and does not say.">
-                    <InsightCards items={data.costOfLiving.insightCards} />
-                  </WidgetCard>
-                  <WidgetCard
-                    title="State income context"
-                    description="Compact repo-backed context from `cleaned_income_with_state.csv`."
-                    action="2024"
-                  >
-                    <div className="grid gap-3">
-                      <div className="grid gap-3 sm:grid-cols-3">
-                        <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                          <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">National per capita</div>
-                          <div className="mt-1 text-lg font-semibold text-[#041627]">
-                            {data.costOfLiving.stateIncomeContext.nationalPerCapita2024}
-                          </div>
-                        </div>
-                        <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                          <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">Top vs bottom</div>
-                          <div className="mt-1 text-sm font-semibold text-[#041627]">
-                            {data.costOfLiving.stateIncomeContext.spread}
-                          </div>
-                        </div>
-                        <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                          <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">Median state</div>
-                          <div className="mt-1 text-sm font-semibold text-[#041627]">
-                            {data.costOfLiving.stateIncomeContext.medianState}
-                          </div>
-                        </div>
+                <div className="grid gap-4">
+                  <div className="min-w-0">
+                    <WidgetCard
+                      title="Income versus major price indexes"
+                      description="Per-capita income and BEA price indexes, each rebased to 2000 = 100."
+                    >
+                      <MultiLineChart data={data.overview.comparisonChart} lines={data.overview.comparisonLines} height={360} />
+                    </WidgetCard>
+                  </div>
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    <WidgetCard
+                      title="2024 affordability score by category"
+                      description="Income-growth index divided by each 2024 price index. Values above 100 mean more buying power than in 2000."
+                      action="2024"
+                    >
+                      <RankedList items={data.overview.affordabilityRankings} itemLabel="Category" valueLabel="Affordability vs 2000" />
+                    </WidgetCard>
+                    <WidgetCard title="Overview read" description="Supporting snapshot from the aggregate dashboard view.">
+                      <div className="grid gap-3 md:grid-cols-3">
+                        {data.overview.summaryCards.map((item) => (
+                          <SummaryCard key={`overview-read-${item.label}`} {...item} />
+                        ))}
                       </div>
-                      <div className="grid gap-3 md:grid-cols-2">
-                        <div>
-                          <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Top states</div>
-                          <RankedList items={data.costOfLiving.stateIncomeContext.topStates} valueLabel="Income" />
-                        </div>
-                        <div>
-                          <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Bottom states</div>
-                          <RankedList items={data.costOfLiving.stateIncomeContext.bottomStates} valueLabel="Income" />
-                        </div>
-                      </div>
-                    </div>
-                  </WidgetCard>
+                    </WidgetCard>
+                  </div>
                 </div>
-              </div>
-            </SectionBlock>
+              </SectionBlock>
 
-            <SectionBlock
-              id="industry-divide"
-              kicker="Industry Divide"
-              title="The dream increasingly depends on which labor market you are in."
-              description="National averages understate the labor-market split. High-skill and degree-heavy sectors pulled farther ahead than retail and accommodation-heavy work."
-            >
-              <div className="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-                <div className="min-w-0">
-                  <WidgetCard title="Wage growth by industry" description="Indexed wages per FTE by industry, compared with overall PCE.">
-                    <MultiLineChart data={data.industryDivide.chart} lines={data.industryDivide.lines} height={360} />
-                  </WidgetCard>
-                </div>
-                <div className="grid min-w-0 gap-4">
-                  <WidgetCard title="2024 industry outcomes" description="Highest indexed wage growth at the top.">
-                    <RankedList items={data.industryDivide.topIndustries} />
-                  </WidgetCard>
-                  <WidgetCard title="Degree-heavy versus non-degree-heavy" description="Growth indexes and 2024 wage levels tell different parts of the story.">
-                    <div className="grid gap-3 md:grid-cols-2">
-                      {data.industryDivide.degreeComparison.growth2024.map((item) => (
-                        <div key={item.label} className={cn("rounded-sm border border-[#e4e2e3] p-3", toneRowStyles[item.tone])}>
-                          <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
-                          <div className="mt-2 text-2xl font-semibold text-[#041627]">{item.formattedValue}</div>
-                          <div className="mt-1 text-xs text-[#5f6978]">{item.note}</div>
+              <SectionBlock
+                id="cost-of-living"
+                kicker="Cost of Living"
+                title="Broad inflation was manageable. Specific categories were not."
+                description="This section keeps the repo-backed indexed comparison intact, but adds context for what the national average hides and what it still supports."
+              >
+                <div className="grid gap-4">
+                  <div className="min-w-0">
+                    <WidgetCard
+                      title="Income versus BEA price indexes"
+                      description="Per-capita income versus broad and category-level BEA price indexes rebased to 2000 = 100."
+                    >
+                      <MultiLineChart data={data.costOfLiving.chart} lines={data.costOfLiving.lines} height={360} />
+                    </WidgetCard>
+                  </div>
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    <WidgetCard title="Affordability interpretation" description="What the chart does and does not say.">
+                      <InsightCards items={data.costOfLiving.insightCards} columns={2} />
+                    </WidgetCard>
+                    <WidgetCard
+                      title="State income context"
+                      description="Compact repo-backed context from `cleaned_income_with_state.csv`."
+                      action="2024"
+                    >
+                      <div className="grid gap-3">
+                        <div className="grid gap-3 sm:grid-cols-3">
+                          <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
+                            <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">National per capita</div>
+                            <div className="mt-1 text-lg font-semibold text-[#041627]">
+                              {data.costOfLiving.stateIncomeContext.nationalPerCapita2024}
+                            </div>
+                          </div>
+                          <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
+                            <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">Top vs bottom</div>
+                            <div className="mt-1 text-sm font-semibold text-[#041627]">
+                              {data.costOfLiving.stateIncomeContext.spread}
+                            </div>
+                          </div>
+                          <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
+                            <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">Median state</div>
+                            <div className="mt-1 text-sm font-semibold text-[#041627]">
+                              {data.costOfLiving.stateIncomeContext.medianState}
+                            </div>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                    <div className="mt-3 grid gap-2">
-                      {data.industryDivide.degreeComparison.wageLevels2024.map((item) => (
-                        <div
-                          key={item.label}
-                          className={cn(
-                            "flex items-center justify-between rounded-sm border border-[#e4e2e3] px-3 py-2",
-                            toneRowStyles[item.tone]
-                          )}
-                        >
+                        <div className="grid gap-3 md:grid-cols-2">
                           <div>
-                            <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
-                            <div className="text-xs text-[#5f6978]">{item.note}</div>
+                            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Top states</div>
+                            <RankedList items={data.costOfLiving.stateIncomeContext.topStates} itemLabel="State" valueLabel="Per-capita income" />
                           </div>
-                          <div className="text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
+                          <div>
+                            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Bottom states</div>
+                            <RankedList items={data.costOfLiving.stateIncomeContext.bottomStates} itemLabel="State" valueLabel="Per-capita income" />
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </WidgetCard>
-                  <WidgetCard title="Interpretation" description="What the labor split implies for the dashboard story.">
-                    <InsightCards items={data.industryDivide.summary} />
+                      </div>
+                    </WidgetCard>
+                  </div>
+                </div>
+              </SectionBlock>
+
+              <SectionBlock
+                id="industry-divide"
+                kicker="Industry Divide"
+                title="The dream increasingly depends on which labor market you are in."
+                description="National averages understate the labor-market split. High-skill and degree-heavy sectors pulled farther ahead than retail and accommodation-heavy work."
+              >
+              <div className="grid gap-4">
+                <div className="min-w-0">
+                  <WidgetCard title="Wage growth by industry" description="Average wages per FTE rebased to 2000 = 100, shown alongside overall PCE.">
+                    <MultiLineChart data={data.industryDivide.chart} lines={data.industryDivide.lines} height={380} />
                   </WidgetCard>
                 </div>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <WidgetCard title="2024 industry wage-growth ranking" description="Highest 2024 wage-growth index at the top; this is not a wage-level ranking.">
+                    <RankedList items={data.industryDivide.topIndustries} itemLabel="Industry" valueLabel="Wage index" />
+                  </WidgetCard>
+                  <div className="grid gap-4">
+                    <WidgetCard title="Degree-heavy versus non-degree-heavy" description="Growth indexes and 2024 wage levels tell different parts of the story.">
+                      <div className="grid gap-3">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {data.industryDivide.degreeComparison.growth2024.map((item) => (
+                            <div key={item.label} className={cn("rounded-sm border border-[#e4e2e3] p-3", toneRowStyles[item.tone])}>
+                              <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
+                              <div className="mt-2 text-2xl font-semibold text-[#041627]">{item.formattedValue}</div>
+                              <div className="mt-1 text-xs text-[#5f6978]">{item.note}</div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="grid gap-2">
+                          {data.industryDivide.degreeComparison.wageLevels2024.map((item) => (
+                            <div
+                              key={item.label}
+                              className={cn(
+                                "flex items-center justify-between rounded-sm border border-[#e4e2e3] px-3 py-2",
+                                toneRowStyles[item.tone]
+                              )}
+                            >
+                              <div>
+                                <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
+                                <div className="text-xs text-[#5f6978]">{item.note}</div>
+                              </div>
+                              <div className="text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </WidgetCard>
+                    <WidgetCard title="Interpretation" description="What the labor split implies for the dashboard story.">
+                      <InsightCards items={data.industryDivide.summary} columns={2} />
+                    </WidgetCard>
+                  </div>
+                </div>
               </div>
-            </SectionBlock>
+              </SectionBlock>
 
-            <SectionBlock
-              id="housing-burden"
-              kicker="Housing Burden"
-              title="Monthly housing burden and ownership access diverged."
-              description="The burden share stayed comparatively stable. The ownership path is the sharper affordability break, which is why both views need to sit side by side."
-            >
-              <div className="grid gap-4 xl:grid-cols-2">
+              <SectionBlock
+                id="housing-burden"
+                kicker="Housing Burden"
+                title="Monthly housing burden and ownership access diverged."
+                description="The burden share stayed comparatively stable. The ownership path is the sharper affordability break, which is why both views need to sit side by side."
+              >
+              <div className="grid gap-4">
                 <div className="min-w-0">
                   <WidgetCard
                     title="Housing burden as a share of personal income"
@@ -592,96 +631,95 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                     </div>
                   </WidgetCard>
                 </div>
-                <div className="grid min-w-0 gap-4">
+                <div className="min-w-0">
                   <WidgetCard
                     title="Tenant rent versus owner-equivalent rent"
-                    description="Indexed 2000 = 100, alongside income and broad PCE."
+                    description="BEA rent price indexes rebased to 2000 = 100, alongside income and broad PCE."
                   >
                     <MultiLineChart
                       data={data.housingBurden.rentVsOwnerChart}
                       lines={data.housingBurden.rentVsOwnerLines}
-                      height={320}
+                      height={340}
                     />
                   </WidgetCard>
-                  <WidgetCard title="Summary read" description="Clarifying the housing claim.">
-                    <InsightCards items={data.housingBurden.summary} />
-                  </WidgetCard>
                 </div>
+                <WidgetCard title="Summary read" description="Clarifying the housing claim.">
+                  <InsightCards items={data.housingBurden.summary} columns={2} />
+                </WidgetCard>
               </div>
-            </SectionBlock>
+              </SectionBlock>
 
-            <SectionBlock
-              id="homeownership"
-              kicker="Homeownership"
-              title="Ownership entry is the cleanest break in the dashboard."
-              description="Construction-cost indices ran much faster than per-capita income. This section keeps the ownership story dominant and uses residential investment share as supporting context."
-            >
+              <SectionBlock
+                id="homeownership"
+                kicker="Homeownership"
+                title="Ownership entry is the cleanest break in the dashboard."
+                description="Construction-cost indices ran much faster than per-capita income. This section keeps the ownership story dominant and uses residential investment share as supporting context."
+              >
               <div className="grid gap-4">
                 <div className="min-w-0">
-                  <WidgetCard title="Construction costs versus income" description="Build-cost indices compared with per-capita income and rent growth.">
+                  <WidgetCard title="Construction-cost indexes versus income" description="Structure-cost price indexes compared with per-capita income and tenant-rent growth; these are not home sale prices.">
                     <MultiLineChart
                       data={data.homeownership.constructionChart}
                       lines={data.homeownership.constructionLines}
-                      height={360}
+                      height={380}
                     />
                   </WidgetCard>
                 </div>
-                <div className="grid gap-4 xl:grid-cols-[minmax(320px,0.7fr)_minmax(0,1.3fr)]">
-                  <div className="grid min-w-0 gap-4">
-                    <WidgetCard title="Ownership conclusion" description="Bottom-line dashboard read.">
-                      <InsightCards items={data.homeownership.summary} />
-                    </WidgetCard>
-                    <WidgetCard title="Key moments" description="Residential investment share milestones.">
-                      <div className="grid gap-2 sm:grid-cols-2">
-                        {data.homeownership.keyMoments.map((item) => (
-                          <div key={item.label} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                            <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">{item.label}</div>
-                            <div className="mt-1 text-xl font-semibold text-[#041627]">{item.value}</div>
-                            <div className="text-xs text-[#5f6978]">{item.note}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </WidgetCard>
-                  </div>
-                  <div className="min-w-0">
-                    <WidgetCard
-                      title="Residential construction as a share of income"
-                      description="Boom, collapse, and partial recovery in residential investment intensity."
-                    >
-                      <ShareAreaChart data={data.homeownership.residentialShareChart} />
-                    </WidgetCard>
-                  </div>
+                <div className="min-w-0">
+                  <WidgetCard
+                    title="Residential investment as a share of income"
+                    description="Residential fixed-investment share of total personal income, showing boom, collapse, and partial recovery."
+                  >
+                    <ShareAreaChart data={data.homeownership.residentialShareChart} />
+                  </WidgetCard>
+                </div>
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <WidgetCard title="Ownership conclusion" description="Bottom-line dashboard read.">
+                    <InsightCards items={data.homeownership.summary} columns={2} />
+                  </WidgetCard>
+                  <WidgetCard title="Key moments" description="Residential investment share milestones.">
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {data.homeownership.keyMoments.map((item) => (
+                        <div key={item.label} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
+                          <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">{item.label}</div>
+                          <div className="mt-1 text-xl font-semibold text-[#041627]">{item.value}</div>
+                          <div className="text-xs text-[#5f6978]">{item.note}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </WidgetCard>
                 </div>
               </div>
-            </SectionBlock>
+              </SectionBlock>
 
-            <SectionBlock
-              id="methodology"
-              kicker="Methodology"
-              title="Only repo data and existing analysis logic are used."
-              description="The dashboard stays within the existing cleaned datasets and notebook logic, then repackages those outputs into section-oriented widgets."
-            >
-              <div className="grid gap-4 xl:grid-cols-2">
-                <WidgetCard title="Sources" description="Repo-backed data inputs and transformations." action={<ScrollText className="h-4 w-4 text-[#5f6978]" />}>
-                  <div className="grid gap-2">
-                    {data.methodology.sources.map((item) => (
-                      <div key={item} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </WidgetCard>
-                <WidgetCard title="Caveats" description="What is intentionally excluded from the dashboard." action={<Home className="h-4 w-4 text-[#5f6978]" />}>
-                  <div className="grid gap-2">
-                    {data.methodology.caveats.map((item) => (
-                      <div key={item} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                </WidgetCard>
-              </div>
-            </SectionBlock>
+              <SectionBlock
+                id="methodology"
+                kicker="Methodology"
+                title="Only repo data and existing analysis logic are used."
+                description="The dashboard stays within the existing cleaned datasets and notebook logic, then repackages those outputs into section-oriented widgets."
+              >
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <WidgetCard title="Sources" description="Repo-backed data inputs and transformations." action={<ScrollText className="h-4 w-4 text-[#5f6978]" />}>
+                    <div className="grid gap-2">
+                      {data.methodology.sources.map((item) => (
+                        <div key={item} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </WidgetCard>
+                  <WidgetCard title="Caveats" description="What is intentionally excluded from the dashboard." action={<Home className="h-4 w-4 text-[#5f6978]" />}>
+                    <div className="grid gap-2">
+                      {data.methodology.caveats.map((item) => (
+                        <div key={item} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  </WidgetCard>
+                </div>
+              </SectionBlock>
+            </div>
           </div>
         </div>
       </div>
