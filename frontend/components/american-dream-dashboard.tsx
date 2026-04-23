@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { DropdownMenu } from "radix-ui";
 import {
   Area,
   AreaChart,
@@ -14,8 +15,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { BarChart3, CircleDollarSign, Home, ScrollText } from "lucide-react";
+import { BarChart3, Check, ChevronDown, CircleDollarSign, Home, ScrollText } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardData, RankedMetric, SeriesPoint, Tone } from "@/lib/dashboard-data";
 import { cn } from "@/lib/utils";
@@ -36,6 +38,13 @@ const toneRowStyles: Record<Tone, string> = {
   warn: "bg-[#fffcf3]",
   bad: "bg-[#fdf7f4]",
   neutral: "bg-[#f7f8fa]",
+};
+
+const toneBarStyles: Record<Tone, string> = {
+  good: "bg-[#b9dfd7]/55",
+  warn: "bg-[#efd89a]/50",
+  bad: "bg-[#e7c0af]/52",
+  neutral: "bg-[#d9dde3]/55",
 };
 
 const sidebarStyles = {
@@ -243,32 +252,50 @@ function RankedList({
   items,
   valueLabel = "Index",
   itemLabel,
+  showBackgroundBars = false,
 }: {
   items: RankedMetric[];
   valueLabel?: string;
   itemLabel?: string;
+  showBackgroundBars?: boolean;
 }) {
+  const maxValue = items.reduce((currentMax, item) => Math.max(currentMax, item.value), 0);
+
   return (
     <div className="space-y-2">
       <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-3 border-b border-[#e4e2e3] pb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">
         <div>{itemLabel ?? (valueLabel === "Index" ? "Category" : "Label")}</div>
         <div>{valueLabel}</div>
       </div>
-      {items.map((item) => (
+      {items.map((item) => {
+        const barWidth = showBackgroundBars && maxValue > 0 ? `${Math.max((item.value / maxValue) * 100, 8)}%` : "0%";
+
+        return (
         <div
           key={item.label}
           className={cn(
-            "grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-sm border border-[#e4e2e3] px-3 py-2",
+            "relative grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 overflow-hidden rounded-sm border border-[#e4e2e3] px-3 py-2",
             toneRowStyles[item.tone]
           )}
         >
-          <div className="min-w-0">
+          {showBackgroundBars ? (
+            <div
+              aria-hidden="true"
+              className={cn(
+                "pointer-events-none absolute inset-y-0 left-0 rounded-r-[0.45rem] border-r border-white/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]",
+                toneBarStyles[item.tone]
+              )}
+              style={{ width: barWidth }}
+            />
+          ) : null}
+          <div className="relative min-w-0">
             <div className="truncate text-sm font-medium text-[#1b1c1d]">{item.label}</div>
             {item.note ? <div className="text-xs text-[#5f6978]">{item.note}</div> : null}
           </div>
-          <div className="text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
+          <div className="relative text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -324,6 +351,9 @@ function MultiLineChart({
   percentage = false,
   height = 320,
   highlightLines = [],
+  emphasizedLines = [],
+  primaryLine,
+  visibleLines,
 }: {
   data: SeriesPoint[];
   lines: string[];
@@ -331,7 +361,12 @@ function MultiLineChart({
   percentage?: boolean;
   height?: number;
   highlightLines?: string[];
+  emphasizedLines?: string[];
+  primaryLine?: string;
+  visibleLines?: string[];
 }) {
+  const displayedLines = visibleLines?.length ? lines.filter((line) => visibleLines.includes(line)) : lines;
+
   return (
     <ChartFrame height={height}>
       {({ mounted, width, height: frameHeight }) =>
@@ -349,9 +384,10 @@ function MultiLineChart({
               />
               <Tooltip content={<ChartTooltip suffix={suffix} />} />
               <Legend wrapperStyle={{ fontSize: "12px", color: "#5f6978" }} />
-              {lines.map((line) => {
+              {displayedLines.map((line) => {
                 const isHighlighted = highlightLines.includes(line);
-                const isDefaultPrimary = line === "Per-capita income" || line === "Private industries";
+                const isPrimary = line === primaryLine || line === "Private industries";
+                const isEmphasized = emphasizedLines.includes(line);
 
                 return (
                   <Line
@@ -359,11 +395,12 @@ function MultiLineChart({
                     type="monotone"
                     dataKey={line}
                     stroke={String(data[0]?.[`${line}Color`] ?? "#0b7a75")}
-                    strokeWidth={isHighlighted ? 4 : isDefaultPrimary ? 2.6 : 2}
+                    strokeWidth={isHighlighted ? 4.8 : isPrimary ? 4.2 : isEmphasized ? 2.8 : 2}
                     dot={false}
-                    activeDot={{ r: isHighlighted ? 5 : 3 }}
-                    strokeOpacity={isHighlighted ? 1 : 0.8}
+                    activeDot={{ r: isHighlighted ? 6 : isPrimary ? 5 : isEmphasized ? 4 : 3 }}
+                    strokeOpacity={isHighlighted ? 1 : isPrimary ? 1 : isEmphasized ? 0.88 : 0.42}
                     strokeDasharray={line === "Overall cost of living (PCE)" ? "4 4" : undefined}
+                    style={isPrimary ? { filter: "drop-shadow(0 0 8px rgba(11,122,117,0.22))" } : undefined}
                   />
                 );
               })}
@@ -374,6 +411,88 @@ function MultiLineChart({
         )
       }
     </ChartFrame>
+  );
+}
+
+function CostOfLivingLineSelector({
+  comparisonLines,
+  selectedLines,
+  allSelected,
+  incomeLine,
+  onSetAll,
+  onClearAll,
+  onToggleLine,
+}: {
+  comparisonLines: string[];
+  selectedLines: Set<string>;
+  allSelected: boolean;
+  incomeLine: string;
+  onSetAll: () => void;
+  onClearAll: () => void;
+  onToggleLine: (line: string) => void;
+}) {
+  const selectedLabel = allSelected ? "All lines" : selectedLines.size ? `${selectedLines.size} selected` : "Income only";
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-8 min-w-[132px] justify-between border-[#d9dde3] bg-white text-[11px] font-medium normal-case tracking-normal text-[#243447] hover:border-[#b6c4d3] hover:bg-[#f7f8fa]"
+        >
+          <span>Line filter: {selectedLabel}</span>
+          <ChevronDown className="h-3.5 w-3.5" />
+        </Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={8}
+          className="z-50 min-w-[250px] rounded-md border border-[#d9dde3] bg-white p-1.5 shadow-[0_10px_26px_rgba(4,22,39,0.14)]"
+        >
+          <DropdownMenu.CheckboxItem
+            checked={allSelected}
+            onCheckedChange={(checked) => (checked ? onSetAll() : onClearAll())}
+            className="flex cursor-default items-center gap-2 rounded-sm px-2.5 py-2 text-xs font-medium text-[#243447] outline-none transition-colors data-[highlighted]:bg-[#f4f7fa]"
+          >
+            <span className="flex h-4 w-4 items-center justify-center rounded-sm border border-[#b8c4d2] bg-white text-[#0b7a75]">
+              <DropdownMenu.ItemIndicator>
+                <Check className="h-3 w-3" />
+              </DropdownMenu.ItemIndicator>
+            </span>
+            <span>All lines</span>
+          </DropdownMenu.CheckboxItem>
+          <DropdownMenu.Separator className="my-1 h-px bg-[#e4e2e3]" />
+          <div className="px-2.5 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Visible series</div>
+          <div className="rounded-sm border border-[#d9e5e3] bg-[#f4fbfa] px-2.5 py-2 text-xs text-[#35555a]">
+            <div className="flex items-center gap-2 font-medium text-[#0a5c63]">
+              <span className="flex h-4 w-4 items-center justify-center rounded-sm border border-[#8dc5bc] bg-white text-[#0b7a75]">
+                <Check className="h-3 w-3" />
+              </span>
+              {incomeLine}
+            </div>
+            <div className="mt-1 text-[11px] text-[#5f6978]">Always visible and visually emphasized.</div>
+          </div>
+          {comparisonLines.map((line) => (
+            <DropdownMenu.CheckboxItem
+              key={line}
+              checked={selectedLines.has(line)}
+              onCheckedChange={() => onToggleLine(line)}
+              className="mt-1 flex cursor-default items-center gap-2 rounded-sm px-2.5 py-2 text-xs text-[#243447] outline-none transition-colors data-[highlighted]:bg-[#f4f7fa]"
+            >
+              <span className="flex h-4 w-4 items-center justify-center rounded-sm border border-[#b8c4d2] bg-white text-[#0b7a75]">
+                <DropdownMenu.ItemIndicator>
+                  <Check className="h-3 w-3" />
+                </DropdownMenu.ItemIndicator>
+              </span>
+              <span>{line}</span>
+            </DropdownMenu.CheckboxItem>
+          ))}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }
 
@@ -478,6 +597,65 @@ function ShareAreaChart({ data }: { data: SeriesPoint[] }) {
 export function AmericanDreamDashboard({ data }: DashboardProps) {
   const sectionIds = useMemo(() => data.sidebar.map((section) => section.id), [data.sidebar]);
   const activeSection = useActiveSection(sectionIds);
+  const incomeLine = "Per-capita income";
+  const comparisonLines = useMemo(
+    () => data.costOfLiving.lines.filter((line) => line !== incomeLine),
+    [data.costOfLiving.lines]
+  );
+  const [costOfLivingSelection, setCostOfLivingSelection] = useState<{
+    mode: "all" | "custom";
+    selected: Set<string>;
+  }>({
+    mode: "all",
+    selected: new Set(comparisonLines),
+  });
+  const selectedCostOfLivingLines =
+    costOfLivingSelection.mode === "all"
+      ? new Set(comparisonLines)
+      : new Set(comparisonLines.filter((line) => costOfLivingSelection.selected.has(line)));
+  const costOfLivingAllLines = costOfLivingSelection.mode === "all";
+  const costOfLivingVisibleLines = costOfLivingAllLines
+    ? data.costOfLiving.lines
+    : [incomeLine, ...comparisonLines.filter((line) => selectedCostOfLivingLines.has(line))];
+  const costOfLivingEmphasizedLines = costOfLivingAllLines ? [] : [...selectedCostOfLivingLines];
+
+  const handleSetAllCostOfLivingLines = () => {
+    setCostOfLivingSelection({
+      mode: "all",
+      selected: new Set(comparisonLines),
+    });
+  };
+
+  const handleClearCostOfLivingLines = () => {
+    setCostOfLivingSelection({
+      mode: "custom",
+      selected: new Set(),
+    });
+  };
+
+  const handleToggleCostOfLivingLine = (line: string) => {
+    setCostOfLivingSelection((current) => {
+      const next = new Set(current.mode === "all" ? comparisonLines : current.selected);
+
+      if (next.has(line)) {
+        next.delete(line);
+      } else {
+        next.add(line);
+      }
+
+      if (next.size === comparisonLines.length) {
+        return {
+          mode: "all",
+          selected: new Set(comparisonLines),
+        };
+      }
+
+      return {
+        mode: "custom",
+        selected: next,
+      };
+    });
+  };
 
   return (
     <main className="min-h-screen bg-[#fbf9fa] text-[#1b1c1d]">
@@ -599,17 +777,50 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                     <WidgetCard
                       title="Income versus BEA price indexes"
                       description="Per-capita income versus broad and category-level BEA price indexes rebased to 2000 = 100."
+                      action={
+                        <CostOfLivingLineSelector
+                          comparisonLines={comparisonLines}
+                          selectedLines={selectedCostOfLivingLines}
+                          allSelected={costOfLivingAllLines}
+                          incomeLine={incomeLine}
+                          onSetAll={handleSetAllCostOfLivingLines}
+                          onClearAll={handleClearCostOfLivingLines}
+                          onToggleLine={handleToggleCostOfLivingLine}
+                        />
+                      }
                     >
-                      <MultiLineChart data={data.costOfLiving.chart} lines={data.costOfLiving.lines} height={360} />
+                      <div className="mb-3 flex flex-wrap items-center gap-2 rounded-sm border border-[#d9e5e3] bg-[#f4fbfa] px-3 py-2 text-xs text-[#35555a]">
+                        <span className="inline-flex items-center gap-2 font-medium text-[#0a5c63]">
+                          <span className="h-2.5 w-2.5 rounded-full bg-[#0b7a75]" />
+                          Income stays emphasized
+                        </span>
+                        <span className="text-[#5f6978]">
+                          Use the dropdown to show all lines or compare income against a custom set of price indexes.
+                        </span>
+                      </div>
+                      <MultiLineChart
+                        data={data.costOfLiving.chart}
+                        lines={data.costOfLiving.lines}
+                        height={360}
+                        primaryLine={incomeLine}
+                        highlightLines={[incomeLine]}
+                        emphasizedLines={costOfLivingEmphasizedLines}
+                        visibleLines={costOfLivingVisibleLines}
+                      />
                     </WidgetCard>
                   </div>
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
                     <WidgetCard
                       title="2024 affordability score by category"
-                      description="Income-growth index divided by each 2024 price index. Values above 100 mean more buying power than in 2000."
+                      description="Calculated as the 2024 per-capita income index divided by each 2024 category price index, then multiplied by 100. A score of 100 means prices kept pace with income since 2000; above 100 means stronger buying power, and below 100 means that category's prices outgrew income."
                       action="2024"
                     >
-                      <RankedList items={data.overview.affordabilityRankings} itemLabel="Category" valueLabel="Affordability vs 2000" />
+                      <RankedList
+                        items={data.overview.affordabilityRankings}
+                        itemLabel="Category"
+                        valueLabel="Affordability vs 2000"
+                        showBackgroundBars
+                      />
                     </WidgetCard>
                     <div className="grid gap-4">
                       <WidgetCard title="Affordability interpretation" description="What the comparison says, and what it does not say.">
@@ -618,10 +829,10 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       <WidgetCard title="Higher-education clarification" description="How to read that series correctly.">
                         <div className="grid gap-3 md:grid-cols-2">
                           <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                            The higher-education line is a BEA price index. It tracks how the price level changed relative to 2000, not how many people enrolled or how much households spent in total.
+                            Higher education costs have outgrown per-capita income by a meaningful margin since 2000. By 2024, the income index reached 239.7 while the higher-education price index climbed to 282.4, so education costs rose about 18% faster than income.
                           </div>
                           <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                            That matters because a price index can rise sharply even if participation changes. The dashboard uses it as evidence of cost pressure, not as a claim about educational demand.
+                            It is still a BEA price index, so the series measures price growth rather than enrollment, borrowing, or total household spending. But the affordability signal is clear: the category scores 84.9 versus 2000, which means a typical dollar of income now buys materially less higher education than it did at the start of the period.
                           </div>
                         </div>
                       </WidgetCard>
