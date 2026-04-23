@@ -1,0 +1,122 @@
+{
+  "models.state_income_momentum": {
+    "1": {
+      "latest_year": 2025,
+      "entities": 47,
+      "best_model_name": "ridge",
+      "predictive_mae": 0.09907189819431297,
+      "naive_mae": 0.09017042750573659,
+      "top_entity": "Utah",
+      "bottom_entity": "North Dakota"
+    },
+    "3": {
+      "latest_year": 2025,
+      "entities": 47,
+      "best_model_name": "ridge",
+      "predictive_mae": 0.10059315568322656,
+      "naive_mae": 0.13496164833595878,
+      "top_entity": "Utah",
+      "bottom_entity": "North Dakota"
+    }
+  },
+  "models.industry_wage_upside": {
+    "1": {
+      "latest_year": 2024,
+      "entities": 84,
+      "best_model_name": "gradient_boosting",
+      "predictive_mae": 0.06676625957457824,
+      "naive_mae": 0.06560389986357973,
+      "top_entity": "Oil and gas extraction",
+      "bottom_entity": "Durable goods"
+    },
+    "3": {
+      "latest_year": 2024,
+      "entities": 84,
+      "best_model_name": "ridge",
+      "predictive_mae": 0.05438264071656629,
+      "naive_mae": 0.11118323731972539,
+      "top_entity": "Securities, commodity contracts, and investments",
+      "bottom_entity": "Nondurable goods"
+    }
+  },
+  "models.industry_wage_stability": {
+    "1": {
+      "latest_year": 2024,
+      "entities": 84,
+      "best_model_name": "gradient_boosting",
+      "predictive_mae": 0.03714457020546938,
+      "naive_mae": 0.04345617150754441,
+      "top_entity": "Paper products",
+      "bottom_entity": "Nondurable goods"
+    },
+    "3": {
+      "latest_year": 2024,
+      "entities": 84,
+      "best_model_name": "gradient_boosting",
+      "predictive_mae": 0.04764200560066113,
+      "naive_mae": 0.06990978407852057,
+      "top_entity": "Nonmetallic mineral products",
+      "bottom_entity": "Nondurable goods"
+    }
+  },
+  "models.industry_household_formation": {
+    "1": {
+      "latest_year": 2024,
+      "entities": 84,
+      "best_model_name": "random_forest",
+      "predictive_mae": 0.03091705287987844,
+      "naive_mae": 0.02765121973232162,
+      "top_entity": "Oil and gas extraction",
+      "bottom_entity": "Nondurable goods"
+    },
+    "3": {
+      "latest_year": 2024,
+      "entities": 84,
+      "best_model_name": "random_forest",
+      "predictive_mae": 0.03257285367183771,
+      "naive_mae": 0.04568082763798085,
+      "top_entity": "Securities, commodity contracts, and investments",
+      "bottom_entity": "Farms"
+    }
+  },
+  "models.american_dream_state": {
+    "1": {
+      "latest_year": 2025,
+      "entities": 47,
+      "best_model_name": "ridge",
+      "predictive_mae": 0.13811324055020105,
+      "naive_mae": 0.08476114700888109,
+      "top_entity": "District of Columbia",
+      "bottom_entity": "Mississippi"
+    },
+    "3": {
+      "latest_year": 2025,
+      "entities": 47,
+      "best_model_name": "ridge",
+      "predictive_mae": 0.12497398940382891,
+      "naive_mae": 0.13720103553423596,
+      "top_entity": "West Virginia",
+      "bottom_entity": "District of Columbia"
+    }
+  },
+  "models.american_dream_industry": {
+    "1": {
+      "latest_year": 2024,
+      "entities": 84,
+      "best_model_name": "random_forest",
+      "predictive_mae": 0.051570954795170945,
+      "naive_mae": 0.034379291432985924,
+      "top_entity": "Oil and gas extraction",
+      "bottom_entity": "Nondurable goods"
+    },
+    "3": {
+      "latest_year": 2024,
+      "entities": 84,
+      "best_model_name": "random_forest",
+      "predictive_mae": 0.04260581345575984,
+      "naive_mae": 0.057069282165293604,
+      "top_entity": "Securities, commodity contracts, and investments",
+      "bottom_entity": "Farms"
+    }
+  }
+}
