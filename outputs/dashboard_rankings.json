@@ -1,0 +1,947 @@
+{
+  "generated_at": "2026-04-22T22:38:49.805303",
+  "state": {
+    "problem_id": 10,
+    "name": "American Dream Score - state",
+    "entity_type": "state",
+    "latest_year": 2025,
+    "horizon": 1,
+    "best_model_name": "ridge",
+    "predictive_metrics": {
+      "mae": 0.13811324055020105,
+      "rmse": 0.1630408614412954,
+      "rank_corr": 0.44883260746946285
+    },
+    "naive_metrics": {
+      "mae": 0.08476114700888109,
+      "rmse": 0.11280218981374993,
+      "rank_corr": 0.5995321183204342
+    },
+    "top_k_overlap": 0.6,
+    "top_5": [
+      {
+        "label": "District of Columbia",
+        "value": 0.5331103569961501,
+        "year": 2025,
+        "rank": 1
+      },
+      {
+        "label": "Wyoming",
+        "value": 0.5288094116033542,
+        "year": 2025,
+        "rank": 2
+      },
+      {
+        "label": "Connecticut",
+        "value": 0.5271030824810157,
+        "year": 2025,
+        "rank": 3
+      },
+      {
+        "label": "Washington",
+        "value": 0.5245401394855566,
+        "year": 2025,
+        "rank": 4
+      },
+      {
+        "label": "Colorado",
+        "value": 0.5232676501049274,
+        "year": 2025,
+        "rank": 5
+      }
+    ],
+    "bottom_5": [
+      {
+        "label": "Alabama",
+        "value": 0.5095484291276524,
+        "year": 2025,
+        "rank": 43
+      },
+      {
+        "label": "Louisiana",
+        "value": 0.5089053417112603,
+        "year": 2025,
+        "rank": 44
+      },
+      {
+        "label": "Kentucky",
+        "value": 0.5088173119730903,
+        "year": 2025,
+        "rank": 45
+      },
+      {
+        "label": "West Virginia",
+        "value": 0.508664267324935,
+        "year": 2025,
+        "rank": 46
+      },
+      {
+        "label": "Mississippi",
+        "value": 0.5052812494962787,
+        "year": 2025,
+        "rank": 47
+      }
+    ],
+    "full_ranking": [
+      {
+        "label": "District of Columbia",
+        "value": 0.5331103569961501,
+        "year": 2025,
+        "rank": 1
+      },
+      {
+        "label": "Wyoming",
+        "value": 0.5288094116033542,
+        "year": 2025,
+        "rank": 2
+      },
+      {
+        "label": "Connecticut",
+        "value": 0.5271030824810157,
+        "year": 2025,
+        "rank": 3
+      },
+      {
+        "label": "Washington",
+        "value": 0.5245401394855566,
+        "year": 2025,
+        "rank": 4
+      },
+      {
+        "label": "Colorado",
+        "value": 0.5232676501049274,
+        "year": 2025,
+        "rank": 5
+      },
+      {
+        "label": "Massachusetts",
+        "value": 0.5228828076598877,
+        "year": 2025,
+        "rank": 6
+      },
+      {
+        "label": "California",
+        "value": 0.5226217604350782,
+        "year": 2025,
+        "rank": 7
+      },
+      {
+        "label": "Florida",
+        "value": 0.520869751168719,
+        "year": 2025,
+        "rank": 8
+      },
+      {
+        "label": "New Hampshire",
+        "value": 0.5205527464405553,
+        "year": 2025,
+        "rank": 9
+      },
+      {
+        "label": "New York",
+        "value": 0.5195769207611525,
+        "year": 2025,
+        "rank": 10
+      },
+      {
+        "label": "Virginia",
+        "value": 0.519507031548556,
+        "year": 2025,
+        "rank": 11
+      },
+      {
+        "label": "South Dakota",
+        "value": 0.5192695247429929,
+        "year": 2025,
+        "rank": 12
+      },
+      {
+        "label": "Montana",
+        "value": 0.5192065666273646,
+        "year": 2025,
+        "rank": 13
+      },
+      {
+        "label": "New Jersey",
+        "value": 0.5185761480314796,
+        "year": 2025,
+        "rank": 14
+      },
+      {
+        "label": "Nebraska",
+        "value": 0.5181648295529436,
+        "year": 2025,
+        "rank": 15
+      },
+      {
+        "label": "Utah",
+        "value": 0.51730168167471,
+        "year": 2025,
+        "rank": 16
+      },
+      {
+        "label": "Maryland",
+        "value": 0.51698205422,
+        "year": 2025,
+        "rank": 17
+      },
+      {
+        "label": "Maine",
+        "value": 0.5169038068448029,
+        "year": 2025,
+        "rank": 18
+      },
+      {
+        "label": "Texas",
+        "value": 0.5168003103229512,
+        "year": 2025,
+        "rank": 19
+      },
+      {
+        "label": "Vermont",
+        "value": 0.5165622933346354,
+        "year": 2025,
+        "rank": 20
+      },
+      {
+        "label": "Oklahoma",
+        "value": 0.5161116775036241,
+        "year": 2025,
+        "rank": 21
+      },
+      {
+        "label": "Tennessee",
+        "value": 0.5155721179254618,
+        "year": 2025,
+        "rank": 22
+      },
+      {
+        "label": "Oregon",
+        "value": 0.51532756650294,
+        "year": 2025,
+        "rank": 23
+      },
+      {
+        "label": "North Carolina",
+        "value": 0.5152892819044487,
+        "year": 2025,
+        "rank": 24
+      },
+      {
+        "label": "Illinois",
+        "value": 0.5149444045139413,
+        "year": 2025,
+        "rank": 25
+      },
+      {
+        "label": "Arizona",
+        "value": 0.5143401207810522,
+        "year": 2025,
+        "rank": 26
+      },
+      {
+        "label": "Delaware",
+        "value": 0.5137105522497476,
+        "year": 2025,
+        "rank": 27
+      },
+      {
+        "label": "New Mexico",
+        "value": 0.5131602086670098,
+        "year": 2025,
+        "rank": 28
+      },
+      {
+        "label": "Rhode Island",
+        "value": 0.5130302553591982,
+        "year": 2025,
+        "rank": 29
+      },
+      {
+        "label": "Missouri",
+        "value": 0.5130128614256504,
+        "year": 2025,
+        "rank": 30
+      },
+      {
+        "label": "Iowa",
+        "value": 0.5129888016039621,
+        "year": 2025,
+        "rank": 31
+      },
+      {
+        "label": "Wisconsin",
+        "value": 0.5122789421715329,
+        "year": 2025,
+        "rank": 32
+      },
+      {
+        "label": "Kansas",
+        "value": 0.511773608606033,
+        "year": 2025,
+        "rank": 33
+      },
+      {
+        "label": "Pennsylvania",
+        "value": 0.5116858093848751,
+        "year": 2025,
+        "rank": 34
+      },
+      {
+        "label": "Idaho",
+        "value": 0.5114689771479122,
+        "year": 2025,
+        "rank": 35
+      },
+      {
+        "label": "South Carolina",
+        "value": 0.5109960148869609,
+        "year": 2025,
+        "rank": 36
+      },
+      {
+        "label": "Ohio",
+        "value": 0.5109619011309462,
+        "year": 2025,
+        "rank": 37
+      },
+      {
+        "label": "North Dakota",
+        "value": 0.5108864977567155,
+        "year": 2025,
+        "rank": 38
+      },
+      {
+        "label": "Indiana",
+        "value": 0.5105664864276139,
+        "year": 2025,
+        "rank": 39
+      },
+      {
+        "label": "Michigan",
+        "value": 0.5100016555891979,
+        "year": 2025,
+        "rank": 40
+      },
+      {
+        "label": "Georgia",
+        "value": 0.5099618042438632,
+        "year": 2025,
+        "rank": 41
+      },
+      {
+        "label": "Arkansas",
+        "value": 0.5097299271155594,
+        "year": 2025,
+        "rank": 42
+      },
+      {
+        "label": "Alabama",
+        "value": 0.5095484291276524,
+        "year": 2025,
+        "rank": 43
+      },
+      {
+        "label": "Louisiana",
+        "value": 0.5089053417112603,
+        "year": 2025,
+        "rank": 44
+      },
+      {
+        "label": "Kentucky",
+        "value": 0.5088173119730903,
+        "year": 2025,
+        "rank": 45
+      },
+      {
+        "label": "West Virginia",
+        "value": 0.508664267324935,
+        "year": 2025,
+        "rank": 46
+      },
+      {
+        "label": "Mississippi",
+        "value": 0.5052812494962787,
+        "year": 2025,
+        "rank": 47
+      }
+    ]
+  },
+  "industry": {
+    "problem_id": 10,
+    "name": "American Dream Score - industry",
+    "entity_type": "industry",
+    "latest_year": 2024,
+    "horizon": 3,
+    "best_model_name": "random_forest",
+    "predictive_metrics": {
+      "mae": 0.04260581345575984,
+      "rmse": 0.06160778513855289,
+      "rank_corr": 0.7656488397597799
+    },
+    "naive_metrics": {
+      "mae": 0.057069282165293604,
+      "rmse": 0.07902904638710198,
+      "rank_corr": 0.6604699377299141
+    },
+    "top_k_overlap": 0.6,
+    "top_5": [
+      {
+        "label": "Securities, commodity contracts, and investments",
+        "value": 0.634690152506565,
+        "year": 2024,
+        "rank": 1
+      },
+      {
+        "label": "Information and data processing services",
+        "value": 0.6306836263592447,
+        "year": 2024,
+        "rank": 2
+      },
+      {
+        "label": "Oil and gas extraction",
+        "value": 0.6304709346902816,
+        "year": 2024,
+        "rank": 3
+      },
+      {
+        "label": "Information",
+        "value": 0.6066615863244822,
+        "year": 2024,
+        "rank": 4
+      },
+      {
+        "label": "Publishing industries (includes software)",
+        "value": 0.6035759541990775,
+        "year": 2024,
+        "rank": 5
+      }
+    ],
+    "bottom_5": [
+      {
+        "label": "Accommodation and food services",
+        "value": 0.30845660014624676,
+        "year": 2024,
+        "rank": 78
+      },
+      {
+        "label": "Agriculture, forestry, fishing, and hunting",
+        "value": 0.30459821920680696,
+        "year": 2024,
+        "rank": 79
+      },
+      {
+        "label": "Food services and drinking places",
+        "value": 0.2563711319305836,
+        "year": 2024,
+        "rank": 80
+      },
+      {
+        "label": "Nondurable goods",
+        "value": 0.2459399409210192,
+        "year": 2024,
+        "rank": 81
+      },
+      {
+        "label": "Farms",
+        "value": 0.1904215496198999,
+        "year": 2024,
+        "rank": 82
+      }
+    ],
+    "full_ranking": [
+      {
+        "label": "Securities, commodity contracts, and investments",
+        "value": 0.634690152506565,
+        "year": 2024,
+        "rank": 1
+      },
+      {
+        "label": "Information and data processing services",
+        "value": 0.6306836263592447,
+        "year": 2024,
+        "rank": 2
+      },
+      {
+        "label": "Oil and gas extraction",
+        "value": 0.6304709346902816,
+        "year": 2024,
+        "rank": 3
+      },
+      {
+        "label": "Information",
+        "value": 0.6066615863244822,
+        "year": 2024,
+        "rank": 4
+      },
+      {
+        "label": "Publishing industries (includes software)",
+        "value": 0.6035759541990775,
+        "year": 2024,
+        "rank": 5
+      },
+      {
+        "label": "Funds, trusts, and other financial vehicles",
+        "value": 0.5975154794326759,
+        "year": 2024,
+        "rank": 6
+      },
+      {
+        "label": "Water transportation",
+        "value": 0.5735602574509472,
+        "year": 2024,
+        "rank": 7
+      },
+      {
+        "label": "Pipeline transportation",
+        "value": 0.572260315978393,
+        "year": 2024,
+        "rank": 8
+      },
+      {
+        "label": "Petroleum and coal products",
+        "value": 0.5720126566606349,
+        "year": 2024,
+        "rank": 9
+      },
+      {
+        "label": "Broadcasting and telecommunications",
+        "value": 0.5596914305424432,
+        "year": 2024,
+        "rank": 10
+      },
+      {
+        "label": "Computer systems design and related services",
+        "value": 0.5595842196087983,
+        "year": 2024,
+        "rank": 11
+      },
+      {
+        "label": "Legal services",
+        "value": 0.5470880308189856,
+        "year": 2024,
+        "rank": 12
+      },
+      {
+        "label": "Computer and electronic products",
+        "value": 0.5458566836644448,
+        "year": 2024,
+        "rank": 13
+      },
+      {
+        "label": "Mining",
+        "value": 0.5411632808131293,
+        "year": 2024,
+        "rank": 14
+      },
+      {
+        "label": "Utilities",
+        "value": 0.5408167195011447,
+        "year": 2024,
+        "rank": 15
+      },
+      {
+        "label": "Management of companies and enterprises",
+        "value": 0.5399471295004249,
+        "year": 2024,
+        "rank": 16
+      },
+      {
+        "label": "Finance and insurance",
+        "value": 0.5312221128896482,
+        "year": 2024,
+        "rank": 17
+      },
+      {
+        "label": "Air transportation",
+        "value": 0.52187759345236,
+        "year": 2024,
+        "rank": 18
+      },
+      {
+        "label": "Support activities for mining",
+        "value": 0.5215324971688767,
+        "year": 2024,
+        "rank": 19
+      },
+      {
+        "label": "Rail transportation",
+        "value": 0.5193123292261576,
+        "year": 2024,
+        "rank": 20
+      },
+      {
+        "label": "Other transportation equipment",
+        "value": 0.49857809575015466,
+        "year": 2024,
+        "rank": 21
+      },
+      {
+        "label": "Chemical products",
+        "value": 0.4925808071983716,
+        "year": 2024,
+        "rank": 22
+      },
+      {
+        "label": "Miscellaneous professional, scientific, and technical services",
+        "value": 0.4923409833853799,
+        "year": 2024,
+        "rank": 23
+      },
+      {
+        "label": "Professional, scientific, and technical services",
+        "value": 0.49061696795992654,
+        "year": 2024,
+        "rank": 24
+      },
+      {
+        "label": "Insurance carriers and related activities",
+        "value": 0.48893880066156326,
+        "year": 2024,
+        "rank": 25
+      },
+      {
+        "label": "Wholesale trade",
+        "value": 0.48763741456792986,
+        "year": 2024,
+        "rank": 26
+      },
+      {
+        "label": "Waste management and remediation services",
+        "value": 0.4815076560198582,
+        "year": 2024,
+        "rank": 27
+      },
+      {
+        "label": "Performing arts, spectator sports, museums, and related activities",
+        "value": 0.4805384588671952,
+        "year": 2024,
+        "rank": 28
+      },
+      {
+        "label": "Machinery",
+        "value": 0.47261977537770605,
+        "year": 2024,
+        "rank": 29
+      },
+      {
+        "label": "Construction",
+        "value": 0.471962915322583,
+        "year": 2024,
+        "rank": 30
+      },
+      {
+        "label": "Durable goods",
+        "value": 0.4710501001204513,
+        "year": 2024,
+        "rank": 31
+      },
+      {
+        "label": "Federal Reserve banks, credit intermediation, and related activities",
+        "value": 0.46982807954157685,
+        "year": 2024,
+        "rank": 32
+      },
+      {
+        "label": "Hospitals",
+        "value": 0.46815725022363675,
+        "year": 2024,
+        "rank": 33
+      },
+      {
+        "label": "Mining, except oil and gas",
+        "value": 0.46657898091680855,
+        "year": 2024,
+        "rank": 34
+      },
+      {
+        "label": "Motion picture and sound recording industries",
+        "value": 0.46236979100145664,
+        "year": 2024,
+        "rank": 35
+      },
+      {
+        "label": "Manufacturing",
+        "value": 0.45936563649447976,
+        "year": 2024,
+        "rank": 36
+      },
+      {
+        "label": "Miscellaneous manufacturing",
+        "value": 0.4569747316892445,
+        "year": 2024,
+        "rank": 37
+      },
+      {
+        "label": "Electrical equipment, appliances, and components",
+        "value": 0.45416739800594125,
+        "year": 2024,
+        "rank": 38
+      },
+      {
+        "label": "Paper products",
+        "value": 0.4468192015969465,
+        "year": 2024,
+        "rank": 39
+      },
+      {
+        "label": "Ambulatory health care services",
+        "value": 0.4453622943108138,
+        "year": 2024,
+        "rank": 40
+      },
+      {
+        "label": "Nonmetallic mineral products",
+        "value": 0.44335379467043073,
+        "year": 2024,
+        "rank": 41
+      },
+      {
+        "label": "Motor vehicles, bodies and trailers, and parts",
+        "value": 0.44306313526715335,
+        "year": 2024,
+        "rank": 42
+      },
+      {
+        "label": "Education",
+        "value": 0.43841474101691225,
+        "year": 2024,
+        "rank": 43
+      },
+      {
+        "label": "Transportation and warehousing",
+        "value": 0.4337398897855701,
+        "year": 2024,
+        "rank": 44
+      },
+      {
+        "label": "Other",
+        "value": 0.43006591456660725,
+        "year": 2024,
+        "rank": 45
+      },
+      {
+        "label": "Fabricated metal products",
+        "value": 0.42768965313517915,
+        "year": 2024,
+        "rank": 46
+      },
+      {
+        "label": "Real estate",
+        "value": 0.4256947662422672,
+        "year": 2024,
+        "rank": 47
+      },
+      {
+        "label": "Real estate and rental and leasing",
+        "value": 0.4255913491254493,
+        "year": 2024,
+        "rank": 48
+      },
+      {
+        "label": "Wood products",
+        "value": 0.4173297028111205,
+        "year": 2024,
+        "rank": 49
+      },
+      {
+        "label": "Rental and leasing services and lessors of intangible assets",
+        "value": 0.40920879747680966,
+        "year": 2024,
+        "rank": 50
+      },
+      {
+        "label": "Primary metals",
+        "value": 0.4057948716736695,
+        "year": 2024,
+        "rank": 51
+      },
+      {
+        "label": "Administrative and waste management services",
+        "value": 0.40511256041203325,
+        "year": 2024,
+        "rank": 52
+      },
+      {
+        "label": "Administrative and support services",
+        "value": 0.4022803742382332,
+        "year": 2024,
+        "rank": 53
+      },
+      {
+        "label": "Other services, except government",
+        "value": 0.39796901596256506,
+        "year": 2024,
+        "rank": 54
+      },
+      {
+        "label": "Truck transportation",
+        "value": 0.3978972265295203,
+        "year": 2024,
+        "rank": 55
+      },
+      {
+        "label": "Health care and social assistance",
+        "value": 0.39706563854387056,
+        "year": 2024,
+        "rank": 56
+      },
+      {
+        "label": "Plastics and rubber products",
+        "value": 0.3928862830596808,
+        "year": 2024,
+        "rank": 57
+      },
+      {
+        "label": "Apparel and leather and allied products",
+        "value": 0.39127845414079343,
+        "year": 2024,
+        "rank": 58
+      },
+      {
+        "label": "Furniture and related products",
+        "value": 0.3888326657267664,
+        "year": 2024,
+        "rank": 59
+      },
+      {
+        "label": "Printing and related support activities",
+        "value": 0.388152161184744,
+        "year": 2024,
+        "rank": 60
+      },
+      {
+        "label": "Food and beverage and tobacco products",
+        "value": 0.38689979734705454,
+        "year": 2024,
+        "rank": 61
+      },
+      {
+        "label": "Textile mills and textile product mills",
+        "value": 0.38648592092257533,
+        "year": 2024,
+        "rank": 62
+      },
+      {
+        "label": "Other transportation and support activities",
+        "value": 0.38606763188900944,
+        "year": 2024,
+        "rank": 63
+      },
+      {
+        "label": "Educational services",
+        "value": 0.3798591285772686,
+        "year": 2024,
+        "rank": 64
+      },
+      {
+        "label": "Social assistance",
+        "value": 0.37804599852478354,
+        "year": 2024,
+        "rank": 65
+      },
+      {
+        "label": "Retail trade",
+        "value": 0.37630661346475497,
+        "year": 2024,
+        "rank": 66
+      },
+      {
+        "label": "Warehousing and storage",
+        "value": 0.37607465241612115,
+        "year": 2024,
+        "rank": 67
+      },
+      {
+        "label": "Nursing and residential care facilities",
+        "value": 0.3742580509257473,
+        "year": 2024,
+        "rank": 68
+      },
+      {
+        "label": "Accommodation",
+        "value": 0.37298220709958807,
+        "year": 2024,
+        "rank": 69
+      },
+      {
+        "label": "Forestry, fishing, and related activities",
+        "value": 0.37279299328667814,
+        "year": 2024,
+        "rank": 70
+      },
+      {
+        "label": "Other retail",
+        "value": 0.37203313450573866,
+        "year": 2024,
+        "rank": 71
+      },
+      {
+        "label": "General merchandise stores",
+        "value": 0.36764672702241064,
+        "year": 2024,
+        "rank": 72
+      },
+      {
+        "label": "Motor vehicle and parts dealers",
+        "value": 0.3635528515538961,
+        "year": 2024,
+        "rank": 73
+      },
+      {
+        "label": "Food and beverage stores",
+        "value": 0.36033396811396157,
+        "year": 2024,
+        "rank": 74
+      },
+      {
+        "label": "Transit and ground passenger transportation",
+        "value": 0.35840268589852153,
+        "year": 2024,
+        "rank": 75
+      },
+      {
+        "label": "Arts, entertainment, and recreation",
+        "value": 0.32801065740007723,
+        "year": 2024,
+        "rank": 76
+      },
+      {
+        "label": "Amusements, gambling, and recreation industries",
+        "value": 0.32031683673741324,
+        "year": 2024,
+        "rank": 77
+      },
+      {
+        "label": "Accommodation and food services",
+        "value": 0.30845660014624676,
+        "year": 2024,
+        "rank": 78
+      },
+      {
+        "label": "Agriculture, forestry, fishing, and hunting",
+        "value": 0.30459821920680696,
+        "year": 2024,
+        "rank": 79
+      },
+      {
+        "label": "Food services and drinking places",
+        "value": 0.2563711319305836,
+        "year": 2024,
+        "rank": 80
+      },
+      {
+        "label": "Nondurable goods",
+        "value": 0.2459399409210192,
+        "year": 2024,
+        "rank": 81
+      },
+      {
+        "label": "Farms",
+        "value": 0.1904215496198999,
+        "year": 2024,
+        "rank": 82
+      }
+    ]
+  }
+}

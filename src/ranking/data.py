@@ -154,7 +154,7 @@ def load_macro_headwinds() -> pd.DataFrame:
         "construction_price_index",
         "construction_investment",
     ]:
-        macro[f"{column}_yoy"] = macro[column].pct_change() * 100.0
+        macro[f"{column}_yoy"] = macro[column].pct_change(fill_method=None) * 100.0
 
     macro["shared_affordability_headwind"] = macro[
         [
