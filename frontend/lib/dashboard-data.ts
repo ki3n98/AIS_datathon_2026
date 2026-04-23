@@ -94,6 +94,17 @@ export type DashboardData = {
     comparisonChart: SeriesPoint[];
     comparisonLines: string[];
     affordabilityRankings: RankedMetric[];
+    spotlightLists: {
+      incomeGrowthIndustries: RankedMetric[];
+      costGrowthCategories: RankedMetric[];
+      homeBuildingGrowth: RankedMetric[];
+      homeBuildingNote: string;
+    medianReadout: {
+      incomeGrowth: string;
+      costGrowth: string;
+      homeBuilding: string;
+    };
+  };
   };
   costOfLiving: {
     chart: SeriesPoint[];
@@ -335,6 +346,29 @@ function classifyGap(value: number): Tone {
   return "good";
 }
 
+function median(values: number[]): number {
+  const sorted = [...values].filter(Number.isFinite).sort((a, b) => a - b);
+  if (!sorted.length) return 0;
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+}
+
+function weightedAverage(items: Array<{ value: number; weight: number }>): number {
+  const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+  if (totalWeight <= 0) return 0;
+  return items.reduce((sum, item) => sum + item.value * item.weight, 0) / totalWeight;
+}
+
+function toIndexMetric(label: string, value: number, tone: Tone, note: string): RankedMetric {
+  return {
+    label,
+    value,
+    formattedValue: `${formatIndex(value)} index`,
+    tone,
+    note,
+  };
+}
+
 export async function getDashboardData(): Promise<DashboardData> {
   const [incomeRows, priceRows, spendingRows, wageRows, constructionRows, residentialRows, rankingExport] = await Promise.all([
     readCsv("cleaned_income_with_state.csv"),
@@ -415,6 +449,19 @@ export async function getDashboardData(): Promise<DashboardData> {
     })
     .sort((a, b) => a.value - b.value);
 
+  const featuredIndustryLabels = new Set([
+    "Information",
+    "Construction",
+    "Retail trade",
+    "Accommodation and food services",
+    "Transportation and warehousing",
+    "Health care and social assistance",
+    "Educational services",
+    "Professional, scientific, and technical services",
+    "Finance and insurance",
+    "Manufacturing",
+  ]);
+
   const collapsedIndustryRows = collapseIndustryRows(wageRows);
   const wagesByIndustry = new Map(collapsedIndustryRows.map((row) => [row.label, row.values]));
 
@@ -433,6 +480,14 @@ export async function getDashboardData(): Promise<DashboardData> {
     })
     .filter((item) => Number.isFinite(item.value) && item.value > 0)
     .sort((a, b) => b.value - a.value);
+
+  const incomeGrowthIndustries = allIndustryGrowthLatest
+    .filter((item) => featuredIndustryLabels.has(item.label))
+    .slice(0, 5)
+    .map((item) => ({
+      ...item,
+      note: "Industry wage growth since 2000",
+    }));
 
   const industryForecastLeaders = rankingExport?.industry
     ? rankingExport.industry.full_ranking.slice(0, 5).map((item) => ({
@@ -549,7 +604,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   for (const row of constructionRows) {
     constructionByCategory.set(cleanCategory(row.category), row);
   }
-  const constructionPicks = ["Residential", "Single-family structures", "Multifamily structures", "Manufactured homes"];
+  const constructionPicks = ["Single-family structures", "Multifamily structures", "Manufactured homes"];
   const constructionValues: Record<string, Record<number, number>> = {
     "Per-capita income": incomeIndex,
     "Rent (tenant)": overviewValues["Rent (tenant)"],
@@ -562,6 +617,79 @@ export async function getDashboardData(): Promise<DashboardData> {
     );
   }
 
+  const featuredCostCategoryLabels = new Set([
+    "Housing",
+    "Rental of tenant-occupied nonfarm housing",
+    "Health",
+    "Food and nonalcoholic beverages purchased for off-premises consumption",
+    "Household utilities and fuels",
+    "Ground transportation",
+    "Net household insurance",
+  ]);
+
+  const costLabelMap: Record<string, string> = {
+    Housing: "Housing",
+    "Rental of tenant-occupied nonfarm housing": "Rent",
+    Health: "Healthcare",
+    "Food and nonalcoholic beverages purchased for off-premises consumption": "Groceries",
+    "Household utilities and fuels": "Utilities",
+    "Ground transportation": "Transportation",
+    "Net household insurance": "Household insurance",
+  };
+
+  const relevantCostMetrics = Array.from(pricesByCategory.entries())
+    .filter(([label]) => featuredCostCategoryLabels.has(label))
+    .map(([label, row]) => {
+      const baseValue = toNumber(row[String(BASE_YEAR)]);
+      const latestValue = toNumber(row[String(FINAL_YEAR)]);
+      const growthIndex = baseValue > 0 ? (latestValue / baseValue) * 100 : 0;
+      return toIndexMetric(
+        costLabelMap[label] ?? label,
+        growthIndex,
+        classifyGap(growthIndex - incomeIndex[FINAL_YEAR]),
+        "Price growth since 2000"
+      );
+    });
+
+  const spendingWeightsByLabel: Record<string, number> = {
+    Housing: toNumber(spendingByCategory.get("Housing")?.[String(FINAL_YEAR)]),
+    Rent: toNumber(spendingByCategory.get("Rental of tenant-occupied nonfarm housing")?.[String(FINAL_YEAR)]),
+    Healthcare: toNumber(spendingByCategory.get("Health")?.[String(FINAL_YEAR)]),
+    Groceries: toNumber(
+      spendingByCategory.get("Food and nonalcoholic beverages purchased for off-premises consumption")?.[String(FINAL_YEAR)]
+    ),
+    Utilities: toNumber(spendingByCategory.get("Household utilities and fuels")?.[String(FINAL_YEAR)]),
+    Transportation: toNumber(spendingByCategory.get("Ground transportation")?.[String(FINAL_YEAR)]),
+    "Household insurance": toNumber(spendingByCategory.get("Net household insurance")?.[String(FINAL_YEAR)]),
+  };
+
+  const weightedRelevantCostGrowth = weightedAverage(
+    relevantCostMetrics.map((item) => ({
+      value: item.value,
+      weight: spendingWeightsByLabel[item.label] ?? 0,
+    }))
+  );
+
+  const costGrowthCategories = relevantCostMetrics
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5);
+
+  const homeBuildingGrowth = [
+    { label: "Manufactured homes", value: constructionValues["Manufactured homes"][FINAL_YEAR] ?? 0 },
+    { label: "Multifamily structures", value: constructionValues["Multifamily structures"][FINAL_YEAR] ?? 0 },
+    { label: "Single-family structures", value: constructionValues["Single-family structures"][FINAL_YEAR] ?? 0 },
+  ]
+    .filter((item) => item.value > 0)
+    .sort((a, b) => b.value - a.value)
+    .map((item) => toIndexMetric(item.label, item.value, classifyGap(item.value - incomeIndex[FINAL_YEAR]), "National building-cost growth"));
+
+  const medianIndustryGrowth = median(
+    allIndustryGrowthLatest.filter((item) => featuredIndustryLabels.has(item.label)).map((item) => item.value)
+  );
+  const medianRelevantCostGrowth = median(relevantCostMetrics.map((item) => item.value));
+  const medianHomeBuildingGrowth = median(homeBuildingGrowth.map((item) => item.value));
+  const meanHomeBuildingGrowth =
+    homeBuildingGrowth.reduce((sum, item) => sum + item.value, 0) / Math.max(homeBuildingGrowth.length, 1);
   const residentialByCategory = new Map<string, CsvRow>();
   for (const row of residentialRows) {
     residentialByCategory.set(cleanCategory(row.category), row);
@@ -605,7 +733,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   return {
     title: "Is the American Dream Still Achievable?",
     subtitle:
-      "A national analytics view of income growth, cost pressure, wage dispersion, and the widening ownership threshold from 2000 to 2024.",
+      "A national view of income growth, rising costs, wage gaps, and why buying into stability became harder from 2000 to 2024.",
     sidebar: [
       { id: "overview", label: "Overview", summary: "The core claim and the broad affordability read." },
       { id: "cost-of-living", label: "Income vs Cost of Living", summary: "The first evidence section: income against major price indexes and category affordability." },
@@ -615,61 +743,71 @@ export async function getDashboardData(): Promise<DashboardData> {
     ],
     verdict: {
       label: "Mixed",
-      summary: "Broad income growth outpaced overall inflation, but ownership access and mobility-linked categories moved against typical workers.",
+      summary: "Income kept up with broad everyday costs, but the parts of the American Dream tied to ownership and long-term mobility became harder to reach.",
     },
     overview: {
       summaryCards: [
         {
           label: "Primary signal",
           value: "Income beat broad prices",
-          note: `Per-capita income reached ${formatIndex(incomeIndex[FINAL_YEAR])} versus ${formatIndex(pce2024)} for overall PCE.`,
+          note: `Income per person reached ${formatIndex(incomeIndex[FINAL_YEAR])} versus ${formatIndex(pce2024)} for the overall cost-of-living index.`,
         },
         {
           label: "Pressure point",
           value: "Housing and education pulled away",
-          note: "Higher education and the housing-related price indexes were the weakest affordability readings in 2024.",
+          note: "Education and housing-related costs had the weakest affordability readings in 2024.",
         },
         {
           label: stateRanking ? "Model read" : "Ownership read",
           value: stateRanking ? `${stateRanking.top_5[0]?.label} leads states` : "Buying in is the break",
           note: stateRanking
             ? `One-year state forecast uses ${stateRanking.best_model_name} and points to ${stateRanking.top_5[0]?.label} at the top in ${stateRankingYear}.`
-            : `Single-family construction costs reached ${formatIndex(singleFamily2024)}, far above income growth.`,
+            : `Single-family building costs reached ${formatIndex(singleFamily2024)}, far above income growth.`,
         },
       ],
       kpis: [
         {
-          label: "Income index",
+          label: "Income growth since 2000",
           value: formatIndex(incomeIndex[FINAL_YEAR]),
           changeLabel: "2000 = 100",
-          note: "National per-capita income",
+          note: "National income per person",
           tone: "good",
         },
         {
-          label: "Overall PCE index",
-          value: formatIndex(pce2024),
+          label: "Everyday cost basket",
+          value: formatIndex(weightedRelevantCostGrowth),
           changeLabel: "2000 = 100",
-          note: "Broad cost of living",
-          tone: incomeIndex[FINAL_YEAR] > pce2024 ? "warn" : "bad",
+          note: "Weighted everyday household categories",
+          tone: incomeIndex[FINAL_YEAR] > weightedRelevantCostGrowth ? "warn" : "bad",
         },
         {
-          label: "Single-family cost index",
-          value: formatIndex(singleFamily2024),
+          label: "Home building costs",
+          value: formatIndex(meanHomeBuildingGrowth),
           changeLabel: "2000 = 100",
-          note: "Build-cost pressure",
-          tone: classifyGap(singleFamily2024 - incomeIndex[FINAL_YEAR]),
+          note: "Average across key housing structure types",
+          tone: classifyGap(meanHomeBuildingGrowth - incomeIndex[FINAL_YEAR]),
         },
         {
-          label: "Dashboard verdict",
+          label: "What this means",
           value: "Mixed",
           changeLabel: "2024 conclusion",
-          note: "Day-to-day consumption held up better than ownership entry.",
+          note: "Everyday costs held up better than housing access and long-term advancement.",
           tone: "warn",
         },
       ],
       comparisonChart: toSeries(incomeYears, overviewValues, overviewOrder),
       comparisonLines: overviewOrder,
       affordabilityRankings,
+      spotlightLists: {
+        incomeGrowthIndustries,
+        costGrowthCategories,
+        homeBuildingGrowth,
+        medianReadout: {
+          incomeGrowth: `${formatIndex(medianIndustryGrowth)} index`,
+          costGrowth: `${formatIndex(medianRelevantCostGrowth)} index`,
+          homeBuilding: `${formatIndex(medianHomeBuildingGrowth)} index`,
+        },
+      },
     },
     costOfLiving: {
       chart: toSeries(incomeYears, overviewValues, overviewOrder),
@@ -677,11 +815,11 @@ export async function getDashboardData(): Promise<DashboardData> {
       insightCards: [
         {
           title: "Aggregate affordability still exists",
-          body: "National income outpaced broad PCE growth, so the dashboard should not claim a universal collapse in purchasing power.",
+          body: "At the national level, income grew faster than the overall cost of living, so the dashboard is not saying affordability collapsed everywhere.",
         },
         {
           title: "The break is category-specific",
-          body: "The weakest affordability readings come from higher education and housing-related price indexes, not groceries or aggregate spending.",
+          body: "The weakest results show up in higher education and housing-related costs, not in groceries or the overall average.",
         },
       ],
       stateIncomeContext: {
@@ -757,16 +895,16 @@ export async function getDashboardData(): Promise<DashboardData> {
       },
       summary: [
         {
-          title: industryRanking ? "Predictive ranking sharpens the split" : "Macro averages hide labor-market sorting",
+          title: industryRanking ? "The forecast makes the job gap clearer" : "National averages hide job-based differences",
           body: industryRanking
             ? `The forecast figure now uses a 3-year model built from ${industryRankingYear} and older data, projecting forward to ${industryRankingYear + industryRanking.horizon}.`
-            : "The strongest indexed wage gains are concentrated in information, finance, and professional services rather than across the full job market.",
+            : "The strongest wage growth is concentrated in fields like information, finance, and professional services rather than spread evenly across the job market.",
         },
         {
-          title: industryRanking ? "Historical and predicted views are separated" : "Growth gap is smaller than level gap",
+          title: industryRanking ? "Forecasts and real results are shown separately" : "The pay-level gap is bigger than the growth gap",
           body: industryRanking
             ? `The dashboard now pairs the saved ${industryRanking.best_model_name} forecast with an actual ${FINAL_YEAR} wage-level ranking, so prediction and observed data are not mixed into one figure.`
-            : "Degree-heavy and non-degree-heavy buckets both grew, but the 2024 wage-level spread remains much larger than the index spread.",
+            : "Both degree-heavy and non-degree-heavy groups saw wage growth, but the actual 2024 pay gap between them is still much larger.",
         },
       ],
     },
@@ -812,12 +950,12 @@ export async function getDashboardData(): Promise<DashboardData> {
       rentVsOwnerLines: ["Tenant rent", "Owner-equivalent rent", "Per-capita income", "Overall cost of living (PCE)"],
       summary: [
         {
-          title: "Monthly burden stayed narrower than the public narrative",
-          body: "Housing and utility spending as a share of personal income stayed within a tighter range than the ownership story would suggest.",
+          title: "Monthly housing strain rose, but not in a straight-line crisis",
+          body: "Housing and utility spending as a share of income stayed within a narrower range than the ownership story might lead people to expect.",
         },
         {
-          title: "Renting and buying are different questions",
-          body: "Tenant rent tracked income more closely than construction costs did, so entry into ownership is the sharper affordability break.",
+          title: "Renting and buying are different problems",
+          body: "Rent tracked income more closely than home-building costs did, so getting into ownership is where the sharper affordability break shows up.",
         },
       ],
     },
@@ -849,12 +987,12 @@ export async function getDashboardData(): Promise<DashboardData> {
       ],
       summary: [
         {
-          title: "Ownership is where the dream fractures",
-          body: `Within the dashboard's broad housing-services affordability measure, 2024 sits at ${affordability2024?.formattedValue ?? "n/a"}, while single-family construction costs rose much faster than income and better capture the ownership-entry squeeze.`,
+          title: "Buying a home is where the dream becomes hardest to reach",
+          body: `The broader housing affordability reading for 2024 sits at ${affordability2024?.formattedValue ?? "n/a"}, but single-family building costs rose much faster than income and better capture why buying in feels out of reach.`,
         },
         {
-          title: "Supply context matters",
-          body: "Residential investment share shows a boom, collapse, and partial recovery pattern, which helps explain why ownership access feels structurally constrained.",
+          title: "Housing supply still matters",
+          body: "Residential investment shows a boom, a collapse, and only a partial recovery, which helps explain why access to ownership still feels constrained.",
         },
       ],
     },
@@ -862,15 +1000,15 @@ export async function getDashboardData(): Promise<DashboardData> {
       sources: [
         "All values are drawn from CSVs in `data/cleaned`, using the same BEA-backed repo datasets already prepared for analysis.",
         "Income is constructed as total personal income divided by total population from `cleaned_income_with_state.csv`.",
-        "Indexed charts rebase each series to 2000 = 100 so growth rates can be compared directly; a price index tracks relative change over time rather than tuition bills, rents paid by one household, or total category spending.",
+        "Indexed charts reset each series to 2000 = 100 so growth can be compared directly; a price index tracks how prices changed over time rather than one family's actual bills.",
         rankingExport
           ? "Predictive rankings are loaded from `outputs/dashboard_rankings.json`, generated locally from the repo's American Dream state and industry models."
           : "Predictive ranking export is optional; without it, the dashboard falls back to repo-derived descriptive summaries.",
-        `Industry wage-level rankings use actual ${FINAL_YEAR} values from \`annual_wages_per_FTE_by_industry.csv\`, collapsed to unique industry labels before display.`,
+        `Industry wage rankings use actual ${FINAL_YEAR} values from \`annual_wages_per_FTE_by_industry.csv\`, grouped into unique industry labels before display.`,
       ],
       caveats: [
-        "This is a national and industry-level dashboard. It does not model taxes, debt, household composition, or local housing markets.",
-        "Aggregate national data can show the direction of affordability pressure while still masking large regional, household, and tenure differences.",
+        "This is a national and industry-level dashboard. It does not include taxes, debt, household makeup, or local housing markets.",
+        "National data can show the direction of affordability pressure while still hiding big differences across regions, households, and renters versus owners.",
         "No external APIs, web-fetched figures, home-price data, or mortgage assumptions are introduced in this dashboard.",
         rankingExport
           ? `Current ranking snapshots mix horizons by design: state rankings remain 1-year, while industry rankings use a 3-year forecast from ${industryRankingYear} to ${industryRankingYear + (industryRanking?.horizon ?? 3)}.`

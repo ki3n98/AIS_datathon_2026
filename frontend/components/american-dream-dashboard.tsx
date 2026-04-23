@@ -193,7 +193,12 @@ function WidgetCard({
 
 function StatusPill({ tone, children }: { tone: Tone; children: React.ReactNode }) {
   return (
-    <span className={cn("inline-flex items-center rounded-sm border px-2 py-1 text-[11px] font-medium", toneBadgeStyles[tone])}>
+    <span
+      className={cn(
+        "inline-flex items-center whitespace-nowrap rounded-sm border px-2 py-1 text-[11px] font-medium",
+        toneBadgeStyles[tone]
+      )}
+    >
       {children}
     </span>
   );
@@ -478,7 +483,6 @@ function ShareAreaChart({ data }: { data: SeriesPoint[] }) {
 export function AmericanDreamDashboard({ data }: DashboardProps) {
   const sectionIds = useMemo(() => data.sidebar.map((section) => section.id), [data.sidebar]);
   const activeSection = useActiveSection(sectionIds);
-
   return (
     <main className="min-h-screen bg-[#fbf9fa] text-[#1b1c1d]">
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -530,10 +534,10 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                 <div className="rounded-md border border-[#d9dde3] bg-[#041627] px-5 py-5 text-white shadow-[0_10px_28px_rgba(4,22,39,0.16)]">
                   <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#9db2cc]">Overview</div>
                   <h2 className="mt-3 max-w-3xl text-[28px] font-semibold leading-9 text-white">
-                    The dashboard argues that the American Dream did not disappear in aggregate. It narrowed around housing, education, and ownership entry.
+                    This dashboard suggests the American Dream did not disappear overall. It became harder to reach in the areas that matter most for long-term stability, especially housing, education, and buying a home.
                   </h2>
                   <p className="mt-3 max-w-3xl text-[14px] leading-6 text-[#d6e3f3]">
-                    Broad income growth beat overall inflation from 2000 to 2024, but the categories that shape mobility and asset-building pulled away from the median worker.
+                    Income grew faster than overall inflation from 2000 to 2024, but the costs tied to moving up and building security rose faster than many workers&apos; incomes.
                   </p>
                 </div>
                 <div className="rounded-md border border-[#d9dde3] bg-white px-4 py-4">
@@ -555,32 +559,92 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
               <SectionBlock
                 id="overview"
                 kicker="Overview"
-                title="A broad win in income growth can still hide a narrower loss in real upward mobility."
-                description="This dashboard makes one claim. The aggregate national picture is not a universal affordability collapse, but the categories most tied to stability and advancement broke away from the broad average."
+                title="Everyday costs held up better than the path to ownership."
+                description="A quick visual read of the dashboard's core message."
               >
-                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-                  <WidgetCard title="What this dashboard argues" description="The framing before the evidence.">
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+                  <WidgetCard title="At a glance" description="The shortest version of the story.">
                     <div className="grid gap-3">
-                      <div className="rounded-md border border-[#c9d7e6] bg-[#f2f7fb] p-4">
-                        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#4d647e]">Problem statement</div>
-                        <p className="mt-2 text-sm leading-6 text-[#243447]">
-                          Looking only at total inflation misses the categories that decide whether households can translate wages into durable security, especially housing access and higher education.
-                        </p>
+                      <div className="rounded-md border border-[#c9d7e6] bg-[#f2f7fb] p-4 text-sm leading-6 text-[#243447]">
+                        Income stayed ahead of broad everyday costs, but ownership, education, and other long-term stepping stones got harder to afford.
                       </div>
-                      <div className="rounded-md border border-[#eadfcd] bg-[#fcf6ec] p-4">
-                        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#7d5b12]">Summary</div>
-                        <p className="mt-2 text-sm leading-6 text-[#3d3327]">
-                          The evidence below moves from the national average to the categories and labor markets where affordability deteriorated fastest. The dashboard reads the problem as a divergence story, not a single all-in inflation story.
-                        </p>
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        <div className="rounded-sm border border-[#b8dbd6] bg-[#f7fcfb] p-3">
+                          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#0a5c63]">Broad picture</div>
+                          <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Still reachable</div>
+                        </div>
+                        <div className="rounded-sm border border-[#ebd6a1] bg-[#fffcf3] p-3">
+                          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#7d5b12]">Everyday costs</div>
+                          <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">More stable</div>
+                        </div>
+                        <div className="rounded-sm border border-[#e3c0b2] bg-[#fdf7f4] p-3">
+                          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#8b4d32]">Ownership</div>
+                          <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Harder</div>
+                        </div>
                       </div>
                     </div>
                   </WidgetCard>
-                  <div className="grid gap-3 md:grid-cols-2">
-                    {data.overview.kpis.map((item) => (
-                      <KpiCard key={item.label} {...item} />
-                    ))}
-                  </div>
+                  <WidgetCard title="Quick key" description="All values use 2000 = 100.">
+                    <div className="grid gap-3 sm:grid-cols-3">
+                      <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">240</div>
+                        <p className="mt-1 text-xs leading-5 text-[#44505f]">About 2.4x the 2000 level.</p>
+                      </div>
+                      <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Above 100</div>
+                        <p className="mt-1 text-xs leading-5 text-[#44505f]">Better buying power than 2000.</p>
+                      </div>
+                      <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Below 100</div>
+                        <p className="mt-1 text-xs leading-5 text-[#44505f]">Worse buying power than 2000.</p>
+                      </div>
+                    </div>
+                  </WidgetCard>
                 </div>
+                <div className="grid gap-3 xl:grid-cols-4">
+                  {data.overview.kpis.map((item) => (
+                    <KpiCard key={item.label} {...item} />
+                  ))}
+                </div>
+                <WidgetCard title="What moved fastest since 2000" description="Broad sectors, everyday costs, and building costs at a glance.">
+                  <div className="mb-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Median industry growth</div>
+                      <div className="mt-1 text-lg font-semibold text-[#041627]">{data.overview.spotlightLists.medianReadout.incomeGrowth}</div>
+                    </div>
+                    <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Median everyday cost growth</div>
+                      <div className="mt-1 text-lg font-semibold text-[#041627]">{data.overview.spotlightLists.medianReadout.costGrowth}</div>
+                    </div>
+                    <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Median housing investment</div>
+                      <div className="mt-1 text-lg font-semibold text-[#041627]">{data.overview.spotlightLists.medianReadout.homeBuilding}</div>
+                    </div>
+                  </div>
+                  <div className="grid gap-4 xl:grid-cols-3">
+                    <div className="space-y-3">
+                      <div className="border-b border-[#e4e2e3] pb-2">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Income growth</div>
+                        <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Top 5 broad industries</div>
+                      </div>
+                      <RankedList items={data.overview.spotlightLists.incomeGrowthIndustries} valueLabel="2000 = 100" itemLabel="Industry" />
+                    </div>
+                    <div className="space-y-3">
+                      <div className="border-b border-[#e4e2e3] pb-2">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Cost of living</div>
+                        <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Top 5 everyday categories</div>
+                      </div>
+                      <RankedList items={data.overview.spotlightLists.costGrowthCategories} valueLabel="2000 = 100" itemLabel="Category" />
+                    </div>
+                    <div className="space-y-3">
+                      <div className="border-b border-[#e4e2e3] pb-2">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Home building costs</div>
+                        <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Fastest-rising building types</div>
+                      </div>
+                      <RankedList items={data.overview.spotlightLists.homeBuildingGrowth} valueLabel="2000 = 100" itemLabel="Building type" />
+                    </div>
+                  </div>
+                </WidgetCard>
                 <div className="grid gap-3 md:grid-cols-3">
                   {data.overview.summaryCards.map((item) => (
                     <SummaryCard key={item.label} {...item} />
@@ -591,10 +655,47 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
               <SectionBlock
                 id="cost-of-living"
                 kicker="Income vs Cost of Living"
-                title="The first evidence section shows where income kept up, and where it clearly did not."
-                description="Per-capita income beat the broad cost-of-living index, but that headline falls apart in the categories most associated with mobility. Higher education here is shown as a price index, meaning rate of price change, not enrollment, student debt, or total spending."
+                title="This section shows where income kept pace and where it clearly fell behind."
+                description="Income per person rose faster than the overall cost of living, but that headline does not hold in every category. Here, higher education is shown as a measure of price growth, not enrollment, student debt, or total spending."
               >
                 <div className="grid gap-4">
+                  <WidgetCard
+                    title="What 'cost of living' means here"
+                    description="A plain-English guide to the everyday costs people usually have in mind."
+                  >
+                    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+                      <div className="rounded-md border border-[#d9dde3] bg-[#f7f8fa] p-4">
+                        <div className="text-sm font-semibold text-[#1b1c1d]">Think of costs like these</div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {[
+                            "Rent or mortgage",
+                            "Utilities",
+                            "Groceries",
+                            "Healthcare",
+                            "Gas and transportation",
+                            "Car payment",
+                            "Insurance",
+                            "Everyday services",
+                          ].map((item) => (
+                            <span
+                              key={item}
+                              className="inline-flex rounded-full border border-[#d9dde3] bg-white px-3 py-1.5 text-xs font-medium text-[#44505f]"
+                            >
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="grid gap-3">
+                        <div className="rounded-sm border border-[#c9d7e6] bg-[#f2f7fb] p-3 text-sm leading-6 text-[#243447]">
+                          In this dashboard, overall cost of living is a broad national price measure. It is meant to reflect the general price pressure people feel across everyday spending, not just one bill.
+                        </div>
+                        <div className="rounded-sm border border-[#eadfcd] bg-[#fcf6ec] p-3 text-sm leading-6 text-[#3d3327]">
+                          The examples on the left help make the idea concrete. The detailed charts below then break out a few categories, like housing, rent, healthcare, and higher education, to show where pressure rose the most.
+                        </div>
+                      </div>
+                    </div>
+                  </WidgetCard>
                   <div className="min-w-0">
                     <WidgetCard
                       title="Income versus BEA price indexes"
@@ -618,10 +719,10 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       <WidgetCard title="Higher-education clarification" description="How to read that series correctly.">
                         <div className="grid gap-3 md:grid-cols-2">
                           <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                            The higher-education line is a BEA price index. It tracks how the price level changed relative to 2000, not how many people enrolled or how much households spent in total.
+                            The higher-education line tracks how prices changed compared with 2000. It does not show how many people enrolled or how much families spent in total.
                           </div>
                           <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                            That matters because a price index can rise sharply even if participation changes. The dashboard uses it as evidence of cost pressure, not as a claim about educational demand.
+                            That matters because prices can rise sharply even when participation changes. The dashboard uses this as evidence of cost pressure, not as a claim about demand for college.
                           </div>
                         </div>
                       </WidgetCard>
@@ -633,8 +734,8 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
               <SectionBlock
                 id="housing-homeownership"
                 kicker="Housing and Homeownership"
-                title="Housing pressure is one story with two layers: renter pain and the ownership barrier."
-                description="Monthly housing burden stayed tighter than many people assume, but the path into ownership broke away much more sharply. Read the first half as the renting-pressure story and the second half as the asset-entry story."
+                title="Housing pressure has two parts: the strain of renting and the challenge of buying."
+                description="Monthly housing pressure rose, but the path into ownership became much harder. The first part of this section is about renting, and the second is about getting through the door to ownership."
               >
                 <div className="grid gap-4">
                   <div className="grid gap-4 xl:grid-cols-2">
@@ -672,10 +773,10 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                   <WidgetCard title="Bridge" description="How the two housing readings fit together.">
                     <div className="grid gap-3 md:grid-cols-2">
                       <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                        Renting pain is about the ongoing monthly claim on income. That pressure increased, but the national burden shares stayed in a tighter band than the public narrative often implies.
+                        Renting pressure is about how much income goes to housing month after month. That pressure increased, but the national trend stayed more stable than many people might expect.
                       </div>
                       <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                        The ownership barrier is different. Entry depends on construction and asset-related costs that moved much faster than income, which is why buying in reads as the sharper break.
+                        Buying is a different challenge. It depends on building and ownership-related costs that rose much faster than income, which is why buying a home looks like the sharper break.
                       </div>
                     </div>
                   </WidgetCard>
@@ -719,8 +820,8 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
               <SectionBlock
                 id="industry-divide"
                 kicker="Industry Divide"
-                title="Affordability now depends more on labor-market position than the aggregate headline suggests."
-                description="After the category pressures above, the next question is who can absorb them. This section pairs a clearly labeled 3-year forecast from the 2024 baseline with observed 2024 wage levels, so predicted and actual labor-market outcomes stay separate without a standalone explanation card."
+                title="Affordability now depends more on the kind of job a person has than the national average suggests."
+                description="After looking at rising costs, the next question is who can absorb them. This section compares a clearly labeled 3-year forecast from the 2024 baseline with actual 2024 wage levels, so forecasts and observed outcomes stay separate."
               >
                 <div className="grid gap-4">
                   <div className="grid gap-4 xl:grid-cols-2">
@@ -788,8 +889,8 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
               <SectionBlock
                 id="methodology"
                 kicker="Methodology"
-                title="Only repo data and existing analysis logic are used."
-                description="The dashboard stays within the existing cleaned datasets and notebook logic, then repackages those outputs into section-oriented widgets. Here, a price index means relative price movement over time, and the national aggregation should be read as directional evidence rather than a substitute for local household realities."
+                title="This dashboard uses only the data and analysis already in the repo."
+                description="The page reuses the cleaned datasets and existing analysis logic, then turns those results into clearer sections. Here, a price index means how prices changed over time, and the national view should be read as a broad signal rather than a stand-in for every local reality."
               >
                 <div className="grid gap-4 xl:grid-cols-2">
                   <WidgetCard title="Sources" description="Repo-backed data inputs and transformations." action={<ScrollText className="h-4 w-4 text-[#5f6978]" />}>
