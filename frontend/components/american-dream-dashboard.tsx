@@ -341,6 +341,64 @@ function MultiLineChart({
   );
 }
 
+function IndustryRankingBars({
+  leaders,
+  laggards,
+  metricLabel,
+}: {
+  leaders: RankedMetric[];
+  laggards: RankedMetric[];
+  metricLabel: string;
+}) {
+  const allItems = [...leaders, ...laggards];
+  const maxValue = Math.max(...allItems.map((item) => item.value), 1);
+
+  function RankingColumn({
+    title,
+    items,
+    fillClassName,
+  }: {
+    title: string;
+    items: RankedMetric[];
+    fillClassName: string;
+  }) {
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center justify-between border-b border-[#e4e2e3] pb-2">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">{title}</div>
+          <div className="text-[11px] font-medium text-[#5f6978]">{metricLabel}</div>
+        </div>
+        <div className="space-y-2">
+          {items.map((item) => (
+            <div key={`${title}-${item.label}`} className="space-y-1.5 rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] px-3 py-2.5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
+                  {item.note ? <div className="text-xs text-[#5f6978]">{item.note}</div> : null}
+                </div>
+                <div className="text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-white">
+                <div
+                  className={cn("h-full rounded-full", fillClassName)}
+                  style={{ width: `${Math.max((item.value / maxValue) * 100, 8)}%` }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 xl:grid-cols-2">
+      <RankingColumn title="Top 5 industries" items={leaders} fillClassName="bg-[#0b7a75]" />
+      <RankingColumn title="Bottom 5 industries" items={laggards} fillClassName="bg-[#b46a43]" />
+    </div>
+  );
+}
+
 function ShareAreaChart({ data }: { data: SeriesPoint[] }) {
   return (
     <ChartFrame height={300}>
@@ -507,8 +565,8 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                     </WidgetCard>
                     <WidgetCard
                       title="State income context"
-                      description="Compact repo-backed context from `cleaned_income_with_state.csv`."
-                      action="2024"
+                      description="Per-capita income context plus the saved one-year American Dream state ranking."
+                      action="Latest"
                     >
                       <div className="grid gap-3">
                         <div className="grid gap-3 sm:grid-cols-3">
@@ -533,12 +591,12 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                         </div>
                         <div className="grid gap-3 md:grid-cols-2">
                           <div>
-                            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Top states</div>
-                            <RankedList items={data.costOfLiving.stateIncomeContext.topStates} itemLabel="State" valueLabel="Per-capita income" />
+                            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Top predicted states</div>
+                            <RankedList items={data.costOfLiving.stateIncomeContext.topStates} itemLabel="State" valueLabel="Score" />
                           </div>
                           <div>
-                            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Bottom states</div>
-                            <RankedList items={data.costOfLiving.stateIncomeContext.bottomStates} itemLabel="State" valueLabel="Per-capita income" />
+                            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Bottom predicted states</div>
+                            <RankedList items={data.costOfLiving.stateIncomeContext.bottomStates} itemLabel="State" valueLabel="Score" />
                           </div>
                         </div>
                       </div>
@@ -551,18 +609,34 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                 id="industry-divide"
                 kicker="Industry Divide"
                 title="The dream increasingly depends on which labor market you are in."
-                description="National averages understate the labor-market split. High-skill and degree-heavy sectors pulled farther ahead than retail and accommodation-heavy work."
+                description="This section now separates forecasted and observed industry results: a labeled 3-year prediction built from 2024 and older data, plus actual 2024 wage leaders and laggards."
               >
               <div className="grid gap-4">
-                <div className="min-w-0">
-                  <WidgetCard title="Wage growth by industry" description="Average wages per FTE rebased to 2000 = 100, shown alongside overall PCE.">
-                    <MultiLineChart data={data.industryDivide.chart} lines={data.industryDivide.lines} height={380} />
+                <div className="grid gap-4 xl:grid-cols-2">
+                  <WidgetCard
+                    title="Predicted industry ranking"
+                    description="Three-year forecast using 2024 and older data to rank industries on future American Dream score."
+                    action={data.industryDivide.predictedFigure.benchmarkLabel}
+                  >
+                    <IndustryRankingBars
+                      leaders={data.industryDivide.predictedFigure.leaders}
+                      laggards={data.industryDivide.predictedFigure.laggards}
+                      metricLabel={data.industryDivide.predictedFigure.metricLabel}
+                    />
+                  </WidgetCard>
+                  <WidgetCard
+                    title="Actual 2024 wage ranking"
+                    description="Observed wage-per-FTE leaders and laggards from the cleaned industry wage data."
+                    action={data.industryDivide.historicalFigure.benchmarkLabel}
+                  >
+                    <IndustryRankingBars
+                      leaders={data.industryDivide.historicalFigure.leaders}
+                      laggards={data.industryDivide.historicalFigure.laggards}
+                      metricLabel={data.industryDivide.historicalFigure.metricLabel}
+                    />
                   </WidgetCard>
                 </div>
                 <div className="grid gap-4 xl:grid-cols-2">
-                  <WidgetCard title="2024 industry wage-growth ranking" description="Highest 2024 wage-growth index at the top; this is not a wage-level ranking.">
-                    <RankedList items={data.industryDivide.topIndustries} itemLabel="Industry" valueLabel="Wage index" />
-                  </WidgetCard>
                   <div className="grid gap-4">
                     <WidgetCard title="Degree-heavy versus non-degree-heavy" description="Growth indexes and 2024 wage levels tell different parts of the story.">
                       <div className="grid gap-3">
@@ -598,6 +672,16 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       <InsightCards items={data.industryDivide.summary} columns={2} />
                     </WidgetCard>
                   </div>
+                  <WidgetCard title="Why these figures changed" description="The dashboard now separates forecast output from observed wage data.">
+                    <div className="grid gap-3">
+                      <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
+                        The forecast panel is explicitly labeled as a 3-year prediction from the 2024 baseline, rather than reading like observed current-year data.
+                      </div>
+                      <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
+                        The second panel shows actual 2024 wage levels, so observed and predicted industry outcomes can be compared without mixing the two concepts.
+                      </div>
+                    </div>
+                  </WidgetCard>
                 </div>
               </div>
               </SectionBlock>

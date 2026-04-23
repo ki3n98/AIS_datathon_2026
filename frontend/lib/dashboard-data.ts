@@ -4,6 +4,42 @@ import Papa from "papaparse";
 
 type CsvRow = Record<string, string>;
 
+type RankingExportItem = {
+  label: string;
+  value: number;
+  rank: number;
+  year: number;
+};
+
+type RankingExportSection = {
+  problem_id: number;
+  name: string;
+  entity_type: string;
+  latest_year: number;
+  horizon: number;
+  best_model_name: string;
+  predictive_metrics: {
+    mae: number;
+    rmse: number;
+    rank_corr: number;
+  };
+  naive_metrics: {
+    mae: number;
+    rmse: number;
+    rank_corr: number;
+  };
+  top_k_overlap: number;
+  top_5: RankingExportItem[];
+  bottom_5: RankingExportItem[];
+  full_ranking: RankingExportItem[];
+};
+
+type RankingExport = {
+  generated_at: string;
+  state: RankingExportSection;
+  industry: RankingExportSection;
+};
+
 export type SeriesPoint = {
   year: number;
   [key: string]: number | string;
@@ -72,9 +108,18 @@ export type DashboardData = {
     };
   };
   industryDivide: {
-    chart: SeriesPoint[];
-    lines: string[];
-    topIndustries: RankedMetric[];
+    predictedFigure: {
+      leaders: RankedMetric[];
+      laggards: RankedMetric[];
+      metricLabel: string;
+      benchmarkLabel: string;
+    };
+    historicalFigure: {
+      leaders: RankedMetric[];
+      laggards: RankedMetric[];
+      metricLabel: string;
+      benchmarkLabel: string;
+    };
     degreeComparison: {
       growth2024: RankedMetric[];
       wageLevels2024: RankedMetric[];
@@ -179,6 +224,76 @@ function formatMoney(value: number): string {
   }).format(value);
 }
 
+function formatScore(value: number): string {
+  return value.toFixed(3);
+}
+
+async function readRankingExport(): Promise<RankingExport | null> {
+  const filePath = path.join(process.cwd(), "..", "outputs", "dashboard_rankings.json");
+  try {
+    const raw = await fs.readFile(filePath, "utf8");
+    return JSON.parse(raw) as RankingExport;
+  } catch {
+    return null;
+  }
+}
+
+function toRankingMetric(item: RankingExportItem, tone: Tone, label: string): RankedMetric {
+  return {
+    label: item.label,
+    value: item.value,
+    formattedValue: formatScore(item.value),
+    tone,
+    note: `${label} rank #${item.rank} for ${item.year}`,
+  };
+}
+
+function buildIndustryRankingMetric(
+  label: string,
+  value: number,
+  tone: Tone,
+  note: string,
+  formatter: (value: number) => string = formatScore
+): RankedMetric {
+  return {
+    label,
+    value,
+    formattedValue: formatter(value),
+    tone,
+    note,
+  };
+}
+
+function collapseIndustryRows(rows: CsvRow[]): Array<{ label: string; values: Record<number, number> }> {
+  const grouped = new Map<string, { totals: Record<number, number>; counts: Record<number, number> }>();
+
+  for (const row of rows) {
+    const label = cleanCategory(row.industry);
+    const group = grouped.get(label) ?? { totals: {}, counts: {} };
+
+    for (const [key, rawValue] of Object.entries(row)) {
+      if (!/^\d{4}$/.test(key)) continue;
+      const year = Number(key);
+      const value = toNumber(rawValue);
+      if (!Number.isFinite(value) || value <= 0) continue;
+      group.totals[year] = (group.totals[year] ?? 0) + value;
+      group.counts[year] = (group.counts[year] ?? 0) + 1;
+    }
+
+    grouped.set(label, group);
+  }
+
+  return Array.from(grouped.entries()).map(([label, group]) => ({
+    label,
+    values: Object.fromEntries(
+      Object.keys(group.totals).map((yearKey) => {
+        const year = Number(yearKey);
+        return [year, group.totals[year] / group.counts[year]];
+      })
+    ),
+  }));
+}
+
 function yearsInRange(rows: CsvRow[]): number[] {
   return Object.keys(rows[0] ?? {})
     .filter((key) => /^\d{4}$/.test(key))
@@ -221,13 +336,14 @@ function classifyGap(value: number): Tone {
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
-  const [incomeRows, priceRows, spendingRows, wageRows, constructionRows, residentialRows] = await Promise.all([
+  const [incomeRows, priceRows, spendingRows, wageRows, constructionRows, residentialRows, rankingExport] = await Promise.all([
     readCsv("cleaned_income_with_state.csv"),
     readCsv("annual_price_indexes_for_PCE.csv"),
     readCsv("annual_Personal_Consumption_Expenditures_by_Function.csv"),
     readCsv("annual_wages_per_FTE_by_industry.csv"),
     readCsv("annual_price_indexes_for_private_fixed_investment_in_structures.csv"),
     readCsv("annual_private_fixed_investment_in_structures.csv"),
+    readRankingExport(),
   ]);
 
   const incomeYears = yearsInRange(incomeRows);
@@ -299,46 +415,60 @@ export async function getDashboardData(): Promise<DashboardData> {
     })
     .sort((a, b) => a.value - b.value);
 
-  const wagesByIndustry = new Map<string, CsvRow>();
-  for (const row of wageRows) {
-    wagesByIndustry.set(cleanCategory(row.industry), row);
-  }
-
-  const industryPicks = [
-    "Private industries",
-    "Information",
-    "Finance and insurance",
-    "Professional, scientific, and technical services",
-    "Educational services",
-    "Construction",
-    "Retail trade",
-    "Accommodation and food services",
-  ];
+  const collapsedIndustryRows = collapseIndustryRows(wageRows);
+  const wagesByIndustry = new Map(collapsedIndustryRows.map((row) => [row.label, row.values]));
 
   const wageYears = Array.from({ length: FINAL_YEAR - BASE_YEAR + 1 }, (_, index) => BASE_YEAR + index);
-  const industryGrowthValues: Record<string, Record<number, number>> = {};
-  for (const industry of industryPicks) {
-    const row = wagesByIndustry.get(industry);
-    if (!row) continue;
-    const baseline = toNumber(row[String(BASE_YEAR)]);
-    industryGrowthValues[industry] = Object.fromEntries(
-      wageYears.map((year) => [year, (toNumber(row[String(year)]) / baseline) * 100])
-    );
-  }
-  industryGrowthValues["Overall cost of living (PCE)"] = overviewValues["Overall cost of living (PCE)"];
-
-  const industryGrowthLatest = industryPicks
-    .map((industry) => {
-      const value = industryGrowthValues[industry][FINAL_YEAR];
-      return {
-        label: industry,
-        value,
-        formattedValue: `${formatIndex(value)} index`,
-        tone: classifyGrowth(value),
-        note: value >= overviewValues["Overall cost of living (PCE)"][FINAL_YEAR] ? "Beat broad inflation" : "Lagged broad inflation",
-      };
+  const allIndustryGrowthLatest = Array.from(wagesByIndustry.entries())
+    .map(([industry, values]) => {
+      const baseline = values[BASE_YEAR] ?? 0;
+      const latestValue = baseline > 0 ? ((values[FINAL_YEAR] ?? 0) / baseline) * 100 : 0;
+      return buildIndustryRankingMetric(
+        industry,
+        latestValue,
+        classifyGrowth(latestValue),
+        latestValue >= overviewValues["Overall cost of living (PCE)"][FINAL_YEAR] ? "Beat broad inflation" : "Lagged broad inflation",
+        (currentValue) => `${formatIndex(currentValue)} index`
+      );
     })
+    .filter((item) => Number.isFinite(item.value) && item.value > 0)
     .sort((a, b) => b.value - a.value);
+
+  const industryForecastLeaders = rankingExport?.industry
+    ? rankingExport.industry.full_ranking.slice(0, 5).map((item) => ({
+        ...toRankingMetric(item, "good", "Predicted"),
+        note: `3-year forecast from ${item.year} to ${item.year + rankingExport.industry.horizon}`,
+      }))
+    : allIndustryGrowthLatest.slice(0, 5);
+
+  const industryForecastLaggards = rankingExport?.industry
+    ? [...rankingExport.industry.full_ranking]
+        .slice(-5)
+        .reverse()
+        .map((item) => ({
+          ...toRankingMetric(item, "bad", "Predicted"),
+          note: `3-year forecast from ${item.year} to ${item.year + rankingExport.industry.horizon}`,
+        }))
+    : [...allIndustryGrowthLatest].slice(-5).reverse().map((item) => ({ ...item, tone: "bad" as Tone }));
+
+  const actualIndustryWageLevels = Array.from(wagesByIndustry.entries())
+    .map(([industry, values]) =>
+      buildIndustryRankingMetric(
+        industry,
+        values[FINAL_YEAR] ?? 0,
+        "neutral",
+        `Actual ${FINAL_YEAR} wage per FTE`,
+        formatMoney
+      )
+    )
+    .filter((item) => Number.isFinite(item.value) && item.value > 0)
+    .sort((a, b) => b.value - a.value);
+
+  const historicalIndustryLeaders = actualIndustryWageLevels.slice(0, 5).map((item) => ({ ...item, tone: "good" as Tone }));
+  const historicalIndustryLaggards = [...actualIndustryWageLevels]
+    .slice(-5)
+    .reverse()
+    .map((item) => ({ ...item, tone: "warn" as Tone }));
 
   const degreeHeavy = [
     "Information",
@@ -361,9 +491,10 @@ export async function getDashboardData(): Promise<DashboardData> {
       wageYears.map((year) => {
         const mean =
           members.reduce((sum, industry) => {
-            const row = wagesByIndustry.get(industry);
-            if (!row) return sum;
-            return sum + (toNumber(row[String(year)]) / toNumber(row[String(BASE_YEAR)])) * 100;
+            const values = wagesByIndustry.get(industry);
+            const baseline = values?.[BASE_YEAR] ?? 0;
+            if (!values || baseline <= 0) return sum;
+            return sum + ((values[year] ?? 0) / baseline) * 100;
           }, 0) / members.length;
         return [year, mean];
       })
@@ -371,10 +502,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   }
 
   function meanLevel(members: string[]): number {
-    return (
-      members.reduce((sum, industry) => sum + toNumber(wagesByIndustry.get(industry)?.[String(FINAL_YEAR)]), 0) /
-      members.length
-    );
+    return members.reduce((sum, industry) => sum + (wagesByIndustry.get(industry)?.[FINAL_YEAR] ?? 0), 0) / members.length;
   }
 
   const degreeGrowth = meanIndex(degreeHeavy);
@@ -469,6 +597,10 @@ export async function getDashboardData(): Promise<DashboardData> {
   const pce2024 = overviewValues["Overall cost of living (PCE)"][FINAL_YEAR];
   const singleFamily2024 = constructionValues["Single-family structures"][FINAL_YEAR];
   const affordability2024 = affordabilityRankings.find((item) => item.label === "Housing");
+  const stateRanking = rankingExport?.state ?? null;
+  const industryRanking = rankingExport?.industry ?? null;
+  const stateRankingYear = stateRanking?.latest_year ?? FINAL_YEAR;
+  const industryRankingYear = industryRanking?.latest_year ?? FINAL_YEAR;
 
   return {
     title: "Is the American Dream Still Achievable?",
@@ -477,7 +609,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     sidebar: [
       { id: "overview", label: "Overview", summary: "Macro trend and 2024 affordability snapshot." },
       { id: "cost-of-living", label: "Cost of Living", summary: "Income versus major household cost categories." },
-      { id: "industry-divide", label: "Industry Divide", summary: "Wage growth separates degree-heavy and service sectors." },
+      { id: "industry-divide", label: "Industry Divide", summary: "Compare a 2024-based 3-year forecast with actual 2024 wage leaders and laggards." },
       { id: "housing-burden", label: "Housing Burden", summary: "Monthly burden stayed tighter than ownership access." },
       { id: "homeownership", label: "Homeownership", summary: "Construction costs outran wages and income." },
       { id: "methodology", label: "Methodology", summary: "Repo-backed sources, transformations, and caveats." },
@@ -499,9 +631,11 @@ export async function getDashboardData(): Promise<DashboardData> {
           note: "Higher education and the housing-related price indexes were the weakest affordability readings in 2024.",
         },
         {
-          label: "Ownership read",
-          value: "Buying in is the break",
-          note: `Single-family construction costs reached ${formatIndex(singleFamily2024)}, far above income growth.`,
+          label: stateRanking ? "Model read" : "Ownership read",
+          value: stateRanking ? `${stateRanking.top_5[0]?.label} leads states` : "Buying in is the break",
+          note: stateRanking
+            ? `One-year state forecast uses ${stateRanking.best_model_name} and points to ${stateRanking.top_5[0]?.label} at the top in ${stateRankingYear}.`
+            : `Single-family construction costs reached ${formatIndex(singleFamily2024)}, far above income growth.`,
         },
       ],
       kpis: [
@@ -547,52 +681,49 @@ export async function getDashboardData(): Promise<DashboardData> {
           body: "National income outpaced broad PCE growth, so the dashboard should not claim a universal collapse in purchasing power.",
         },
         {
-          title: "Mobility-linked categories did worse",
-          body: "The weakest affordability readings come from higher education and housing-related price indexes, not groceries or aggregate spending.",
+          title: stateRanking ? "Predicted state mobility remains uneven" : "Mobility-linked categories did worse",
+          body: stateRanking
+            ? `The one-year state model ranks ${stateRanking.top_5[0]?.label} highest and ${stateRanking.bottom_5[0]?.label} lowest in ${stateRankingYear}.`
+            : "The weakest affordability readings come from higher education and housing-related price indexes, not groceries or aggregate spending.",
         },
       ],
       stateIncomeContext: {
         nationalPerCapita2024: formatMoney(perCapitaIncome[FINAL_YEAR]),
         spread: `${formatMoney(topState?.value ?? 0)} vs ${formatMoney(bottomState?.value ?? 0)}`,
         medianState: `${medianState?.label ?? "Median state"} at ${formatMoney(medianState?.value ?? 0)}`,
-        topStates: statePerCapitaList.slice(0, 5).map((item) => ({
-          label: item.label,
-          value: item.value,
-          formattedValue: formatMoney(item.value),
-          tone: "good",
-        })),
-        bottomStates: statePerCapitaList.slice(-5).reverse().map((item) => ({
-          label: item.label,
-          value: item.value,
-          formattedValue: formatMoney(item.value),
-          tone: "warn",
-        })),
+        topStates: stateRanking
+          ? stateRanking.top_5.map((item) => toRankingMetric(item, "good", "Predicted"))
+          : statePerCapitaList.slice(0, 5).map((item) => ({
+              label: item.label,
+              value: item.value,
+              formattedValue: formatMoney(item.value),
+              tone: "good",
+            })),
+        bottomStates: stateRanking
+          ? stateRanking.bottom_5.map((item) => toRankingMetric(item, "warn", "Predicted"))
+          : statePerCapitaList.slice(-5).reverse().map((item) => ({
+              label: item.label,
+              value: item.value,
+              formattedValue: formatMoney(item.value),
+              tone: "warn",
+            })),
       },
     },
     industryDivide: {
-      chart: toSeries(wageYears, industryGrowthValues, [
-        "Private industries",
-        "Information",
-        "Finance and insurance",
-        "Professional, scientific, and technical services",
-        "Educational services",
-        "Construction",
-        "Retail trade",
-        "Accommodation and food services",
-        "Overall cost of living (PCE)",
-      ]),
-      lines: [
-        "Private industries",
-        "Information",
-        "Finance and insurance",
-        "Professional, scientific, and technical services",
-        "Educational services",
-        "Construction",
-        "Retail trade",
-        "Accommodation and food services",
-        "Overall cost of living (PCE)",
-      ],
-      topIndustries: industryGrowthLatest,
+      predictedFigure: {
+        leaders: industryForecastLeaders,
+        laggards: industryForecastLaggards,
+        metricLabel: rankingExport ? "3-year predicted American Dream score" : "2024 wage growth index",
+        benchmarkLabel: rankingExport
+          ? `Uses ${industryRankingYear} and older data; forecast target ${industryRankingYear + (industryRanking?.horizon ?? 3)}`
+          : "Indexed to 2000 = 100",
+      },
+      historicalFigure: {
+        leaders: historicalIndustryLeaders,
+        laggards: historicalIndustryLaggards,
+        metricLabel: `Actual ${FINAL_YEAR} wage per FTE`,
+        benchmarkLabel: `${FINAL_YEAR} observed data`,
+      },
       degreeComparison: {
         growth2024: [
           {
@@ -629,12 +760,16 @@ export async function getDashboardData(): Promise<DashboardData> {
       },
       summary: [
         {
-          title: "Macro averages hide labor-market sorting",
-          body: "The strongest indexed wage gains are concentrated in information, finance, and professional services rather than across the full job market.",
+          title: industryRanking ? "Predictive ranking sharpens the split" : "Macro averages hide labor-market sorting",
+          body: industryRanking
+            ? `The forecast figure now uses a 3-year model built from ${industryRankingYear} and older data, projecting forward to ${industryRankingYear + industryRanking.horizon}.`
+            : "The strongest indexed wage gains are concentrated in information, finance, and professional services rather than across the full job market.",
         },
         {
-          title: "Growth gap is smaller than level gap",
-          body: "Degree-heavy and non-degree-heavy buckets both grew, but the 2024 wage-level spread remains much larger than the index spread.",
+          title: industryRanking ? "Historical and predicted views are separated" : "Growth gap is smaller than level gap",
+          body: industryRanking
+            ? `The dashboard now pairs the saved ${industryRanking.best_model_name} forecast with an actual ${FINAL_YEAR} wage-level ranking, so prediction and observed data are not mixed into one figure.`
+            : "Degree-heavy and non-degree-heavy buckets both grew, but the 2024 wage-level spread remains much larger than the index spread.",
         },
       ],
     },
@@ -731,11 +866,18 @@ export async function getDashboardData(): Promise<DashboardData> {
         "All values are drawn from CSVs in `data/cleaned`, using the same BEA-backed repo datasets already prepared for analysis.",
         "Income is constructed as total personal income divided by total population from `cleaned_income_with_state.csv`.",
         "Indexed charts rebase each series to 2000 = 100 so growth rates can be compared directly; several widgets use BEA price indexes rather than market-price series.",
+        rankingExport
+          ? "Predictive rankings are loaded from `outputs/dashboard_rankings.json`, generated locally from the repo's American Dream state and industry models."
+          : "Predictive ranking export is optional; without it, the dashboard falls back to repo-derived descriptive summaries.",
+        `Industry wage-level rankings use actual ${FINAL_YEAR} values from \`annual_wages_per_FTE_by_industry.csv\`, collapsed to unique industry labels before display.`,
       ],
       caveats: [
         "This is a national and industry-level dashboard. It does not model taxes, debt, household composition, or local housing markets.",
         "The state widget is context only. It shows per-capita income dispersion, not a full state affordability model.",
         "No external APIs, web-fetched figures, home-price data, or mortgage assumptions are introduced in this dashboard.",
+        rankingExport
+          ? `Current ranking snapshots mix horizons by design: state rankings remain 1-year, while industry rankings use a 3-year forecast from ${industryRankingYear} to ${industryRankingYear + (industryRanking?.horizon ?? 3)}.`
+          : "Run `python scripts/export_dashboard_rankings.py` to refresh predictive ranking panels.",
       ],
     },
   };
