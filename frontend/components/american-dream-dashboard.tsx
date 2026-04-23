@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   Area,
   AreaChart,
@@ -278,15 +278,43 @@ function ChartFrame({
   children,
 }: {
   height?: number;
-  children: (mounted: boolean) => React.ReactNode;
+  children: (state: { mounted: boolean; width: number; height: number }) => React.ReactNode;
 }) {
   const mounted = useSyncExternalStore(
     () => () => undefined,
     () => true,
     () => false
   );
+  const frameRef = useRef<HTMLDivElement | null>(null);
+  const [size, setSize] = useState({ width: 0, height });
 
-  return <div className="min-w-0 w-full" style={{ height }}>{children(mounted)}</div>;
+  useEffect(() => {
+    const element = frameRef.current;
+    if (!element || !mounted) return;
+
+    const updateSize = () => {
+      const nextWidth = Math.max(Math.floor(element.clientWidth), 0);
+      const nextHeight = Math.max(Math.floor(element.clientHeight), 0);
+      setSize((current) =>
+        current.width === nextWidth && current.height === nextHeight
+          ? current
+          : { width: nextWidth, height: nextHeight }
+      );
+    };
+
+    updateSize();
+
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, [height, mounted]);
+
+  return (
+    <div ref={frameRef} className="min-w-0 w-full" style={{ height }}>
+      {children({ mounted, width: size.width, height: size.height })}
+    </div>
+  );
 }
 
 function MultiLineChart({
@@ -295,18 +323,20 @@ function MultiLineChart({
   suffix = "",
   percentage = false,
   height = 320,
+  highlightLines = [],
 }: {
   data: SeriesPoint[];
   lines: string[];
   suffix?: string;
   percentage?: boolean;
   height?: number;
+  highlightLines?: string[];
 }) {
   return (
     <ChartFrame height={height}>
-      {(mounted) =>
-        mounted ? (
-          <ResponsiveContainer width="100%" height="100%">
+      {({ mounted, width, height: frameHeight }) =>
+        mounted && width > 0 && frameHeight > 0 ? (
+          <ResponsiveContainer width={width} height={frameHeight}>
             <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid stroke="#e4e2e3" vertical={false} />
               <XAxis dataKey="year" tick={{ fill: "#5f6978", fontSize: 12 }} tickLine={false} axisLine={false} />
@@ -319,18 +349,24 @@ function MultiLineChart({
               />
               <Tooltip content={<ChartTooltip suffix={suffix} />} />
               <Legend wrapperStyle={{ fontSize: "12px", color: "#5f6978" }} />
-              {lines.map((line) => (
-                <Line
-                  key={line}
-                  type="monotone"
-                  dataKey={line}
-                  stroke={String(data[0]?.[`${line}Color`] ?? "#0b7a75")}
-                  strokeWidth={line === "Per-capita income" || line === "Private industries" ? 2.6 : 2}
-                  dot={false}
-                  activeDot={{ r: 3 }}
-                  strokeDasharray={line === "Overall cost of living (PCE)" ? "4 4" : undefined}
-                />
-              ))}
+              {lines.map((line) => {
+                const isHighlighted = highlightLines.includes(line);
+                const isDefaultPrimary = line === "Per-capita income" || line === "Private industries";
+
+                return (
+                  <Line
+                    key={line}
+                    type="monotone"
+                    dataKey={line}
+                    stroke={String(data[0]?.[`${line}Color`] ?? "#0b7a75")}
+                    strokeWidth={isHighlighted ? 4 : isDefaultPrimary ? 2.6 : 2}
+                    dot={false}
+                    activeDot={{ r: isHighlighted ? 5 : 3 }}
+                    strokeOpacity={isHighlighted ? 1 : 0.8}
+                    strokeDasharray={line === "Overall cost of living (PCE)" ? "4 4" : undefined}
+                  />
+                );
+              })}
             </LineChart>
           </ResponsiveContainer>
         ) : (
@@ -338,6 +374,48 @@ function MultiLineChart({
         )
       }
     </ChartFrame>
+  );
+}
+
+function RankingColumn({
+  title,
+  items,
+  fillClassName,
+  metricLabel,
+  maxValue,
+}: {
+  title: string;
+  items: RankedMetric[];
+  fillClassName: string;
+  metricLabel: string;
+  maxValue: number;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between border-b border-[#e4e2e3] pb-2">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">{title}</div>
+        <div className="text-[11px] font-medium text-[#5f6978]">{metricLabel}</div>
+      </div>
+      <div className="space-y-2">
+        {items.map((item) => (
+          <div key={`${title}-${item.label}`} className="space-y-1.5 rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] px-3 py-2.5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
+                {item.note ? <div className="text-xs text-[#5f6978]">{item.note}</div> : null}
+              </div>
+              <div className="text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-white">
+              <div
+                className={cn("h-full rounded-full", fillClassName)}
+                style={{ width: `${Math.max((item.value / maxValue) * 100, 8)}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -353,48 +431,10 @@ function IndustryRankingBars({
   const allItems = [...leaders, ...laggards];
   const maxValue = Math.max(...allItems.map((item) => item.value), 1);
 
-  function RankingColumn({
-    title,
-    items,
-    fillClassName,
-  }: {
-    title: string;
-    items: RankedMetric[];
-    fillClassName: string;
-  }) {
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center justify-between border-b border-[#e4e2e3] pb-2">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">{title}</div>
-          <div className="text-[11px] font-medium text-[#5f6978]">{metricLabel}</div>
-        </div>
-        <div className="space-y-2">
-          {items.map((item) => (
-            <div key={`${title}-${item.label}`} className="space-y-1.5 rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] px-3 py-2.5">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
-                  {item.note ? <div className="text-xs text-[#5f6978]">{item.note}</div> : null}
-                </div>
-                <div className="text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-white">
-                <div
-                  className={cn("h-full rounded-full", fillClassName)}
-                  style={{ width: `${Math.max((item.value / maxValue) * 100, 8)}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="grid gap-4 xl:grid-cols-2">
-      <RankingColumn title="Top 5 industries" items={leaders} fillClassName="bg-[#0b7a75]" />
-      <RankingColumn title="Bottom 5 industries" items={laggards} fillClassName="bg-[#b46a43]" />
+      <RankingColumn title="Top 5 industries" items={leaders} fillClassName="bg-[#0b7a75]" metricLabel={metricLabel} maxValue={maxValue} />
+      <RankingColumn title="Bottom 5 industries" items={laggards} fillClassName="bg-[#b46a43]" metricLabel={metricLabel} maxValue={maxValue} />
     </div>
   );
 }
@@ -402,9 +442,9 @@ function IndustryRankingBars({
 function ShareAreaChart({ data }: { data: SeriesPoint[] }) {
   return (
     <ChartFrame height={300}>
-      {(mounted) =>
-        mounted ? (
-          <ResponsiveContainer width="100%" height="100%">
+      {({ mounted, width, height }) =>
+        mounted && width > 0 && height > 0 ? (
+          <ResponsiveContainer width={width} height={height}>
             <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="shareFill" x1="0" y1="0" x2="0" y2="1">
@@ -486,17 +526,24 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
         <div className="min-w-0">
           <div className="border-b border-[#d9dde3] bg-[#efedef]">
             <div className="mx-auto max-w-[1320px] px-4 py-4 sm:px-6 lg:px-8">
-              <div className="grid gap-3 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-                <div className="grid gap-3 md:grid-cols-3">
-                  {data.overview.summaryCards.map((item) => (
-                    <SummaryCard key={item.label} {...item} />
-                  ))}
+              <div className="grid gap-3 xl:grid-cols-[minmax(0,1.25fr)_minmax(0,0.75fr)]">
+                <div className="rounded-md border border-[#d9dde3] bg-[#041627] px-5 py-5 text-white shadow-[0_10px_28px_rgba(4,22,39,0.16)]">
+                  <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-[#9db2cc]">Overview</div>
+                  <h2 className="mt-3 max-w-3xl text-[28px] font-semibold leading-9 text-white">
+                    The dashboard argues that the American Dream did not disappear in aggregate. It narrowed around housing, education, and ownership entry.
+                  </h2>
+                  <p className="mt-3 max-w-3xl text-[14px] leading-6 text-[#d6e3f3]">
+                    Broad income growth beat overall inflation from 2000 to 2024, but the categories that shape mobility and asset-building pulled away from the median worker.
+                  </p>
                 </div>
-                <div className="rounded-md border border-[#d9dde3] bg-white px-4 py-3">
+                <div className="rounded-md border border-[#d9dde3] bg-white px-4 py-4">
                   <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#5f6978]">Readout</div>
                   <div className="mt-2 flex items-start gap-3">
                     <CircleDollarSign className="mt-0.5 h-5 w-5 text-[#0b7a75]" />
-                    <p className="text-sm leading-6 text-[#44474c]">{data.verdict.summary}</p>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold leading-6 text-[#1b1c1d]">{data.verdict.label}</p>
+                      <p className="text-sm leading-6 text-[#44474c]">{data.verdict.summary}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -508,47 +555,44 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
               <SectionBlock
                 id="overview"
                 kicker="Overview"
-                title="Macro affordability improved in aggregate, but the important categories did not."
-                description="The national read is not a collapse story. Per-capita income beat broad inflation. The split shows up once the dashboard narrows from total consumption to housing, education, and ownership access."
+                title="A broad win in income growth can still hide a narrower loss in real upward mobility."
+                description="This dashboard makes one claim. The aggregate national picture is not a universal affordability collapse, but the categories most tied to stability and advancement broke away from the broad average."
               >
-                <div className="grid gap-3 xl:grid-cols-4">
-                  {data.overview.kpis.map((item) => (
-                    <KpiCard key={item.label} {...item} />
-                  ))}
-                </div>
-                <div className="grid gap-4">
-                  <div className="min-w-0">
-                    <WidgetCard
-                      title="Income versus major price indexes"
-                      description="Per-capita income and BEA price indexes, each rebased to 2000 = 100."
-                    >
-                      <MultiLineChart data={data.overview.comparisonChart} lines={data.overview.comparisonLines} height={360} />
-                    </WidgetCard>
-                  </div>
-                  <div className="grid gap-4 xl:grid-cols-2">
-                    <WidgetCard
-                      title="2024 affordability score by category"
-                      description="Income-growth index divided by each 2024 price index. Values above 100 mean more buying power than in 2000."
-                      action="2024"
-                    >
-                      <RankedList items={data.overview.affordabilityRankings} itemLabel="Category" valueLabel="Affordability vs 2000" />
-                    </WidgetCard>
-                    <WidgetCard title="Overview read" description="Supporting snapshot from the aggregate dashboard view.">
-                      <div className="grid gap-3 md:grid-cols-3">
-                        {data.overview.summaryCards.map((item) => (
-                          <SummaryCard key={`overview-read-${item.label}`} {...item} />
-                        ))}
+                <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+                  <WidgetCard title="What this dashboard argues" description="The framing before the evidence.">
+                    <div className="grid gap-3">
+                      <div className="rounded-md border border-[#c9d7e6] bg-[#f2f7fb] p-4">
+                        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#4d647e]">Problem statement</div>
+                        <p className="mt-2 text-sm leading-6 text-[#243447]">
+                          Looking only at total inflation misses the categories that decide whether households can translate wages into durable security, especially housing access and higher education.
+                        </p>
                       </div>
-                    </WidgetCard>
+                      <div className="rounded-md border border-[#eadfcd] bg-[#fcf6ec] p-4">
+                        <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#7d5b12]">Summary</div>
+                        <p className="mt-2 text-sm leading-6 text-[#3d3327]">
+                          The evidence below moves from the national average to the categories and labor markets where affordability deteriorated fastest. The dashboard reads the problem as a divergence story, not a single all-in inflation story.
+                        </p>
+                      </div>
+                    </div>
+                  </WidgetCard>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    {data.overview.kpis.map((item) => (
+                      <KpiCard key={item.label} {...item} />
+                    ))}
                   </div>
+                </div>
+                <div className="grid gap-3 md:grid-cols-3">
+                  {data.overview.summaryCards.map((item) => (
+                    <SummaryCard key={item.label} {...item} />
+                  ))}
                 </div>
               </SectionBlock>
 
               <SectionBlock
                 id="cost-of-living"
-                kicker="Cost of Living"
-                title="Broad inflation was manageable. Specific categories were not."
-                description="This section keeps the repo-backed indexed comparison intact, but adds context for what the national average hides and what it still supports."
+                kicker="Income vs Cost of Living"
+                title="The first evidence section shows where income kept up, and where it clearly did not."
+                description="Per-capita income beat the broad cost-of-living index, but that headline falls apart in the categories most associated with mobility. Higher education here is shown as a price index, meaning rate of price change, not enrollment, student debt, or total spending."
               >
                 <div className="grid gap-4">
                   <div className="min-w-0">
@@ -559,46 +603,113 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       <MultiLineChart data={data.costOfLiving.chart} lines={data.costOfLiving.lines} height={360} />
                     </WidgetCard>
                   </div>
+                  <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+                    <WidgetCard
+                      title="2024 affordability score by category"
+                      description="Income-growth index divided by each 2024 price index. Values above 100 mean more buying power than in 2000."
+                      action="2024"
+                    >
+                      <RankedList items={data.overview.affordabilityRankings} itemLabel="Category" valueLabel="Affordability vs 2000" />
+                    </WidgetCard>
+                    <div className="grid gap-4">
+                      <WidgetCard title="Affordability interpretation" description="What the comparison says, and what it does not say.">
+                        <InsightCards items={data.costOfLiving.insightCards} columns={2} />
+                      </WidgetCard>
+                      <WidgetCard title="Higher-education clarification" description="How to read that series correctly.">
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
+                            The higher-education line is a BEA price index. It tracks how the price level changed relative to 2000, not how many people enrolled or how much households spent in total.
+                          </div>
+                          <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
+                            That matters because a price index can rise sharply even if participation changes. The dashboard uses it as evidence of cost pressure, not as a claim about educational demand.
+                          </div>
+                        </div>
+                      </WidgetCard>
+                    </div>
+                  </div>
+                </div>
+              </SectionBlock>
+
+              <SectionBlock
+                id="housing-homeownership"
+                kicker="Housing and Homeownership"
+                title="Housing pressure is one story with two layers: renter pain and the ownership barrier."
+                description="Monthly housing burden stayed tighter than many people assume, but the path into ownership broke away much more sharply. Read the first half as the renting-pressure story and the second half as the asset-entry story."
+              >
+                <div className="grid gap-4">
                   <div className="grid gap-4 xl:grid-cols-2">
-                    <WidgetCard title="Affordability interpretation" description="What the chart does and does not say.">
-                      <InsightCards items={data.costOfLiving.insightCards} columns={2} />
+                    <WidgetCard
+                      title="Housing burden as a share of personal income"
+                      description="Housing and utility spending shares rather than index growth."
+                    >
+                      <MultiLineChart
+                        data={data.housingBurden.burdenChart}
+                        lines={data.housingBurden.burdenLines}
+                        height={320}
+                        percentage
+                        suffix="%"
+                      />
+                      <div className="mt-3 grid gap-2 md:grid-cols-3">
+                        {data.housingBurden.burdenChange.map((item) => (
+                          <div key={item.label} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
+                            <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
+                            <div className="mt-1 text-xs text-[#5f6978]">{item.formattedValue}</div>
+                          </div>
+                        ))}
+                      </div>
                     </WidgetCard>
                     <WidgetCard
-                      title="State income context"
-                      description="Per-capita income context plus the saved one-year American Dream state ranking."
-                      action="Latest"
+                      title="Tenant rent versus owner-equivalent rent"
+                      description="BEA rent price indexes rebased to 2000 = 100, alongside income and broad PCE."
                     >
-                      <div className="grid gap-3">
-                        <div className="grid gap-3 sm:grid-cols-3">
-                          <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                            <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">National per capita</div>
-                            <div className="mt-1 text-lg font-semibold text-[#041627]">
-                              {data.costOfLiving.stateIncomeContext.nationalPerCapita2024}
-                            </div>
+                      <MultiLineChart
+                        data={data.housingBurden.rentVsOwnerChart}
+                        lines={data.housingBurden.rentVsOwnerLines}
+                        height={340}
+                      />
+                    </WidgetCard>
+                  </div>
+                  <WidgetCard title="Bridge" description="How the two housing readings fit together.">
+                    <div className="grid gap-3 md:grid-cols-2">
+                      <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
+                        Renting pain is about the ongoing monthly claim on income. That pressure increased, but the national burden shares stayed in a tighter band than the public narrative often implies.
+                      </div>
+                      <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
+                        The ownership barrier is different. Entry depends on construction and asset-related costs that moved much faster than income, which is why buying in reads as the sharper break.
+                      </div>
+                    </div>
+                  </WidgetCard>
+                  <WidgetCard title="Summary read" description="Clarifying the housing claim.">
+                    <InsightCards items={data.housingBurden.summary} columns={2} />
+                  </WidgetCard>
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    <WidgetCard title="Construction-cost indexes versus income" description="Structure-cost price indexes compared with per-capita income and tenant-rent growth; these are not home sale prices.">
+                      <MultiLineChart
+                        data={data.homeownership.constructionChart}
+                        lines={data.homeownership.constructionLines}
+                        height={380}
+                      />
+                    </WidgetCard>
+                    <WidgetCard
+                      title="Residential investment as a share of income"
+                      description="Residential fixed-investment share of total personal income, showing boom, collapse, and partial recovery."
+                    >
+                      <ShareAreaChart data={data.homeownership.residentialShareChart} />
+                    </WidgetCard>
+                  </div>
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    <WidgetCard title="Ownership conclusion" description="Bottom-line dashboard read.">
+                      <InsightCards items={data.homeownership.summary} columns={2} />
+                    </WidgetCard>
+                    <WidgetCard title="Key moments" description="Residential investment share milestones.">
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {data.homeownership.keyMoments.map((item) => (
+                          <div key={item.label} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
+                            <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">{item.label}</div>
+                            <div className="mt-1 text-xl font-semibold text-[#041627]">{item.value}</div>
+                            <div className="text-xs text-[#5f6978]">{item.note}</div>
                           </div>
-                          <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                            <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">Top vs bottom</div>
-                            <div className="mt-1 text-sm font-semibold text-[#041627]">
-                              {data.costOfLiving.stateIncomeContext.spread}
-                            </div>
-                          </div>
-                          <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                            <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">Median state</div>
-                            <div className="mt-1 text-sm font-semibold text-[#041627]">
-                              {data.costOfLiving.stateIncomeContext.medianState}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="grid gap-3 md:grid-cols-2">
-                          <div>
-                            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Top predicted states</div>
-                            <RankedList items={data.costOfLiving.stateIncomeContext.topStates} itemLabel="State" valueLabel="Score" />
-                          </div>
-                          <div>
-                            <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Bottom predicted states</div>
-                            <RankedList items={data.costOfLiving.stateIncomeContext.bottomStates} itemLabel="State" valueLabel="Score" />
-                          </div>
-                        </div>
+                        ))}
                       </div>
                     </WidgetCard>
                   </div>
@@ -608,36 +719,35 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
               <SectionBlock
                 id="industry-divide"
                 kicker="Industry Divide"
-                title="The dream increasingly depends on which labor market you are in."
-                description="This section now separates forecasted and observed industry results: a labeled 3-year prediction built from 2024 and older data, plus actual 2024 wage leaders and laggards."
+                title="Affordability now depends more on labor-market position than the aggregate headline suggests."
+                description="After the category pressures above, the next question is who can absorb them. This section pairs a clearly labeled 3-year forecast from the 2024 baseline with observed 2024 wage levels, so predicted and actual labor-market outcomes stay separate without a standalone explanation card."
               >
-              <div className="grid gap-4">
-                <div className="grid gap-4 xl:grid-cols-2">
-                  <WidgetCard
-                    title="Predicted industry ranking"
-                    description="Three-year forecast using 2024 and older data to rank industries on future American Dream score."
-                    action={data.industryDivide.predictedFigure.benchmarkLabel}
-                  >
-                    <IndustryRankingBars
-                      leaders={data.industryDivide.predictedFigure.leaders}
-                      laggards={data.industryDivide.predictedFigure.laggards}
-                      metricLabel={data.industryDivide.predictedFigure.metricLabel}
-                    />
-                  </WidgetCard>
-                  <WidgetCard
-                    title="Actual 2024 wage ranking"
-                    description="Observed wage-per-FTE leaders and laggards from the cleaned industry wage data."
-                    action={data.industryDivide.historicalFigure.benchmarkLabel}
-                  >
-                    <IndustryRankingBars
-                      leaders={data.industryDivide.historicalFigure.leaders}
-                      laggards={data.industryDivide.historicalFigure.laggards}
-                      metricLabel={data.industryDivide.historicalFigure.metricLabel}
-                    />
-                  </WidgetCard>
-                </div>
-                <div className="grid gap-4 xl:grid-cols-2">
-                  <div className="grid gap-4">
+                <div className="grid gap-4">
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    <WidgetCard
+                      title="Predicted industry ranking"
+                      description="Three-year forecast using 2024 and older data to rank industries on future American Dream score."
+                      action={data.industryDivide.predictedFigure.benchmarkLabel}
+                    >
+                      <IndustryRankingBars
+                        leaders={data.industryDivide.predictedFigure.leaders}
+                        laggards={data.industryDivide.predictedFigure.laggards}
+                        metricLabel={data.industryDivide.predictedFigure.metricLabel}
+                      />
+                    </WidgetCard>
+                    <WidgetCard
+                      title="Actual 2024 wage ranking"
+                      description="Observed wage-per-FTE leaders and laggards from the cleaned industry wage data."
+                      action={data.industryDivide.historicalFigure.benchmarkLabel}
+                    >
+                      <IndustryRankingBars
+                        leaders={data.industryDivide.historicalFigure.leaders}
+                        laggards={data.industryDivide.historicalFigure.laggards}
+                        metricLabel={data.industryDivide.historicalFigure.metricLabel}
+                      />
+                    </WidgetCard>
+                  </div>
+                  <div className="grid gap-4 xl:grid-cols-2">
                     <WidgetCard title="Degree-heavy versus non-degree-heavy" description="Growth indexes and 2024 wage levels tell different parts of the story.">
                       <div className="grid gap-3">
                         <div className="grid gap-3 sm:grid-cols-2">
@@ -672,115 +782,14 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       <InsightCards items={data.industryDivide.summary} columns={2} />
                     </WidgetCard>
                   </div>
-                  <WidgetCard title="Why these figures changed" description="The dashboard now separates forecast output from observed wage data.">
-                    <div className="grid gap-3">
-                      <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                        The forecast panel is explicitly labeled as a 3-year prediction from the 2024 baseline, rather than reading like observed current-year data.
-                      </div>
-                      <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                        The second panel shows actual 2024 wage levels, so observed and predicted industry outcomes can be compared without mixing the two concepts.
-                      </div>
-                    </div>
-                  </WidgetCard>
                 </div>
-              </div>
-              </SectionBlock>
-
-              <SectionBlock
-                id="housing-burden"
-                kicker="Housing Burden"
-                title="Monthly housing burden and ownership access diverged."
-                description="The burden share stayed comparatively stable. The ownership path is the sharper affordability break, which is why both views need to sit side by side."
-              >
-              <div className="grid gap-4">
-                <div className="min-w-0">
-                  <WidgetCard
-                    title="Housing burden as a share of personal income"
-                    description="Housing and utility spending shares rather than index growth."
-                  >
-                    <MultiLineChart
-                      data={data.housingBurden.burdenChart}
-                      lines={data.housingBurden.burdenLines}
-                      height={320}
-                      percentage
-                      suffix="%"
-                    />
-                    <div className="mt-3 grid gap-2 md:grid-cols-3">
-                      {data.housingBurden.burdenChange.map((item) => (
-                        <div key={item.label} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                          <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
-                          <div className="mt-1 text-xs text-[#5f6978]">{item.formattedValue}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </WidgetCard>
-                </div>
-                <div className="min-w-0">
-                  <WidgetCard
-                    title="Tenant rent versus owner-equivalent rent"
-                    description="BEA rent price indexes rebased to 2000 = 100, alongside income and broad PCE."
-                  >
-                    <MultiLineChart
-                      data={data.housingBurden.rentVsOwnerChart}
-                      lines={data.housingBurden.rentVsOwnerLines}
-                      height={340}
-                    />
-                  </WidgetCard>
-                </div>
-                <WidgetCard title="Summary read" description="Clarifying the housing claim.">
-                  <InsightCards items={data.housingBurden.summary} columns={2} />
-                </WidgetCard>
-              </div>
-              </SectionBlock>
-
-              <SectionBlock
-                id="homeownership"
-                kicker="Homeownership"
-                title="Ownership entry is the cleanest break in the dashboard."
-                description="Construction-cost indices ran much faster than per-capita income. This section keeps the ownership story dominant and uses residential investment share as supporting context."
-              >
-              <div className="grid gap-4">
-                <div className="min-w-0">
-                  <WidgetCard title="Construction-cost indexes versus income" description="Structure-cost price indexes compared with per-capita income and tenant-rent growth; these are not home sale prices.">
-                    <MultiLineChart
-                      data={data.homeownership.constructionChart}
-                      lines={data.homeownership.constructionLines}
-                      height={380}
-                    />
-                  </WidgetCard>
-                </div>
-                <div className="min-w-0">
-                  <WidgetCard
-                    title="Residential investment as a share of income"
-                    description="Residential fixed-investment share of total personal income, showing boom, collapse, and partial recovery."
-                  >
-                    <ShareAreaChart data={data.homeownership.residentialShareChart} />
-                  </WidgetCard>
-                </div>
-                <div className="grid gap-4 xl:grid-cols-2">
-                  <WidgetCard title="Ownership conclusion" description="Bottom-line dashboard read.">
-                    <InsightCards items={data.homeownership.summary} columns={2} />
-                  </WidgetCard>
-                  <WidgetCard title="Key moments" description="Residential investment share milestones.">
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {data.homeownership.keyMoments.map((item) => (
-                        <div key={item.label} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3">
-                          <div className="text-[11px] uppercase tracking-[0.12em] text-[#5f6978]">{item.label}</div>
-                          <div className="mt-1 text-xl font-semibold text-[#041627]">{item.value}</div>
-                          <div className="text-xs text-[#5f6978]">{item.note}</div>
-                        </div>
-                      ))}
-                    </div>
-                  </WidgetCard>
-                </div>
-              </div>
               </SectionBlock>
 
               <SectionBlock
                 id="methodology"
                 kicker="Methodology"
                 title="Only repo data and existing analysis logic are used."
-                description="The dashboard stays within the existing cleaned datasets and notebook logic, then repackages those outputs into section-oriented widgets."
+                description="The dashboard stays within the existing cleaned datasets and notebook logic, then repackages those outputs into section-oriented widgets. Here, a price index means relative price movement over time, and the national aggregation should be read as directional evidence rather than a substitute for local household realities."
               >
                 <div className="grid gap-4 xl:grid-cols-2">
                   <WidgetCard title="Sources" description="Repo-backed data inputs and transformations." action={<ScrollText className="h-4 w-4 text-[#5f6978]" />}>

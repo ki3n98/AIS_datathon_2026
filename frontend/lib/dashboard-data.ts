@@ -607,11 +607,10 @@ export async function getDashboardData(): Promise<DashboardData> {
     subtitle:
       "A national analytics view of income growth, cost pressure, wage dispersion, and the widening ownership threshold from 2000 to 2024.",
     sidebar: [
-      { id: "overview", label: "Overview", summary: "Macro trend and 2024 affordability snapshot." },
-      { id: "cost-of-living", label: "Cost of Living", summary: "Income versus major household cost categories." },
-      { id: "industry-divide", label: "Industry Divide", summary: "Compare a 2024-based 3-year forecast with actual 2024 wage leaders and laggards." },
-      { id: "housing-burden", label: "Housing Burden", summary: "Monthly burden stayed tighter than ownership access." },
-      { id: "homeownership", label: "Homeownership", summary: "Construction costs outran wages and income." },
+      { id: "overview", label: "Overview", summary: "The core claim and the broad affordability read." },
+      { id: "cost-of-living", label: "Income vs Cost of Living", summary: "The first evidence section: income against major price indexes and category affordability." },
+      { id: "housing-homeownership", label: "Housing and Homeownership", summary: "Renter strain and the ownership-entry barrier in one continuous housing story." },
+      { id: "industry-divide", label: "Industry Divide", summary: "How labor-market sorting shapes who can still absorb rising costs." },
       { id: "methodology", label: "Methodology", summary: "Repo-backed sources, transformations, and caveats." },
     ],
     verdict: {
@@ -681,10 +680,8 @@ export async function getDashboardData(): Promise<DashboardData> {
           body: "National income outpaced broad PCE growth, so the dashboard should not claim a universal collapse in purchasing power.",
         },
         {
-          title: stateRanking ? "Predicted state mobility remains uneven" : "Mobility-linked categories did worse",
-          body: stateRanking
-            ? `The one-year state model ranks ${stateRanking.top_5[0]?.label} highest and ${stateRanking.bottom_5[0]?.label} lowest in ${stateRankingYear}.`
-            : "The weakest affordability readings come from higher education and housing-related price indexes, not groceries or aggregate spending.",
+          title: "The break is category-specific",
+          body: "The weakest affordability readings come from higher education and housing-related price indexes, not groceries or aggregate spending.",
         },
       ],
       stateIncomeContext: {
@@ -865,7 +862,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       sources: [
         "All values are drawn from CSVs in `data/cleaned`, using the same BEA-backed repo datasets already prepared for analysis.",
         "Income is constructed as total personal income divided by total population from `cleaned_income_with_state.csv`.",
-        "Indexed charts rebase each series to 2000 = 100 so growth rates can be compared directly; several widgets use BEA price indexes rather than market-price series.",
+        "Indexed charts rebase each series to 2000 = 100 so growth rates can be compared directly; a price index tracks relative change over time rather than tuition bills, rents paid by one household, or total category spending.",
         rankingExport
           ? "Predictive rankings are loaded from `outputs/dashboard_rankings.json`, generated locally from the repo's American Dream state and industry models."
           : "Predictive ranking export is optional; without it, the dashboard falls back to repo-derived descriptive summaries.",
@@ -873,7 +870,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       ],
       caveats: [
         "This is a national and industry-level dashboard. It does not model taxes, debt, household composition, or local housing markets.",
-        "The state widget is context only. It shows per-capita income dispersion, not a full state affordability model.",
+        "Aggregate national data can show the direction of affordability pressure while still masking large regional, household, and tenure differences.",
         "No external APIs, web-fetched figures, home-price data, or mortgage assumptions are introduced in this dashboard.",
         rankingExport
           ? `Current ranking snapshots mix horizons by design: state rankings remain 1-year, while industry rankings use a 3-year forecast from ${industryRankingYear} to ${industryRankingYear + (industryRanking?.horizon ?? 3)}.`
