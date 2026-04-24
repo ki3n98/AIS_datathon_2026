@@ -87,6 +87,34 @@ export type DashboardData = {
     generatedAtIso: string;
     editionDateLabel: string;
   };
+  researchDesk: {
+    defaultYear: number;
+    years: number[];
+    regions: string[];
+    states: string[];
+    industries: string[];
+    stateYearMetrics: {
+      year: number;
+      state: string;
+      region: string;
+      perCapitaIncome: number;
+      incomeIndex: number;
+      costOfLivingIndex: number;
+      affordabilityScore: number;
+    }[];
+    industryYearMetrics: {
+      year: number;
+      industry: string;
+      wageLevel: number;
+      wageIndex: number;
+    }[];
+    housingYearMetrics: {
+      year: number;
+      tenantRentIndex: number;
+      ownerEquivalentRentIndex: number;
+      housingBurdenPct: number;
+    }[];
+  };
   sidebar: SectionLink[];
   verdict: {
     label: string;
@@ -353,13 +381,53 @@ export async function getDashboardData(): Promise<DashboardData> {
   const incomeYears = yearsInRange(incomeRows);
   const totalIncomeByYear = Object.fromEntries(incomeYears.map((year) => [year, 0]));
   const totalPopulationByYear = Object.fromEntries(incomeYears.map((year) => [year, 0]));
+  const stateIncomeByYear = new Map<string, Record<number, number>>();
+  const statePopulationByYear = new Map<string, Record<number, number>>();
+  const stateRegion = new Map<string, string>();
 
   for (const row of incomeRows) {
     const lineCode = toNumber(row.LineCode);
-    for (const year of incomeYears) {
-      if (lineCode === 1) totalIncomeByYear[year] += toNumber(row[String(year)]);
-      if (lineCode === 2) totalPopulationByYear[year] += toNumber(row[String(year)]);
+    const state = cleanCategory(row.GeoName);
+    const region = cleanCategory(row.Region);
+    if (state) {
+      if (region) stateRegion.set(state, region);
+      if (!stateIncomeByYear.has(state)) stateIncomeByYear.set(state, Object.fromEntries(incomeYears.map((year) => [year, 0])));
+      if (!statePopulationByYear.has(state))
+        statePopulationByYear.set(state, Object.fromEntries(incomeYears.map((year) => [year, 0])));
     }
+
+    for (const year of incomeYears) {
+      const value = toNumber(row[String(year)]);
+      if (lineCode === 1) {
+        totalIncomeByYear[year] += value;
+        if (state) stateIncomeByYear.get(state)![year] = value;
+      }
+      if (lineCode === 2) {
+        totalPopulationByYear[year] += value;
+        if (state) statePopulationByYear.get(state)![year] = value;
+      }
+    }
+  }
+
+  const statePerCapitaSeries: Record<string, Record<number, number>> = {};
+  const byStateIncome: Array<{ state: string; region: string; perCapitaIncome: number }> = [];
+
+  for (const [state, incomeSeries] of stateIncomeByYear.entries()) {
+    const populationSeries = statePopulationByYear.get(state);
+    if (!populationSeries) continue;
+
+    const perCapitaSeries: Record<number, number> = {};
+    for (const year of incomeYears) {
+      const population = populationSeries[year] || 1;
+      perCapitaSeries[year] = (incomeSeries[year] * 1_000_000) / population;
+    }
+
+    statePerCapitaSeries[state] = perCapitaSeries;
+    byStateIncome.push({
+      state,
+      region: stateRegion.get(state) || "Unknown",
+      perCapitaIncome: perCapitaSeries[FINAL_YEAR] ?? 0,
+    });
   }
 
   const perCapitaIncome = Object.fromEntries(
@@ -605,6 +673,49 @@ export async function getDashboardData(): Promise<DashboardData> {
   const industryRanking = rankingExport?.industry ?? null;
   const stateRankingYear = stateRanking?.latest_year ?? FINAL_YEAR;
   const industryRankingYear = industryRanking?.latest_year ?? FINAL_YEAR;
+  const regionSet = new Set<string>();
+  const stateYearMetrics: DashboardData["researchDesk"]["stateYearMetrics"] = [];
+
+  for (const [state, series] of Object.entries(statePerCapitaSeries)) {
+    const baseValue = series[BASE_YEAR] || 1;
+    const region = byStateIncome.find((entry) => entry.state === state)?.region || "Unknown";
+    regionSet.add(region);
+
+    for (const year of incomeYears) {
+      const perCapitaIncome = series[year];
+      const incomeIndex = (perCapitaIncome / baseValue) * 100;
+      const costOfLivingIndex = overviewValues["Overall cost of living (PCE)"]?.[year] ?? 100;
+      const affordabilityScore = costOfLivingIndex > 0 ? (incomeIndex / costOfLivingIndex) * 100 : 100;
+
+      stateYearMetrics.push({
+        year,
+        state,
+        region,
+        perCapitaIncome,
+        incomeIndex,
+        costOfLivingIndex,
+        affordabilityScore,
+      });
+    }
+  }
+
+  const industryYearMetrics: DashboardData["researchDesk"]["industryYearMetrics"] = [];
+  for (const [industry, series] of Object.entries(wagesByIndustry)) {
+    const baseValue = series[BASE_YEAR] || 1;
+    for (const year of incomeYears) {
+      const wageLevel = series[year] ?? series[FINAL_YEAR] ?? 0;
+      const wageIndex = (wageLevel / baseValue) * 100;
+      industryYearMetrics.push({ year, industry, wageLevel, wageIndex });
+    }
+  }
+
+  const housingYearMetrics: DashboardData["researchDesk"]["housingYearMetrics"] = incomeYears.map((year) => ({
+    year,
+    tenantRentIndex: rentOwnerValues["Tenant rent"][year],
+    ownerEquivalentRentIndex: rentOwnerValues["Owner-equivalent rent"][year],
+    housingBurdenPct: housingBurdenValues["All housing + utilities"][year],
+  }));
+
   const generatedAtIso = new Date().toISOString();
   const editionDateLabel = new Intl.DateTimeFormat("en-US", {
     month: "long",
@@ -620,6 +731,16 @@ export async function getDashboardData(): Promise<DashboardData> {
     edition: {
       generatedAtIso,
       editionDateLabel,
+    },
+    researchDesk: {
+      defaultYear: FINAL_YEAR,
+      years: incomeYears,
+      regions: Array.from(regionSet).sort((a, b) => a.localeCompare(b)),
+      states: Object.keys(statePerCapitaSeries).sort((a, b) => a.localeCompare(b)),
+      industries: Object.keys(wagesByIndustry).sort((a, b) => a.localeCompare(b)),
+      stateYearMetrics,
+      industryYearMetrics,
+      housingYearMetrics,
     },
     sidebar: [
       { id: "overview", label: "Overview", summary: "Macro trend and 2024 affordability snapshot." },

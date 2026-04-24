@@ -1,20 +1,20 @@
 # AIS Datathon Frontend (`openclaw` branch)
 
-Hybrid editorial analytics experience:
+Hybrid editorial + research product:
 
 - `/` → newspaper-style feature homepage
-- `/dashboard` → full interactive analytics workspace
+- `/dashboard` → interactive research desk
 - `/methodology` → sources + caveats
 
 ## Data pipeline (single source of truth)
 
-This frontend uses a **pre-generated JSON artifact** at runtime:
+Runtime reads one generated artifact:
 
-- Generator: `scripts/generate-dashboard-data.ts`
-- Output: `data/dashboard-data.json`
-- Upstream inputs: `../data/cleaned/*.csv`
+- generator: `scripts/generate-dashboard-data.ts`
+- output: `data/dashboard-data.json`
+- upstream inputs: `../data/cleaned/*.csv`
 
-Build/dev automatically regenerate the JSON before rendering.
+`predev` and `prebuild` regenerate the JSON automatically.
 
 ## Local development
 
@@ -30,23 +30,16 @@ npm run dev
 npm run build
 ```
 
-## Deployment options
+## Deployment (Vercel only for openclaw)
 
-### Vercel (recommended)
-- Branch: `openclaw`
-- Root directory: `frontend`
-- Build command: `npm run build`
-- Output directory: `out`
+Use Vercel for branch deployment and sharing:
 
-### GitHub Pages
-- Uses static export (`output: "export"`)
-- Workflow: `.github/workflows/deploy-frontend-pages.yml`
-- Trigger branch: `openclaw`
-
-### Team preview (quick share)
-- Run local server and expose via your existing ngrok/tunnel setup.
+- branch: `openclaw`
+- root directory: `frontend`
+- build command: `npm run build`
+- output directory: `out`
 
 ## Notes
 
 - Keep website work on `openclaw` branch only.
-- Dashboard and editorial homepage share the same generated data model.
+- Dashboard and editorial homepage use the same generated data model.
