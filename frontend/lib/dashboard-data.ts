@@ -700,7 +700,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   }
 
   const industryYearMetrics: DashboardData["researchDesk"]["industryYearMetrics"] = [];
-  for (const [industry, series] of Object.entries(wagesByIndustry)) {
+  for (const [industry, series] of wagesByIndustry.entries()) {
     const baseValue = series[BASE_YEAR] || 1;
     for (const year of incomeYears) {
       const wageLevel = series[year] ?? series[FINAL_YEAR] ?? 0;
@@ -737,7 +737,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       years: incomeYears,
       regions: Array.from(regionSet).sort((a, b) => a.localeCompare(b)),
       states: Object.keys(statePerCapitaSeries).sort((a, b) => a.localeCompare(b)),
-      industries: Object.keys(wagesByIndustry).sort((a, b) => a.localeCompare(b)),
+      industries: Array.from(wagesByIndustry.keys()).sort((a, b) => a.localeCompare(b)),
       stateYearMetrics,
       industryYearMetrics,
       housingYearMetrics,

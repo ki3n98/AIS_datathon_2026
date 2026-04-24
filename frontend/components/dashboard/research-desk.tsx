@@ -29,25 +29,39 @@ function toNumber(value: string | null, fallback: number) {
 
 export function ResearchDesk({ data }: Props) {
   const urlParams = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-  const [selectedYear, setSelectedYear] = useState<number>(toNumber(urlParams?.get("year") || null, data.researchDesk.defaultYear));
+  const stateYears = new Set(data.researchDesk.stateYearMetrics.map((row) => row.year));
+  const industryYears = new Set(data.researchDesk.industryYearMetrics.map((row) => row.year));
+  const defaultYearWithData =
+    data.researchDesk.years.find((year) => stateYears.has(year) && industryYears.has(year)) ??
+    data.researchDesk.years.find((year) => stateYears.has(year)) ??
+    data.researchDesk.defaultYear;
+  const requestedYear = toNumber(urlParams?.get("year") || null, defaultYearWithData);
+  const initialYear = stateYears.has(requestedYear) || industryYears.has(requestedYear) ? requestedYear : defaultYearWithData;
+
+  const [selectedYear, setSelectedYear] = useState<number>(initialYear);
   const [selectedRegion, setSelectedRegion] = useState<string>(urlParams?.get("region") || "All");
-  const [selectedState, setSelectedState] = useState<string>(urlParams?.get("state") || data.researchDesk.states[0]);
-  const [selectedIndustry, setSelectedIndustry] = useState<string>(urlParams?.get("industry") || data.researchDesk.industries[0]);
+  const [selectedState, setSelectedState] = useState<string>(urlParams?.get("state") || "");
+  const [selectedIndustry, setSelectedIndustry] = useState<string>(urlParams?.get("industry") || "");
   const [compareMode, setCompareMode] = useState<boolean>(urlParams?.get("compare") === "1");
-  const [stateB, setStateB] = useState<string>(
-    urlParams?.get("stateB") || data.researchDesk.states[1] || data.researchDesk.states[0]
-  );
-  const [industryB, setIndustryB] = useState<string>(
-    urlParams?.get("industryB") || data.researchDesk.industries[1] || data.researchDesk.industries[0]
-  );
+  const [stateB, setStateB] = useState<string>(urlParams?.get("stateB") || "");
+  const [industryB, setIndustryB] = useState<string>(urlParams?.get("industryB") || "");
   const [metricMode, setMetricMode] = useState<MetricMode>((urlParams?.get("metric") as MetricMode) || "affordability");
   const [evidenceMode, setEvidenceMode] = useState<EvidenceMode>((urlParams?.get("view") as EvidenceMode) || "chart");
+  const [quickAnswer, setQuickAnswer] = useState<string>("Select a quick question to add a fact-based answer here.");
 
   const availableStates = useMemo(() => {
-    const rows = data.researchDesk.stateYearMetrics.filter((row) => row.year === selectedYear);
-    const regionFiltered = selectedRegion === "All" ? rows : rows.filter((row) => row.region === selectedRegion);
-    return Array.from(new Set(regionFiltered.map((row) => row.state))).sort((a, b) => a.localeCompare(b));
+    const rowsForYear = data.researchDesk.stateYearMetrics.filter((row) => row.year === selectedYear);
+    const regionFiltered = selectedRegion === "All" ? rowsForYear : rowsForYear.filter((row) => row.region === selectedRegion);
+    const preferredRows = regionFiltered.length > 0 ? regionFiltered : rowsForYear;
+    const candidates = preferredRows.length > 0 ? preferredRows : data.researchDesk.stateYearMetrics;
+    return Array.from(new Set(candidates.map((row) => row.state))).sort((a, b) => a.localeCompare(b));
   }, [data.researchDesk.stateYearMetrics, selectedRegion, selectedYear]);
+
+  const availableIndustries = useMemo(() => {
+    const rowsForYear = data.researchDesk.industryYearMetrics.filter((row) => row.year === selectedYear);
+    const candidates = rowsForYear.length > 0 ? rowsForYear : data.researchDesk.industryYearMetrics;
+    return Array.from(new Set(candidates.map((row) => row.industry))).sort((a, b) => a.localeCompare(b));
+  }, [data.researchDesk.industryYearMetrics, selectedYear]);
 
   const effectiveSelectedState = availableStates.includes(selectedState)
     ? selectedState
@@ -55,17 +69,23 @@ export function ResearchDesk({ data }: Props) {
   const effectiveStateB = availableStates.includes(stateB)
     ? stateB
     : availableStates[1] || availableStates[0] || data.researchDesk.states[0];
+  const effectiveSelectedIndustry = availableIndustries.includes(selectedIndustry)
+    ? selectedIndustry
+    : availableIndustries[0] || data.researchDesk.industries[0] || "";
+  const effectiveIndustryB = availableIndustries.includes(industryB)
+    ? industryB
+    : availableIndustries[1] || availableIndustries[0] || data.researchDesk.industries[0] || "";
 
   useEffect(() => {
     const params = new URLSearchParams();
     params.set("year", String(selectedYear));
     if (selectedRegion !== "All") params.set("region", selectedRegion);
     params.set("state", effectiveSelectedState);
-    params.set("industry", selectedIndustry);
+    params.set("industry", effectiveSelectedIndustry);
     if (compareMode) {
       params.set("compare", "1");
       params.set("stateB", effectiveStateB);
-      params.set("industryB", industryB);
+      params.set("industryB", effectiveIndustryB);
     }
     params.set("metric", metricMode);
     params.set("view", evidenceMode);
@@ -74,9 +94,9 @@ export function ResearchDesk({ data }: Props) {
   }, [
     compareMode,
     evidenceMode,
-    industryB,
+    effectiveIndustryB,
     metricMode,
-    selectedIndustry,
+    effectiveSelectedIndustry,
     selectedRegion,
     effectiveSelectedState,
     selectedYear,
@@ -102,23 +122,23 @@ export function ResearchDesk({ data }: Props) {
   );
 
   const selectedIndustrySeries = useMemo(
-    () => data.researchDesk.industryYearMetrics.filter((row) => row.industry === selectedIndustry).sort((a, b) => a.year - b.year),
-    [data.researchDesk.industryYearMetrics, selectedIndustry]
+    () => data.researchDesk.industryYearMetrics.filter((row) => row.industry === effectiveSelectedIndustry).sort((a, b) => a.year - b.year),
+    [data.researchDesk.industryYearMetrics, effectiveSelectedIndustry]
   );
 
   const compareIndustrySeries = useMemo(
-    () => data.researchDesk.industryYearMetrics.filter((row) => row.industry === industryB).sort((a, b) => a.year - b.year),
-    [data.researchDesk.industryYearMetrics, industryB]
+    () => data.researchDesk.industryYearMetrics.filter((row) => row.industry === effectiveIndustryB).sort((a, b) => a.year - b.year),
+    [data.researchDesk.industryYearMetrics, effectiveIndustryB]
   );
 
   const selectedStateNow = stateRowsForYear.find((row) => row.state === effectiveSelectedState);
   const compareStateNow = stateRowsForYear.find((row) => row.state === effectiveStateB);
 
   const selectedIndustryNow = data.researchDesk.industryYearMetrics.find(
-    (row) => row.year === selectedYear && row.industry === selectedIndustry
+    (row) => row.year === selectedYear && row.industry === effectiveSelectedIndustry
   );
   const compareIndustryNow = data.researchDesk.industryYearMetrics.find(
-    (row) => row.year === selectedYear && row.industry === industryB
+    (row) => row.year === selectedYear && row.industry === effectiveIndustryB
   );
 
   const chartRows = useMemo(() => {
@@ -146,37 +166,81 @@ export function ResearchDesk({ data }: Props) {
   ]);
 
   const resetAll = () => {
-    setSelectedYear(data.researchDesk.defaultYear);
+    setSelectedYear(defaultYearWithData);
     setSelectedRegion("All");
-    setSelectedState(data.researchDesk.states[0]);
-    setSelectedIndustry(data.researchDesk.industries[0]);
+    setSelectedState("");
+    setSelectedIndustry("");
     setCompareMode(false);
-    setStateB(data.researchDesk.states[1] || data.researchDesk.states[0]);
-    setIndustryB(data.researchDesk.industries[1] || data.researchDesk.industries[0]);
+    setStateB("");
+    setIndustryB("");
     setMetricMode("affordability");
     setEvidenceMode("chart");
+    setQuickAnswer("Select a quick question to add a fact-based answer here.");
   };
 
   const applyQuickQuestion = (kind: "strongest" | "housing" | "industry" | "income") => {
     if (kind === "strongest") {
+      const leader = stateRowsForYear[0];
+      const runnerUp = stateRowsForYear[1];
       setMetricMode("affordability");
       setEvidenceMode("chart");
       setCompareMode(false);
       setSelectedState(stateRowsForYear[0]?.state || data.researchDesk.states[0]);
+      setQuickAnswer(
+        leader
+          ? `${selectedYear}${selectedRegion === "All" ? "" : ` (${selectedRegion})`}: ${leader.state} has the highest affordability score at ${leader.affordabilityScore.toFixed(1)}${runnerUp ? `, followed by ${runnerUp.state} at ${runnerUp.affordabilityScore.toFixed(1)}` : ""}.`
+          : `No state metrics are available for ${selectedYear}${selectedRegion === "All" ? "" : ` in ${selectedRegion}`}.`
+      );
       return;
     }
     if (kind === "housing") {
+      const first = data.researchDesk.housingYearMetrics[0];
+      const current =
+        data.researchDesk.housingYearMetrics.find((row) => row.year === selectedYear) ||
+        data.researchDesk.housingYearMetrics[data.researchDesk.housingYearMetrics.length - 1];
+      const delta = first && current ? current.housingBurdenPct - first.housingBurdenPct : 0;
       setEvidenceMode("table");
       setMetricMode("affordability");
+      setQuickAnswer(
+        first && current
+          ? `National housing burden is ${current.housingBurdenPct.toFixed(1)}% in ${current.year}, ${delta >= 0 ? "up" : "down"} ${Math.abs(delta).toFixed(1)} points from ${first.year} (${first.housingBurdenPct.toFixed(1)}%).`
+          : "Housing-burden trend data is unavailable in this snapshot."
+      );
       return;
     }
     if (kind === "industry") {
+      const industryRowsForYear = data.researchDesk.industryYearMetrics
+        .filter((row) => row.year === selectedYear)
+        .sort((a, b) => b.wageLevel - a.wageLevel);
+      const top = industryRowsForYear[0];
+      const second = industryRowsForYear[1];
       setCompareMode(true);
       setEvidenceMode("chart");
+      if (top) setSelectedIndustry(top.industry);
+      if (second) setIndustryB(second.industry);
+      setQuickAnswer(
+        top
+          ? `${selectedYear}: ${top.industry} leads with an average wage of $${Math.round(top.wageLevel).toLocaleString()}${second ? `, followed by ${second.industry} at $${Math.round(second.wageLevel).toLocaleString()}` : ""}.`
+          : `Industry wage data is unavailable for ${selectedYear}.`
+      );
       return;
     }
+
+    const stateSeries = data.researchDesk.stateYearMetrics
+      .filter((row) => row.state === effectiveSelectedState)
+      .sort((a, b) => a.year - b.year);
+    const baseline = stateSeries[0];
+    const current = stateSeries.find((row) => row.year === selectedYear) || stateSeries[stateSeries.length - 1];
+    const incomeGain = current && baseline ? current.incomeIndex - baseline.incomeIndex : 0;
+    const costGain = current && baseline ? current.costOfLivingIndex - baseline.costOfLivingIndex : 0;
+
     setMetricMode("income");
     setEvidenceMode("chart");
+    setQuickAnswer(
+      baseline && current
+        ? `${effectiveSelectedState}: from ${baseline.year} to ${current.year}, income index changed ${incomeGain >= 0 ? "+" : ""}${incomeGain.toFixed(1)} and cost-of-living index changed ${costGain >= 0 ? "+" : ""}${costGain.toFixed(1)}. ${incomeGain >= costGain ? "Income outpaced costs." : "Costs rose faster than income."}`
+        : `Income-versus-cost trend is unavailable for ${effectiveSelectedState}.`
+    );
   };
 
   const deltaState = compareMode && selectedStateNow && compareStateNow ? selectedStateNow.perCapitaIncome - compareStateNow.perCapitaIncome : null;
@@ -194,21 +258,15 @@ export function ResearchDesk({ data }: Props) {
             <button className="dash-btn" onClick={() => applyQuickQuestion("industry")}>Which industries lead?</button>
             <button className="dash-btn" onClick={() => applyQuickQuestion("income")}>Did income outpace costs?</button>
           </div>
-        </div>
-
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.12em] text-[#607080]">Sections</p>
-          <ul className="mt-2 space-y-1 text-sm text-[#334155]">
-            <li>Overview</li>
-            <li>States</li>
-            <li>Industries</li>
-            <li>Housing evidence</li>
-          </ul>
+          <div className="mt-3 rounded border border-[#dbe3ea] bg-[#f8fafc] p-3">
+            <p className="text-[11px] uppercase tracking-[0.1em] text-[#607080]">Answer</p>
+            <p className="mt-2 text-sm text-[#1f2937]">{quickAnswer}</p>
+          </div>
         </div>
       </aside>
 
       <section className="space-y-4">
-        <div className="grid gap-3 border border-[#ced4dc] bg-white p-4 xl:grid-cols-8">
+        <div className="grid gap-3 border border-[#ced4dc] bg-white p-4 xl:grid-cols-9">
           <label className="dash-field xl:col-span-1">
             <span>Year</span>
             <select value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}>
@@ -245,8 +303,8 @@ export function ResearchDesk({ data }: Props) {
 
           <label className="dash-field xl:col-span-2">
             <span>Industry A</span>
-            <select value={selectedIndustry} onChange={(e) => setSelectedIndustry(e.target.value)}>
-              {data.researchDesk.industries.map((industry) => (
+            <select value={effectiveSelectedIndustry} onChange={(e) => setSelectedIndustry(e.target.value)}>
+              {availableIndustries.map((industry) => (
                 <option key={industry} value={industry}>
                   {industry}
                 </option>
@@ -262,11 +320,11 @@ export function ResearchDesk({ data }: Props) {
             </select>
           </label>
 
-          <div className="flex items-end gap-2 xl:col-span-1">
-            <button className="dash-btn" onClick={() => setCompareMode((prev) => !prev)}>
+          <div className="flex flex-wrap items-end justify-start gap-2 xl:col-span-2 xl:justify-end">
+            <button className="dash-btn shrink-0" onClick={() => setCompareMode((prev) => !prev)}>
               {compareMode ? "Compare: On" : "Compare: Off"}
             </button>
-            <button className="dash-btn" onClick={resetAll}>
+            <button className="dash-btn shrink-0" onClick={resetAll}>
               Reset
             </button>
           </div>
@@ -285,8 +343,8 @@ export function ResearchDesk({ data }: Props) {
               </label>
               <label className="dash-field xl:col-span-2">
                 <span>Industry B</span>
-                <select value={industryB} onChange={(e) => setIndustryB(e.target.value)}>
-                  {data.researchDesk.industries.map((industry) => (
+                <select value={effectiveIndustryB} onChange={(e) => setIndustryB(e.target.value)}>
+                  {availableIndustries.map((industry) => (
                     <option key={industry} value={industry}>
                       {industry}
                     </option>
@@ -311,7 +369,7 @@ export function ResearchDesk({ data }: Props) {
           <Kpi
             label="Selected industry wage"
             value={`$${Math.round(selectedIndustryNow?.wageLevel || 0).toLocaleString()}`}
-            sub={`${selectedIndustry} (${selectedYear})`}
+            sub={`${effectiveSelectedIndustry || "-"} (${selectedYear})`}
           />
           <Kpi
             label="Compare deltas"
@@ -347,8 +405,8 @@ export function ResearchDesk({ data }: Props) {
                     <Legend />
                     <Line type="monotone" dataKey="stateA" stroke="#0f172a" dot={false} name={effectiveSelectedState} />
                     {compareMode ? <Line type="monotone" dataKey="stateB" stroke="#7c3aed" dot={false} name={effectiveStateB} /> : null}
-                    <Line type="monotone" dataKey="industryA" stroke="#0f766e" dot={false} name={`${selectedIndustry} wage index`} />
-                    {compareMode ? <Line type="monotone" dataKey="industryB" stroke="#ea580c" dot={false} name={`${industryB} wage index`} /> : null}
+                    <Line type="monotone" dataKey="industryA" stroke="#0f766e" dot={false} name={`${effectiveSelectedIndustry || "Industry A"} wage index`} />
+                    {compareMode ? <Line type="monotone" dataKey="industryB" stroke="#ea580c" dot={false} name={`${effectiveIndustryB || "Industry B"} wage index`} /> : null}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -446,6 +504,7 @@ export function ResearchDesk({ data }: Props) {
           padding: 8px 10px;
           font-size: 12px;
           font-family: var(--font-ui);
+          white-space: nowrap;
         }
         .dash-btn-active {
           background: #0f172a;
