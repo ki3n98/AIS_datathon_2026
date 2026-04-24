@@ -163,7 +163,7 @@ const BASE_YEAR = 2000;
 const FINAL_YEAR = 2024;
 
 const CATEGORY_COLORS = {
-  "Per-capita income": "#0b7a75",
+  "Median industry wage": "#0b7a75",
   "Overall cost of living (PCE)": "#7c8796",
   Housing: "#c6922d",
   "Rent (tenant)": "#d2a84c",
@@ -395,8 +395,33 @@ export async function getDashboardData(): Promise<DashboardData> {
   const perCapitaIncome = Object.fromEntries(
     incomeYears.map((year) => [year, (totalIncomeByYear[year] * 1_000_000) / totalPopulationByYear[year]])
   );
+
+  const excludedIndustryLabels = new Set([
+    "Wages and salaries per full-time equivalent employee",
+    "Domestic industries",
+    "Private industries",
+    "Government and government enterprises",
+    "Federal civilian",
+    "Military",
+    "State and local",
+  ]);
+  const collapsedIndustryRows = collapseIndustryRows(wageRows).filter(({ label, values }) => {
+    const baseline = values[BASE_YEAR] ?? 0;
+    return !excludedIndustryLabels.has(label) && baseline > 0;
+  });
+  const wagesByIndustry = new Map(collapsedIndustryRows.map((row) => [row.label, row.values]));
+  const wageYears = Array.from({ length: FINAL_YEAR - BASE_YEAR + 1 }, (_, index) => BASE_YEAR + index);
   const incomeIndex = Object.fromEntries(
-    incomeYears.map((year) => [year, (perCapitaIncome[year] / perCapitaIncome[BASE_YEAR]) * 100])
+    wageYears.map((year) => [
+      year,
+      median(
+        collapsedIndustryRows.map(({ values }) => {
+          const baseline = values[BASE_YEAR] ?? 0;
+          const current = values[year] ?? 0;
+          return baseline > 0 && current > 0 ? (current / baseline) * 100 : Number.NaN;
+        })
+      ),
+    ])
   );
 
   const pricesByCategory = new Map<string, CsvRow>();
@@ -414,7 +439,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   };
 
   const overviewValues: Record<string, Record<number, number>> = {
-    "Per-capita income": incomeIndex,
+    "Median industry wage": incomeIndex,
   };
 
   for (const [source, label] of Object.entries(overviewPicks)) {
@@ -426,7 +451,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   }
 
   const overviewOrder = [
-    "Per-capita income",
+    "Median industry wage",
     "Overall cost of living (PCE)",
     "Housing",
     "Rent (tenant)",
@@ -436,7 +461,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   ];
 
   const affordabilityRankings = overviewOrder
-    .filter((label) => label !== "Per-capita income")
+    .filter((label) => label !== "Median industry wage")
     .map((label) => {
       const affordability = (incomeIndex[FINAL_YEAR] / Number(overviewValues[label][FINAL_YEAR])) * 100;
       return {
@@ -462,10 +487,6 @@ export async function getDashboardData(): Promise<DashboardData> {
     "Manufacturing",
   ]);
 
-  const collapsedIndustryRows = collapseIndustryRows(wageRows);
-  const wagesByIndustry = new Map(collapsedIndustryRows.map((row) => [row.label, row.values]));
-
-  const wageYears = Array.from({ length: FINAL_YEAR - BASE_YEAR + 1 }, (_, index) => BASE_YEAR + index);
   const allIndustryGrowthLatest = Array.from(wagesByIndustry.entries())
     .map(([industry, values]) => {
       const baseline = values[BASE_YEAR] ?? 0;
@@ -588,7 +609,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     "Imputed rental of owner-occupied nonfarm housing": "Owner-equivalent rent",
   };
   const rentOwnerValues: Record<string, Record<number, number>> = {
-    "Per-capita income": incomeIndex,
+    "Median industry wage": incomeIndex,
     "Overall cost of living (PCE)": overviewValues["Overall cost of living (PCE)"],
   };
 
@@ -606,7 +627,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   }
   const constructionPicks = ["Single-family structures", "Multifamily structures", "Manufactured homes"];
   const constructionValues: Record<string, Record<number, number>> = {
-    "Per-capita income": incomeIndex,
+    "Median industry wage": incomeIndex,
     "Rent (tenant)": overviewValues["Rent (tenant)"],
   };
   for (const category of constructionPicks) {
@@ -750,7 +771,7 @@ export async function getDashboardData(): Promise<DashboardData> {
         {
           label: "Primary signal",
           value: "Income beat broad prices",
-          note: `Income per person reached ${formatIndex(incomeIndex[FINAL_YEAR])} versus ${formatIndex(pce2024)} for the overall cost-of-living index.`,
+          note: `The median industry wage index reached ${formatIndex(incomeIndex[FINAL_YEAR])} versus ${formatIndex(pce2024)} for the overall cost-of-living index.`,
         },
         {
           label: "Pressure point",
@@ -770,7 +791,7 @@ export async function getDashboardData(): Promise<DashboardData> {
           label: "Income growth since 2000",
           value: formatIndex(incomeIndex[FINAL_YEAR]),
           changeLabel: "2000 = 100",
-          note: "National income per person",
+          note: "Median across industry wage indexes",
           tone: "good",
         },
         {
@@ -944,10 +965,10 @@ export async function getDashboardData(): Promise<DashboardData> {
       rentVsOwnerChart: toSeries(incomeYears, rentOwnerValues, [
         "Tenant rent",
         "Owner-equivalent rent",
-        "Per-capita income",
+        "Median industry wage",
         "Overall cost of living (PCE)",
       ]),
-      rentVsOwnerLines: ["Tenant rent", "Owner-equivalent rent", "Per-capita income", "Overall cost of living (PCE)"],
+      rentVsOwnerLines: ["Tenant rent", "Owner-equivalent rent", "Median industry wage", "Overall cost of living (PCE)"],
       summary: [
         {
           title: "Monthly housing strain rose, but not in a straight-line crisis",
@@ -964,14 +985,14 @@ export async function getDashboardData(): Promise<DashboardData> {
         "Single-family structures",
         "Multifamily structures",
         "Manufactured homes",
-        "Per-capita income",
+        "Median industry wage",
         "Rent (tenant)",
       ]),
       constructionLines: [
         "Single-family structures",
         "Multifamily structures",
         "Manufactured homes",
-        "Per-capita income",
+        "Median industry wage",
         "Rent (tenant)",
       ],
       residentialShareChart: incomeYears.map((year) => ({
@@ -999,7 +1020,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     methodology: {
       sources: [
         "All values are drawn from CSVs in `data/cleaned`, using the same BEA-backed repo datasets already prepared for analysis.",
-        "Income is constructed as total personal income divided by total population from `cleaned_income_with_state.csv`.",
+        "The income line uses the median of industry wage indexes from `annual_wages_per_FTE_by_industry.csv`, with each industry rebased to 2000 = 100 before taking the yearly median.",
         "Indexed charts reset each series to 2000 = 100 so growth can be compared directly; a price index tracks how prices changed over time rather than one family's actual bills.",
         rankingExport
           ? "Predictive rankings are loaded from `outputs/dashboard_rankings.json`, generated locally from the repo's American Dream state and industry models."
