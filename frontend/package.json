@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "data:build": "node scripts/generate-datathon-data.mjs",
+    "predev": "npm run data:build",
     "dev": "next dev",
+    "prebuild": "npm run data:build",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

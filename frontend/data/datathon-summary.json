@@ -1,0 +1,401 @@
+{
+  "generatedAt": "2026-04-24T05:44:49.946Z",
+  "sourceFiles": [
+    "data/cleaned/cleaned_income_with_state.csv",
+    "data/cleaned/annual_inflation.csv",
+    "data/cleaned/annual_price_indexes_for_housing_sector_output.csv",
+    "data/cleaned/corporate_profit_by_industry.csv"
+  ],
+  "notes": [
+    "Data transformed from the AIS datathon notebook source files.",
+    "Income values are in millions of dollars.",
+    "Inflation values are annual percent change for PCE."
+  ],
+  "heroStats": {
+    "averageStateIncome2025": 529407.7,
+    "medianStateIncome2025": {
+      "state": "Oregon",
+      "income2025": 314868.7
+    },
+    "latestPceInflation": 2.6,
+    "latestHousingIndex": 135.315,
+    "improvingStatesCount": 10
+  },
+  "charts": {
+    "inflationTrend": [
+      {
+        "year": 2000,
+        "inflationRate": 2.5
+      },
+      {
+        "year": 2001,
+        "inflationRate": 2
+      },
+      {
+        "year": 2002,
+        "inflationRate": 1.3
+      },
+      {
+        "year": 2003,
+        "inflationRate": 2.1
+      },
+      {
+        "year": 2004,
+        "inflationRate": 2.5
+      },
+      {
+        "year": 2005,
+        "inflationRate": 2.9
+      },
+      {
+        "year": 2006,
+        "inflationRate": 2.8
+      },
+      {
+        "year": 2007,
+        "inflationRate": 2.6
+      },
+      {
+        "year": 2008,
+        "inflationRate": 3
+      },
+      {
+        "year": 2009,
+        "inflationRate": -0.3
+      },
+      {
+        "year": 2010,
+        "inflationRate": 1.8
+      },
+      {
+        "year": 2011,
+        "inflationRate": 2.5
+      },
+      {
+        "year": 2012,
+        "inflationRate": 1.9
+      },
+      {
+        "year": 2013,
+        "inflationRate": 1.3
+      },
+      {
+        "year": 2014,
+        "inflationRate": 1.4
+      },
+      {
+        "year": 2015,
+        "inflationRate": 0.2
+      },
+      {
+        "year": 2016,
+        "inflationRate": 1
+      },
+      {
+        "year": 2017,
+        "inflationRate": 1.7
+      },
+      {
+        "year": 2018,
+        "inflationRate": 2
+      },
+      {
+        "year": 2019,
+        "inflationRate": 1.4
+      },
+      {
+        "year": 2020,
+        "inflationRate": 1.1
+      },
+      {
+        "year": 2021,
+        "inflationRate": 4.1
+      },
+      {
+        "year": 2022,
+        "inflationRate": 6.5
+      },
+      {
+        "year": 2023,
+        "inflationRate": 3.8
+      },
+      {
+        "year": 2024,
+        "inflationRate": 2.6
+      },
+      {
+        "year": 2025,
+        "inflationRate": 2.6
+      }
+    ],
+    "housingTrend": [
+      {
+        "year": 2000,
+        "housingPriceIndex": 63.856
+      },
+      {
+        "year": 2001,
+        "housingPriceIndex": 66.359
+      },
+      {
+        "year": 2002,
+        "housingPriceIndex": 68.98
+      },
+      {
+        "year": 2003,
+        "housingPriceIndex": 70.719
+      },
+      {
+        "year": 2004,
+        "housingPriceIndex": 72.507
+      },
+      {
+        "year": 2005,
+        "housingPriceIndex": 74.364
+      },
+      {
+        "year": 2006,
+        "housingPriceIndex": 76.971
+      },
+      {
+        "year": 2007,
+        "housingPriceIndex": 79.715
+      },
+      {
+        "year": 2008,
+        "housingPriceIndex": 81.891
+      },
+      {
+        "year": 2009,
+        "housingPriceIndex": 83.323
+      },
+      {
+        "year": 2010,
+        "housingPriceIndex": 83.361
+      },
+      {
+        "year": 2011,
+        "housingPriceIndex": 84.48
+      },
+      {
+        "year": 2012,
+        "housingPriceIndex": 86.311
+      },
+      {
+        "year": 2013,
+        "housingPriceIndex": 88.309
+      },
+      {
+        "year": 2014,
+        "housingPriceIndex": 90.744
+      },
+      {
+        "year": 2015,
+        "housingPriceIndex": 93.537
+      },
+      {
+        "year": 2016,
+        "housingPriceIndex": 96.666
+      },
+      {
+        "year": 2017,
+        "housingPriceIndex": 100
+      },
+      {
+        "year": 2018,
+        "housingPriceIndex": 103.391
+      },
+      {
+        "year": 2019,
+        "housingPriceIndex": 106.915
+      },
+      {
+        "year": 2020,
+        "housingPriceIndex": 109.977
+      },
+      {
+        "year": 2021,
+        "housingPriceIndex": 112.743
+      },
+      {
+        "year": 2022,
+        "housingPriceIndex": 119.346
+      },
+      {
+        "year": 2023,
+        "housingPriceIndex": 128.391
+      },
+      {
+        "year": 2024,
+        "housingPriceIndex": 135.315
+      }
+    ],
+    "topStateIncome2025": [
+      {
+        "state": "California",
+        "income2025": 3585890.9
+      },
+      {
+        "state": "Texas",
+        "income2025": 2294646.6
+      },
+      {
+        "state": "Florida",
+        "income2025": 1793464.1
+      },
+      {
+        "state": "New York",
+        "income2025": 1777164.5
+      },
+      {
+        "state": "Illinois",
+        "income2025": 989192.4
+      },
+      {
+        "state": "Pennsylvania",
+        "income2025": 969412.5
+      },
+      {
+        "state": "New Jersey",
+        "income2025": 842372.2
+      },
+      {
+        "state": "Ohio",
+        "income2025": 800799.1
+      },
+      {
+        "state": "North Carolina",
+        "income2025": 767182.6
+      },
+      {
+        "state": "Georgia",
+        "income2025": 738993.1
+      }
+    ],
+    "fastestGrowingStates": [
+      {
+        "state": "Florida",
+        "growthPct": 46.8
+      },
+      {
+        "state": "Utah",
+        "growthPct": 45.7
+      },
+      {
+        "state": "Texas",
+        "growthPct": 43.2
+      },
+      {
+        "state": "Idaho",
+        "growthPct": 43.1
+      },
+      {
+        "state": "Montana",
+        "growthPct": 42.2
+      },
+      {
+        "state": "North Carolina",
+        "growthPct": 41.7
+      },
+      {
+        "state": "Nevada",
+        "growthPct": 40.9
+      },
+      {
+        "state": "South Carolina",
+        "growthPct": 40.6
+      },
+      {
+        "state": "Wyoming",
+        "growthPct": 40.6
+      },
+      {
+        "state": "Tennessee",
+        "growthPct": 40.4
+      }
+    ],
+    "regionIncomeAverages": [
+      {
+        "region": "Far West",
+        "avgIncome2025": 1538674.2
+      },
+      {
+        "region": "Southwest",
+        "avgIncome2025": 805276.4
+      },
+      {
+        "region": "Mideast",
+        "avgIncome2025": 709641.2
+      },
+      {
+        "region": "Great Lakes",
+        "avgIncome2025": 669567.8
+      },
+      {
+        "region": "Southeast",
+        "avgIncome2025": 517560
+      },
+      {
+        "region": "Unknown",
+        "avgIncome2025": 349009.6
+      },
+      {
+        "region": "New England",
+        "avgIncome2025": 236155.8
+      },
+      {
+        "region": "Rocky Mountain",
+        "avgIncome2025": 206632
+      },
+      {
+        "region": "Plains",
+        "avgIncome2025": 189888.4
+      }
+    ],
+    "industryProfitSnapshot": {
+      "latestQuarter": "2025-Q4",
+      "topIndustries": [
+        {
+          "industry": "Manufacturing",
+          "value": 759.6
+        },
+        {
+          "industry": "Durable goods",
+          "value": 433.4
+        },
+        {
+          "industry": "Retail trade",
+          "value": 415.8
+        },
+        {
+          "industry": "Nondurable goods",
+          "value": 326.2
+        },
+        {
+          "industry": "Information",
+          "value": 317.7
+        },
+        {
+          "industry": "Wholesale trade",
+          "value": 229.6
+        },
+        {
+          "industry": "Computer and electronic products",
+          "value": 187.6
+        },
+        {
+          "industry": "Chemical products",
+          "value": 156.3
+        },
+        {
+          "industry": "Other durable goods",
+          "value": 121.2
+        },
+        {
+          "industry": "Transportation and warehousing",
+          "value": 96.8
+        }
+      ]
+    }
+  }
+}
