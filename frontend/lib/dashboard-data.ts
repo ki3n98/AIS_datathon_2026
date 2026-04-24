@@ -823,6 +823,7 @@ export async function getDashboardData(): Promise<DashboardData> {
         incomeGrowthIndustries,
         costGrowthCategories,
         homeBuildingGrowth,
+        homeBuildingNote: "The repo does not include state-level home-building cost growth. This panel uses national building-type cost indexes instead.",
         medianReadout: {
           incomeGrowth: `${formatIndex(medianIndustryGrowth)} index`,
           costGrowth: `${formatIndex(medianRelevantCostGrowth)} index`,
