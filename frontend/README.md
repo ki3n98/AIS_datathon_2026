@@ -1,18 +1,8 @@
-# AIS Datathon Frontend (Newspaper Edition)
+# AIS Datathon Frontend (OpenClaw branch)
 
-Next.js site that presents the datathon topic as an interactive newspaper-style report.
+This is the **newspaper-style** Next.js frontend, rebuilt using the analytics dashboard data model and wrapped in an editorial landing page.
 
-## Data source flow
-
-The app pulls from notebook source datasets in `../data/cleaned/*` via:
-
-```bash
-npm run data:build
-```
-
-That generates `frontend/data/datathon-summary.json`, which powers the UI.
-
-## Local development
+## Run locally
 
 ```bash
 cd frontend
@@ -20,25 +10,30 @@ npm install
 npm run dev
 ```
 
-## Production build
+## Build
 
 ```bash
 npm run build
 ```
 
-## Deployment options
+## Deployment / sharing options
 
-### 1) GitHub Pages (already wired)
-
-- Workflow: `.github/workflows/deploy-frontend-pages.yml`
-- Trigger: push to `openclaw` branch under `frontend/**`
-- Site URL format: `https://<org-or-user>.github.io/AIS_datathon_2026/`
-
-### 2) Vercel
-
-- Import this repo into Vercel
-- Set root directory to `frontend`
+### 1) Vercel (recommended)
+- Import repo
+- Branch: `openclaw`
+- Root directory: `frontend`
 - Build command: `npm run build`
 - Output directory: `out`
 
-No server runtime is required because this app is exported as static HTML.
+### 2) GitHub Pages (optional)
+- Workflow: `.github/workflows/deploy-frontend-pages.yml`
+- Trigger: push to `openclaw` under `frontend/**`
+- Ensure repo Settings → Pages uses **GitHub Actions**
+
+### 3) Local share with tunnel (fast team demo)
+- Run locally: `npm run dev -- --hostname 0.0.0.0 --port 8117`
+- Share via your existing ngrok tunnel or local site supervisor setup
+
+## Notes
+- Data is loaded from `../data/cleaned/*.csv` via `frontend/lib/dashboard-data.ts`.
+- Keep all website work on `openclaw` branch.

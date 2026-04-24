@@ -49,38 +49,41 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --background: #fbf9fa;
+  --foreground: #1b1c1d;
+  --card: #ffffff;
+  --card-foreground: #1b1c1d;
+  --popover: #ffffff;
+  --popover-foreground: #1b1c1d;
+  --primary: #041627;
+  --primary-foreground: #ffffff;
+  --secondary: #efedef;
+  --secondary-foreground: #1b1c1d;
+  --muted: #f5f3f4;
+  --muted-foreground: #44474c;
+  --accent: #d0e1fb;
+  --accent-foreground: #041627;
+  --destructive: #ba1a1a;
+  --border: #c4c6cd;
+  --input: #c4c6cd;
+  --ring: #0b7a75;
+  --chart-1: #0b7a75;
+  --chart-2: #c6922d;
+  --chart-3: #505f76;
+  --chart-4: #1f4f8d;
+  --chart-5: #9b4a26;
+  --radius: 0.25rem;
+  --sidebar: #041627;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #041627;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1a2b3c;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-ring: #0b7a75;
+  --font-sans: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-heading: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-geist-mono: "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", monospace;
 }
 
 .dark {
@@ -123,6 +126,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at top left, rgba(208, 225, 251, 0.45), transparent 24%),
+      linear-gradient(180deg, rgba(251, 249, 250, 1), rgba(245, 243, 244, 0.92));
   }
   html {
     @apply font-sans;

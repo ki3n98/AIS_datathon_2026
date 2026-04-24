@@ -15,7 +15,7 @@ const ptSerif = PT_Serif({
 
 export const metadata: Metadata = {
   title: "The American Dream Report",
-  description: "AIS Datathon newspaper-style interactive report built with Next.js",
+  description: "Newspaper-style interactive analytics site for AIS Datathon",
 };
 
 export default function RootLayout({
