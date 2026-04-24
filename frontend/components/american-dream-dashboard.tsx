@@ -15,7 +15,22 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { BarChart3, Check, ChevronDown, CircleDollarSign, Home, ScrollText } from "lucide-react";
+import {
+  BarChart3,
+  Car,
+  Check,
+  ChevronDown,
+  CircleDollarSign,
+  Fuel,
+  Home,
+  KeyRound,
+  ScrollText,
+  ShieldCheck,
+  ShoppingCart,
+  Stethoscope,
+  Wrench,
+  Zap,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -843,25 +858,31 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                     description="A plain-English guide to the everyday costs people usually have in mind."
                   >
                     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
-                      <div className="rounded-md border border-[#d9dde3] bg-[#f7f8fa] p-4">
-                        <div className="text-sm font-semibold text-[#1b1c1d]">Think of costs like these</div>
-                        <div className="mt-3 flex flex-wrap gap-2">
+                      <div className="rounded-md border border-[#d9dde3] bg-gradient-to-br from-white to-[#f2f5f9] p-5">
+                        <div className="flex items-baseline justify-between">
+                          <div className="text-sm font-semibold text-[#1b1c1d]">Think of costs like these</div>
+                          <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#8892a1]">Everyday spending</div>
+                        </div>
+                        <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                           {[
-                            "Rent or mortgage",
-                            "Utilities",
-                            "Groceries",
-                            "Healthcare",
-                            "Gas and transportation",
-                            "Car payment",
-                            "Insurance",
-                            "Everyday services",
-                          ].map((item) => (
-                            <span
-                              key={item}
-                              className="inline-flex rounded-full border border-[#d9dde3] bg-white px-3 py-1.5 text-xs font-medium text-[#44505f]"
+                            { label: "Rent or mortgage", icon: KeyRound },
+                            { label: "Utilities", icon: Zap },
+                            { label: "Groceries", icon: ShoppingCart },
+                            { label: "Healthcare", icon: Stethoscope },
+                            { label: "Gas & transport", icon: Fuel },
+                            { label: "Car payment", icon: Car },
+                            { label: "Insurance", icon: ShieldCheck },
+                            { label: "Everyday services", icon: Wrench },
+                          ].map(({ label, icon: Icon }) => (
+                            <div
+                              key={label}
+                              className="group flex flex-col items-center gap-2 rounded-md border border-[#e4e7ec] bg-white px-3 py-3 text-center transition-colors hover:border-[#c9d7e6] hover:bg-[#f7fafc]"
                             >
-                              {item}
-                            </span>
+                              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#eef3f9] text-[#3a6696] transition-colors group-hover:bg-[#e2ecf6]">
+                                <Icon className="h-4 w-4" strokeWidth={1.75} />
+                              </span>
+                              <span className="text-xs font-medium leading-tight text-[#44505f]">{label}</span>
+                            </div>
                           ))}
                         </div>
                       </div>
