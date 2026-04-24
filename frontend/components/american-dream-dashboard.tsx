@@ -602,7 +602,7 @@ function ShareAreaChart({ data }: { data: SeriesPoint[] }) {
 export function AmericanDreamDashboard({ data }: DashboardProps) {
   const sectionIds = useMemo(() => data.sidebar.map((section) => section.id), [data.sidebar]);
   const activeSection = useActiveSection(sectionIds);
-  const incomeLine = "Per-capita income";
+  const incomeLine = "Median industry wage";
   const comparisonLines = useMemo(
     () => data.costOfLiving.lines.filter((line) => line !== incomeLine),
     [data.costOfLiving.lines]
@@ -835,7 +835,7 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                 id="cost-of-living"
                 kicker="Income vs Cost of Living"
                 title="This section shows where income kept pace and where it clearly fell behind."
-                description="Income per person rose faster than the overall cost of living, but that headline does not hold in every category. Here, higher education is shown as a measure of price growth, not enrollment, student debt, or total spending."
+                description="The median industry wage rose faster than the overall cost of living, but that headline does not hold in every category. Here, higher education is shown as a measure of price growth, not enrollment, student debt, or total spending."
               >
                 <div className="grid gap-4">
                   <WidgetCard
@@ -878,7 +878,7 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                   <div className="min-w-0">
                     <WidgetCard
                       title="Income versus BEA price indexes"
-                      description="Per-capita income versus broad and category-level BEA price indexes rebased to 2000 = 100."
+                      description="Median industry wage versus broad and category-level BEA price indexes rebased to 2000 = 100."
                       action={
                         <CostOfLivingLineSelector
                           comparisonLines={comparisonLines}
@@ -914,7 +914,7 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                   <div className="grid gap-4 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
                     <WidgetCard
                       title="2024 affordability score by category"
-                      description="Calculated as the 2024 per-capita income index divided by each 2024 category price index, then multiplied by 100. A score of 100 means prices kept pace with income since 2000; above 100 means stronger buying power, and below 100 means that category's prices outgrew income."
+                      description="Calculated as the 2024 median industry wage index divided by each 2024 category price index, then multiplied by 100. A score of 100 means prices kept pace with income since 2000; above 100 means stronger buying power, and below 100 means that category's prices outgrew income."
                       action="2024"
                     >
                       <RankedList
@@ -931,7 +931,7 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       <WidgetCard title="Higher-education clarification" description="How to read that series correctly.">
                         <div className="grid gap-3 md:grid-cols-2">
                           <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                            Higher education costs have outgrown per-capita income by a meaningful margin since 2000. By 2024, the income index reached 239.7 while the higher-education price index climbed to 282.4, so education costs rose about 18% faster than income.
+                            Higher education costs have outgrown the median industry wage by a meaningful margin since 2000. By 2024, the income index reached 239.7 while the higher-education price index climbed to 282.4, so education costs rose about 18% faster than income.
                           </div>
                           <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
                             It is still a BEA price index, so the series measures price growth rather than enrollment, borrowing, or total household spending. But the affordability signal is clear: the category scores 84.9 versus 2000, which means a typical dollar of income now buys materially less higher education than it did at the start of the period.
@@ -996,7 +996,7 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                     <InsightCards items={data.housingBurden.summary} columns={2} />
                   </WidgetCard>
                   <div className="grid gap-4 xl:grid-cols-2">
-                    <WidgetCard title="Construction-cost indexes versus income" description="Structure-cost price indexes compared with per-capita income and tenant-rent growth; these are not home sale prices.">
+                    <WidgetCard title="Construction-cost indexes versus income" description="Structure-cost price indexes compared with the median industry wage and tenant-rent growth; these are not home sale prices.">
                       <MultiLineChart
                         data={data.homeownership.constructionChart}
                         lines={data.homeownership.constructionLines}
