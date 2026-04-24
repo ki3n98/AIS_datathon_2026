@@ -83,6 +83,10 @@ export type InsightCard = {
 export type DashboardData = {
   title: string;
   subtitle: string;
+  edition: {
+    generatedAtIso: string;
+    editionDateLabel: string;
+  };
   sidebar: SectionLink[];
   verdict: {
     label: string;
@@ -601,11 +605,22 @@ export async function getDashboardData(): Promise<DashboardData> {
   const industryRanking = rankingExport?.industry ?? null;
   const stateRankingYear = stateRanking?.latest_year ?? FINAL_YEAR;
   const industryRankingYear = industryRanking?.latest_year ?? FINAL_YEAR;
+  const generatedAtIso = new Date().toISOString();
+  const editionDateLabel = new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(new Date(generatedAtIso));
 
   return {
     title: "Is the American Dream Still Achievable?",
     subtitle:
       "A national analytics view of income growth, cost pressure, wage dispersion, and the widening ownership threshold from 2000 to 2024.",
+    edition: {
+      generatedAtIso,
+      editionDateLabel,
+    },
     sidebar: [
       { id: "overview", label: "Overview", summary: "Macro trend and 2024 affordability snapshot." },
       { id: "cost-of-living", label: "Cost of Living", summary: "Income versus major household cost categories." },

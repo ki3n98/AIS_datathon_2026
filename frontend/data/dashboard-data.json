@@ -1,0 +1,2349 @@
+{
+  "title": "Is the American Dream Still Achievable?",
+  "subtitle": "A national analytics view of income growth, cost pressure, wage dispersion, and the widening ownership threshold from 2000 to 2024.",
+  "edition": {
+    "generatedAtIso": "2026-04-24T07:13:46.859Z",
+    "editionDateLabel": "April 24, 2026"
+  },
+  "sidebar": [
+    {
+      "id": "overview",
+      "label": "Overview",
+      "summary": "Macro trend and 2024 affordability snapshot."
+    },
+    {
+      "id": "cost-of-living",
+      "label": "Cost of Living",
+      "summary": "Income versus major household cost categories."
+    },
+    {
+      "id": "industry-divide",
+      "label": "Industry Divide",
+      "summary": "Compare a 2024-based 3-year forecast with actual 2024 wage leaders and laggards."
+    },
+    {
+      "id": "housing-burden",
+      "label": "Housing Burden",
+      "summary": "Monthly burden stayed tighter than ownership access."
+    },
+    {
+      "id": "homeownership",
+      "label": "Homeownership",
+      "summary": "Construction costs outran wages and income."
+    },
+    {
+      "id": "methodology",
+      "label": "Methodology",
+      "summary": "Repo-backed sources, transformations, and caveats."
+    }
+  ],
+  "verdict": {
+    "label": "Mixed",
+    "summary": "Broad income growth outpaced overall inflation, but ownership access and mobility-linked categories moved against typical workers."
+  },
+  "overview": {
+    "summaryCards": [
+      {
+        "label": "Primary signal",
+        "value": "Income beat broad prices",
+        "note": "Per-capita income reached 239.7 versus 167.5 for overall PCE."
+      },
+      {
+        "label": "Pressure point",
+        "value": "Housing and education pulled away",
+        "note": "Higher education and the housing-related price indexes were the weakest affordability readings in 2024."
+      },
+      {
+        "label": "Ownership read",
+        "value": "Buying in is the break",
+        "note": "Single-family construction costs reached 255.6, far above income growth."
+      }
+    ],
+    "kpis": [
+      {
+        "label": "Income index",
+        "value": "239.7",
+        "changeLabel": "2000 = 100",
+        "note": "National per-capita income",
+        "tone": "good"
+      },
+      {
+        "label": "Overall PCE index",
+        "value": "167.5",
+        "changeLabel": "2000 = 100",
+        "note": "Broad cost of living",
+        "tone": "warn"
+      },
+      {
+        "label": "Single-family cost index",
+        "value": "255.6",
+        "changeLabel": "2000 = 100",
+        "note": "Build-cost pressure",
+        "tone": "good"
+      },
+      {
+        "label": "Dashboard verdict",
+        "value": "Mixed",
+        "changeLabel": "2024 conclusion",
+        "note": "Day-to-day consumption held up better than ownership entry.",
+        "tone": "warn"
+      }
+    ],
+    "comparisonChart": [
+      {
+        "year": 2000,
+        "Per-capita income": 100,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 100,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 100,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 100,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 100,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 100,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 100,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2001,
+        "Per-capita income": 103.25884130053203,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 102.0048224106635,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 103.92000250579466,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 104.3256614685186,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 103.5163209227889,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 105.0897906538347,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 103.06608103718557,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2002,
+        "Per-capita income": 104.06732534577104,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 103.34453144049198,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 108.02480736703627,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 108.298651155794,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 106.3924872422019,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 112.26064093660084,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 104.56452045701697,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2003,
+        "Per-capita income": 106.86883739705554,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 105.51597084879847,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 110.74829292739462,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 111.47938290795435,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 110.180571911707,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 121.66881635082845,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 106.59821769034134,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2004,
+        "Per-capita income": 111.85589392040323,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 108.1344314702934,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 113.54851844891311,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 114.47291447291448,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 114.05471510100556,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 133.1927770612164,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 110.07103817419181,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2005,
+        "Per-capita income": 116.70995500641786,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 111.25003386524341,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 116.45680636471842,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 117.89600361028934,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 117.59217320409459,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 143.17144557991864,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 112.0934370895533,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2006,
+        "Per-capita income": 123.82674861894911,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 114.38324618677358,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 120.54125164442775,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 122.10299353156495,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 121.30929733973488,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 152.76317094949897,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 114.03109862019292,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2007,
+        "Per-capita income": 129.52788414719458,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 117.31868548671127,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 124.838689469398,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 127.31117016831301,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 125.28006763897696,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 162.31520984224625,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 118.76085697741748,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2008,
+        "Per-capita income": 133.64657728868633,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 120.79055024247513,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 128.24657019357267,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 131.97111768540339,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 128.51556602349248,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 172.43774183946817,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 126.55669637182766,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2009,
+        "Per-capita income": 128.56437873924938,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 120.45325241797838,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 130.48925640543757,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 134.96464925036352,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 132.05000452939578,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 182.82071634090684,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 127.73454601946135,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2010,
+        "Per-capita income": 132.66014898108793,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 122.61114572891549,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 130.54876902837813,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 135.27720670577816,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 135.48932572394844,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 192.33554916162316,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 128.0904430352931,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2011,
+        "Per-capita income": 139.51439515491944,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 125.71320202649616,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 132.30282528346802,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 137.587123301409,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 138.23715916296769,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 201.9520785792241,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 133.92037510415636,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2012,
+        "Per-capita income": 144.73036941742214,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 128.05667687139334,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 135.17039403620873,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 141.23585552156982,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 140.9759338104297,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 211.76952078579222,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 137.42850283164094,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2013,
+        "Per-capita income": 145.27860087777245,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 129.74587521335104,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 138.30107122721296,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 145.21887379030235,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 142.69257481052028,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 220.71634090683597,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 138.7306339768667,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2014,
+        "Per-capita income": 151.4482011164658,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 131.56105226084364,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 142.1130113387208,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 149.79859265573552,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 144.68097955732705,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 228.85702946720903,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 141.63853856257148,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2015,
+        "Per-capita income": 157.25362840573544,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 131.80217279401805,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 146.48875524650754,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 155.15218372361227,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 146.1937977473805,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 236.79184442901084,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 143.46180462383663,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2016,
+        "Per-capita income": 160.2453283341312,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 133.13646338489883,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 151.3907160308213,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 160.99550385264672,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 148.48718180994658,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 243.17888679432485,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 141.5961698702106,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2017,
+        "Per-capita income": 166.90672082105863,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 135.4609736934789,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 156.6121656330264,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 167.14302428588144,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 150.97985928677116,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 248.0404802063697,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 141.2289745364159,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2018,
+        "Per-capita income": 174.47033441616765,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 138.23385982498442,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 161.92288416964232,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 173.2036303464875,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 153.61445783132532,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 253.5196944141284,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 141.86309263208437,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2019,
+        "Per-capita income": 181.85535344300106,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 140.21429926038306,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 167.44189688655015,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 179.62192247906532,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 155.8821753178126,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 260.7922412937791,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 143.16804835680088,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2020,
+        "Per-capita income": 193.6084731576531,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 141.7815827260166,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 172.23892751988973,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 185.22789951361378,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 159.19618322915724,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 264.36650461355293,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 148.30878302992642,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2021,
+        "Per-capita income": 211.77526297657357,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 147.61453225325783,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 176.57082002129926,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 189.40480369051798,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 162.41205423196547,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 266.6732810794722,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 153.28004293360826,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2022,
+        "Per-capita income": 217.02744408904482,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 157.270190458129,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 186.911921318048,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 200.8440722726437,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 166.44019687773653,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 272.4154181962496,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 171.1412713432288,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2023,
+        "Per-capita income": 229.1657033514031,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 163.24537400774835,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 201.07749169955525,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 216.80623109194536,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 170.78841682519555,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 277.66147435261433,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 180.30844408038752,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2024,
+        "Per-capita income": 239.66981181280866,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 167.5191677277776,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 211.92131804798598,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 227.86942786942785,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 175.2091071051122,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 282.42881238218075,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 182.5271512703546,
+        "GroceriesColor": "#55725f"
+      }
+    ],
+    "comparisonLines": [
+      "Per-capita income",
+      "Overall cost of living (PCE)",
+      "Housing",
+      "Rent (tenant)",
+      "Healthcare",
+      "Higher education",
+      "Groceries"
+    ],
+    "affordabilityRankings": [
+      {
+        "label": "Higher education",
+        "value": 84.86025550696615,
+        "formattedValue": "84.9",
+        "tone": "bad",
+        "note": "Less income coverage than 2000"
+      },
+      {
+        "label": "Rent (tenant)",
+        "value": 105.1785726824849,
+        "formattedValue": "105.2",
+        "tone": "warn",
+        "note": "More income coverage than 2000"
+      },
+      {
+        "label": "Housing",
+        "value": 113.09377179248172,
+        "formattedValue": "113.1",
+        "tone": "warn",
+        "note": "More income coverage than 2000"
+      },
+      {
+        "label": "Groceries",
+        "value": 131.3063892931829,
+        "formattedValue": "131.3",
+        "tone": "good",
+        "note": "More income coverage than 2000"
+      },
+      {
+        "label": "Healthcare",
+        "value": 136.79072724742838,
+        "formattedValue": "136.8",
+        "tone": "good",
+        "note": "More income coverage than 2000"
+      },
+      {
+        "label": "Overall cost of living (PCE)",
+        "value": 143.070082703776,
+        "formattedValue": "143.1",
+        "tone": "good",
+        "note": "More income coverage than 2000"
+      }
+    ]
+  },
+  "costOfLiving": {
+    "chart": [
+      {
+        "year": 2000,
+        "Per-capita income": 100,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 100,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 100,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 100,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 100,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 100,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 100,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2001,
+        "Per-capita income": 103.25884130053203,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 102.0048224106635,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 103.92000250579466,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 104.3256614685186,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 103.5163209227889,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 105.0897906538347,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 103.06608103718557,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2002,
+        "Per-capita income": 104.06732534577104,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 103.34453144049198,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 108.02480736703627,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 108.298651155794,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 106.3924872422019,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 112.26064093660084,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 104.56452045701697,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2003,
+        "Per-capita income": 106.86883739705554,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 105.51597084879847,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 110.74829292739462,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 111.47938290795435,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 110.180571911707,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 121.66881635082845,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 106.59821769034134,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2004,
+        "Per-capita income": 111.85589392040323,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 108.1344314702934,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 113.54851844891311,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 114.47291447291448,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 114.05471510100556,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 133.1927770612164,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 110.07103817419181,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2005,
+        "Per-capita income": 116.70995500641786,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 111.25003386524341,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 116.45680636471842,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 117.89600361028934,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 117.59217320409459,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 143.17144557991864,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 112.0934370895533,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2006,
+        "Per-capita income": 123.82674861894911,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 114.38324618677358,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 120.54125164442775,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 122.10299353156495,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 121.30929733973488,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 152.76317094949897,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 114.03109862019292,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2007,
+        "Per-capita income": 129.52788414719458,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 117.31868548671127,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 124.838689469398,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 127.31117016831301,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 125.28006763897696,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 162.31520984224625,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 118.76085697741748,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2008,
+        "Per-capita income": 133.64657728868633,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 120.79055024247513,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 128.24657019357267,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 131.97111768540339,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 128.51556602349248,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 172.43774183946817,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 126.55669637182766,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2009,
+        "Per-capita income": 128.56437873924938,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 120.45325241797838,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 130.48925640543757,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 134.96464925036352,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 132.05000452939578,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 182.82071634090684,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 127.73454601946135,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2010,
+        "Per-capita income": 132.66014898108793,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 122.61114572891549,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 130.54876902837813,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 135.27720670577816,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 135.48932572394844,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 192.33554916162316,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 128.0904430352931,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2011,
+        "Per-capita income": 139.51439515491944,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 125.71320202649616,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 132.30282528346802,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 137.587123301409,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 138.23715916296769,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 201.9520785792241,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 133.92037510415636,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2012,
+        "Per-capita income": 144.73036941742214,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 128.05667687139334,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 135.17039403620873,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 141.23585552156982,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 140.9759338104297,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 211.76952078579222,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 137.42850283164094,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2013,
+        "Per-capita income": 145.27860087777245,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 129.74587521335104,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 138.30107122721296,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 145.21887379030235,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 142.69257481052028,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 220.71634090683597,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 138.7306339768667,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2014,
+        "Per-capita income": 151.4482011164658,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 131.56105226084364,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 142.1130113387208,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 149.79859265573552,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 144.68097955732705,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 228.85702946720903,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 141.63853856257148,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2015,
+        "Per-capita income": 157.25362840573544,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 131.80217279401805,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 146.48875524650754,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 155.15218372361227,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 146.1937977473805,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 236.79184442901084,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 143.46180462383663,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2016,
+        "Per-capita income": 160.2453283341312,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 133.13646338489883,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 151.3907160308213,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 160.99550385264672,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 148.48718180994658,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 243.17888679432485,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 141.5961698702106,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2017,
+        "Per-capita income": 166.90672082105863,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 135.4609736934789,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 156.6121656330264,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 167.14302428588144,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 150.97985928677116,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 248.0404802063697,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 141.2289745364159,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2018,
+        "Per-capita income": 174.47033441616765,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 138.23385982498442,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 161.92288416964232,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 173.2036303464875,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 153.61445783132532,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 253.5196944141284,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 141.86309263208437,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2019,
+        "Per-capita income": 181.85535344300106,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 140.21429926038306,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 167.44189688655015,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 179.62192247906532,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 155.8821753178126,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 260.7922412937791,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 143.16804835680088,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2020,
+        "Per-capita income": 193.6084731576531,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 141.7815827260166,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 172.23892751988973,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 185.22789951361378,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 159.19618322915724,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 264.36650461355293,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 148.30878302992642,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2021,
+        "Per-capita income": 211.77526297657357,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 147.61453225325783,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 176.57082002129926,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 189.40480369051798,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 162.41205423196547,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 266.6732810794722,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 153.28004293360826,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2022,
+        "Per-capita income": 217.02744408904482,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 157.270190458129,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 186.911921318048,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 200.8440722726437,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 166.44019687773653,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 272.4154181962496,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 171.1412713432288,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2023,
+        "Per-capita income": 229.1657033514031,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 163.24537400774835,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 201.07749169955525,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 216.80623109194536,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 170.78841682519555,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 277.66147435261433,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 180.30844408038752,
+        "GroceriesColor": "#55725f"
+      },
+      {
+        "year": 2024,
+        "Per-capita income": 239.66981181280866,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 167.5191677277776,
+        "Overall cost of living (PCE)Color": "#7c8796",
+        "Housing": 211.92131804798598,
+        "HousingColor": "#c6922d",
+        "Rent (tenant)": 227.86942786942785,
+        "Rent (tenant)Color": "#d2a84c",
+        "Healthcare": 175.2091071051122,
+        "HealthcareColor": "#2a95a0",
+        "Higher education": 282.42881238218075,
+        "Higher educationColor": "#9b4a26",
+        "Groceries": 182.5271512703546,
+        "GroceriesColor": "#55725f"
+      }
+    ],
+    "lines": [
+      "Per-capita income",
+      "Overall cost of living (PCE)",
+      "Housing",
+      "Rent (tenant)",
+      "Healthcare",
+      "Higher education",
+      "Groceries"
+    ],
+    "insightCards": [
+      {
+        "title": "Aggregate affordability still exists",
+        "body": "National income outpaced broad PCE growth, so the dashboard should not claim a universal collapse in purchasing power."
+      },
+      {
+        "title": "Mobility-linked categories did worse",
+        "body": "The weakest affordability readings come from higher education and housing-related price indexes, not groceries or aggregate spending."
+      }
+    ],
+    "stateIncomeContext": {
+      "nationalPerCapita2024": "$73,227",
+      "spread": "$112,944 vs $51,948",
+      "medianState": "Maine at $68,764",
+      "topStates": [
+        {
+          "label": "District of Columbia",
+          "value": 112944.26523556726,
+          "formattedValue": "$112,944",
+          "tone": "good"
+        },
+        {
+          "label": "Connecticut",
+          "value": 95082.85459942429,
+          "formattedValue": "$95,083",
+          "tone": "good"
+        },
+        {
+          "label": "Massachusetts",
+          "value": 93575.31490944953,
+          "formattedValue": "$93,575",
+          "tone": "good"
+        },
+        {
+          "label": "Wyoming",
+          "value": 86608.99028841598,
+          "formattedValue": "$86,609",
+          "tone": "good"
+        },
+        {
+          "label": "California",
+          "value": 86377.66598126538,
+          "formattedValue": "$86,378",
+          "tone": "good"
+        }
+      ],
+      "bottomStates": [
+        {
+          "label": "Mississippi",
+          "value": 51948.2931842618,
+          "formattedValue": "$51,948",
+          "tone": "warn"
+        },
+        {
+          "label": "West Virginia",
+          "value": 55432.0409278704,
+          "formattedValue": "$55,432",
+          "tone": "warn"
+        },
+        {
+          "label": "Alabama",
+          "value": 57251.084871263236,
+          "formattedValue": "$57,251",
+          "tone": "warn"
+        },
+        {
+          "label": "Kentucky",
+          "value": 58310.47506940376,
+          "formattedValue": "$58,310",
+          "tone": "warn"
+        },
+        {
+          "label": "New Mexico",
+          "value": 58344.79827193674,
+          "formattedValue": "$58,345",
+          "tone": "warn"
+        }
+      ]
+    }
+  },
+  "industryDivide": {
+    "predictedFigure": {
+      "leaders": [
+        {
+          "label": "Information and data processing services",
+          "value": 398.3296677168163,
+          "formattedValue": "398.3 index",
+          "tone": "good",
+          "note": "Beat broad inflation"
+        },
+        {
+          "label": "Publishing industries (includes software)",
+          "value": 305.6736620081638,
+          "formattedValue": "305.7 index",
+          "tone": "good",
+          "note": "Beat broad inflation"
+        },
+        {
+          "label": "Transit and ground passenger transportation",
+          "value": 300.44907038233936,
+          "formattedValue": "300.4 index",
+          "tone": "good",
+          "note": "Beat broad inflation"
+        },
+        {
+          "label": "Funds, trusts, and other financial vehicles",
+          "value": 298.6979445251012,
+          "formattedValue": "298.7 index",
+          "tone": "good",
+          "note": "Beat broad inflation"
+        },
+        {
+          "label": "Information",
+          "value": 298.3538700036758,
+          "formattedValue": "298.4 index",
+          "tone": "good",
+          "note": "Beat broad inflation"
+        }
+      ],
+      "laggards": [
+        {
+          "label": "Printing and related support activities",
+          "value": 164.07950539062898,
+          "formattedValue": "164.1 index",
+          "tone": "bad",
+          "note": "Lagged broad inflation"
+        },
+        {
+          "label": "Motor vehicles, bodies and trailers, and parts",
+          "value": 164.89723920088608,
+          "formattedValue": "164.9 index",
+          "tone": "bad",
+          "note": "Lagged broad inflation"
+        },
+        {
+          "label": "Pipeline transportation",
+          "value": 178.41757877966523,
+          "formattedValue": "178.4 index",
+          "tone": "bad",
+          "note": "Beat broad inflation"
+        },
+        {
+          "label": "Food and beverage stores",
+          "value": 179.5550847457627,
+          "formattedValue": "179.6 index",
+          "tone": "bad",
+          "note": "Beat broad inflation"
+        },
+        {
+          "label": "Motion picture and sound recording industries",
+          "value": 179.7911108786246,
+          "formattedValue": "179.8 index",
+          "tone": "bad",
+          "note": "Beat broad inflation"
+        }
+      ],
+      "metricLabel": "2024 wage growth index",
+      "benchmarkLabel": "Indexed to 2000 = 100"
+    },
+    "historicalFigure": {
+      "leaders": [
+        {
+          "label": "Securities, commodity contracts, and investments",
+          "value": 296353,
+          "formattedValue": "$296,353",
+          "tone": "good",
+          "note": "Actual 2024 wage per FTE"
+        },
+        {
+          "label": "Information and data processing services",
+          "value": 268044,
+          "formattedValue": "$268,044",
+          "tone": "good",
+          "note": "Actual 2024 wage per FTE"
+        },
+        {
+          "label": "Oil and gas extraction",
+          "value": 220012,
+          "formattedValue": "$220,012",
+          "tone": "good",
+          "note": "Actual 2024 wage per FTE"
+        },
+        {
+          "label": "Publishing industries (includes software)",
+          "value": 201442,
+          "formattedValue": "$201,442",
+          "tone": "good",
+          "note": "Actual 2024 wage per FTE"
+        },
+        {
+          "label": "Funds, trusts, and other financial vehicles",
+          "value": 195453,
+          "formattedValue": "$195,453",
+          "tone": "good",
+          "note": "Actual 2024 wage per FTE"
+        }
+      ],
+      "laggards": [
+        {
+          "label": "General merchandise stores",
+          "value": 37189,
+          "formattedValue": "$37,189",
+          "tone": "warn",
+          "note": "Actual 2024 wage per FTE"
+        },
+        {
+          "label": "Food and beverage stores",
+          "value": 38985,
+          "formattedValue": "$38,985",
+          "tone": "warn",
+          "note": "Actual 2024 wage per FTE"
+        },
+        {
+          "label": "Social assistance",
+          "value": 40419,
+          "formattedValue": "$40,419",
+          "tone": "warn",
+          "note": "Actual 2024 wage per FTE"
+        },
+        {
+          "label": "Food services and drinking places",
+          "value": 42200,
+          "formattedValue": "$42,200",
+          "tone": "warn",
+          "note": "Actual 2024 wage per FTE"
+        },
+        {
+          "label": "Accommodation and food services",
+          "value": 43985,
+          "formattedValue": "$43,985",
+          "tone": "warn",
+          "note": "Actual 2024 wage per FTE"
+        }
+      ],
+      "metricLabel": "Actual 2024 wage per FTE",
+      "benchmarkLabel": "2024 observed data"
+    },
+    "degreeComparison": {
+      "growth2024": [
+        {
+          "label": "Degree-heavy industries",
+          "value": 229.01869661229884,
+          "formattedValue": "229.0 index",
+          "tone": "warn",
+          "note": "Average wage growth index"
+        },
+        {
+          "label": "Non-degree-heavy industries",
+          "value": 216.4867614423403,
+          "formattedValue": "216.5 index",
+          "tone": "warn",
+          "note": "Average wage growth index"
+        }
+      ],
+      "wageLevels2024": [
+        {
+          "label": "Degree-heavy average",
+          "value": 127525.33333333333,
+          "formattedValue": "$127,525",
+          "tone": "good",
+          "note": "2024 mean annual wages per FTE"
+        },
+        {
+          "label": "Non-degree-heavy average",
+          "value": 61414.2,
+          "formattedValue": "$61,414",
+          "tone": "warn",
+          "note": "2024 mean annual wages per FTE"
+        }
+      ]
+    },
+    "summary": [
+      {
+        "title": "Macro averages hide labor-market sorting",
+        "body": "The strongest indexed wage gains are concentrated in information, finance, and professional services rather than across the full job market."
+      },
+      {
+        "title": "Growth gap is smaller than level gap",
+        "body": "Degree-heavy and non-degree-heavy buckets both grew, but the 2024 wage-level spread remains much larger than the index spread."
+      }
+    ]
+  },
+  "housingBurden": {
+    "burdenChart": [
+      {
+        "year": 2000,
+        "All housing + utilities": 14.179801626179156,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 8.977354709816613,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.6612136108292392,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2001,
+        "All housing + utilities": 14.588224366893899,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.283482681761043,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.712257850594488,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2002,
+        "All housing + utilities": 14.79084883677711,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.543346246689332,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.731549400529057,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2003,
+        "All housing + utilities": 14.967402372489888,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.650321672607232,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.6753512204750445,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2004,
+        "All housing + utilities": 14.948428345214435,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.65014704895922,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.6567054538668162,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2005,
+        "All housing + utilities": 15.308205838191247,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.831071374750335,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.691308390211678,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2006,
+        "All housing + utilities": 15.06603590215381,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.713002289334025,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.5999577583111204,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2007,
+        "All housing + utilities": 15.074689625977145,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.737009329739108,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.6078382806039286,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2008,
+        "All housing + utilities": 15.426729810999596,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.947054930938828,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.676528477310242,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2009,
+        "All housing + utilities": 16.067429624799097,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 10.393331123670187,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.893169425718551,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2010,
+        "All housing + utilities": 15.836623264823604,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 10.17695251371019,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.8987889761461725,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2011,
+        "All housing + utilities": 15.226346490841086,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.725434849197407,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.86534123228101,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2012,
+        "All housing + utilities": 14.768408493646106,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.429100479258747,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.893537947543787,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2013,
+        "All housing + utilities": 15.12346255944842,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.62463299632916,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.9610889270619265,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2014,
+        "All housing + utilities": 14.815773434189989,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.35219884147143,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.927154965021384,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2015,
+        "All housing + utilities": 14.439863968948558,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.18942227605394,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.901030036888014,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2016,
+        "All housing + utilities": 14.502453278370217,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.324376944287707,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.9211148848371384,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2017,
+        "All housing + utilities": 14.335943823095143,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.26790951625816,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.8233380348870694,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2018,
+        "All housing + utilities": 14.281112222266104,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.160953449360784,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.819268299537752,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2019,
+        "All housing + utilities": 14.186962279588208,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.137325177642762,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.8581786310208392,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2020,
+        "All housing + utilities": 13.896609672384061,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.087266088144899,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.754970801735487,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2021,
+        "All housing + utilities": 13.432395174285839,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 8.75714765014559,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.6680887929112322,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2022,
+        "All housing + utilities": 14.304172991728537,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.22014647566876,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.8286899093595483,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2023,
+        "All housing + utilities": 14.528172426012755,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.482379944997131,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.9406591422589026,
+        "Tenant rent (cash)Color": "#c6922d"
+      },
+      {
+        "year": 2024,
+        "All housing + utilities": 14.673100614595402,
+        "All housing + utilitiesColor": "#0b7a75",
+        "Owner-occupied (imputed)": 9.59713121333082,
+        "Owner-occupied (imputed)Color": "#1f4f8d",
+        "Tenant rent (cash)": 2.992648733755999,
+        "Tenant rent (cash)Color": "#c6922d"
+      }
+    ],
+    "burdenLines": [
+      "All housing + utilities",
+      "Owner-occupied (imputed)",
+      "Tenant rent (cash)"
+    ],
+    "burdenChange": [
+      {
+        "label": "All housing + utilities",
+        "value": 14.673100614595402,
+        "formattedValue": "14.2% to 14.7%",
+        "tone": "neutral"
+      },
+      {
+        "label": "Tenant rent (cash)",
+        "value": 2.992648733755999,
+        "formattedValue": "2.7% to 3.0%",
+        "tone": "neutral"
+      },
+      {
+        "label": "Owner-occupied (imputed)",
+        "value": 9.59713121333082,
+        "formattedValue": "9.0% to 9.6%",
+        "tone": "neutral"
+      }
+    ],
+    "rentVsOwnerChart": [
+      {
+        "year": 2000,
+        "Tenant rent": 100,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 100,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 100,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 100,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2001,
+        "Tenant rent": 104.3256614685186,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 103.83434169712234,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 103.25884130053203,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 102.0048224106635,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2002,
+        "Tenant rent": 108.298651155794,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 108.0571849758914,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 104.06732534577104,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 103.34453144049198,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2003,
+        "Tenant rent": 111.47938290795435,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 110.6983814993397,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 106.86883739705554,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 105.51597084879847,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2004,
+        "Tenant rent": 114.47291447291448,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 113.21826725223427,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 111.85589392040323,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 108.1344314702934,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2005,
+        "Tenant rent": 117.89600361028934,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 115.83796566444519,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 116.70995500641786,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 111.25003386524341,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2006,
+        "Tenant rent": 122.10299353156495,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 119.8826817358189,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 123.82674861894911,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 114.38324618677358,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2007,
+        "Tenant rent": 127.31117016831301,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 123.94121802155954,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 129.52788414719458,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 117.31868548671127,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2008,
+        "Tenant rent": 131.97111768540339,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 127.05076625410767,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 133.64657728868633,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 120.79055024247513,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2009,
+        "Tenant rent": 134.96464925036352,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 129.1514388378735,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 128.56437873924938,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 120.45325241797838,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2010,
+        "Tenant rent": 135.27720670577816,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 129.13608304413256,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 132.66014898108793,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 122.61114572891549,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2011,
+        "Tenant rent": 137.587123301409,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 130.63173735450385,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 139.51439515491944,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 125.71320202649616,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2012,
+        "Tenant rent": 141.23585552156982,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 133.28061177482263,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 144.73036941742214,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 128.05667687139334,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2013,
+        "Tenant rent": 145.21887379030235,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 136.2243174349682,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 145.27860087777245,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 129.74587521335104,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2014,
+        "Tenant rent": 149.79859265573552,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 139.8160375909831,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 151.4482011164658,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 131.56105226084364,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2015,
+        "Tenant rent": 155.15218372361227,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 143.8883940910906,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 157.25362840573544,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 131.80217279401805,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2016,
+        "Tenant rent": 160.99550385264672,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 148.6440834126716,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 160.2453283341312,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 133.13646338489883,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2017,
+        "Tenant rent": 167.14302428588144,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 153.55793740978473,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 166.90672082105863,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 135.4609736934789,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2018,
+        "Tenant rent": 173.2036303464875,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 158.62381376493352,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 174.47033441616765,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 138.23385982498442,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2019,
+        "Tenant rent": 179.62192247906532,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 163.92156260557107,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 181.85535344300106,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 140.21429926038306,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2020,
+        "Tenant rent": 185.22789951361378,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 168.51908725162005,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 193.6084731576531,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 141.7815827260166,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2021,
+        "Tenant rent": 189.40480369051798,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 172.86017014219465,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 211.77526297657357,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 147.61453225325783,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2022,
+        "Tenant rent": 200.8440722726437,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 182.78922637511133,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 217.02744408904482,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 157.270190458129,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2023,
+        "Tenant rent": 216.80623109194536,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 196.437455852093,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 229.1657033514031,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 163.24537400774835,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      },
+      {
+        "year": 2024,
+        "Tenant rent": 227.86942786942785,
+        "Tenant rentColor": "#c6922d",
+        "Owner-equivalent rent": 207.16194220079234,
+        "Owner-equivalent rentColor": "#1f4f8d",
+        "Per-capita income": 239.66981181280866,
+        "Per-capita incomeColor": "#0b7a75",
+        "Overall cost of living (PCE)": 167.5191677277776,
+        "Overall cost of living (PCE)Color": "#7c8796"
+      }
+    ],
+    "rentVsOwnerLines": [
+      "Tenant rent",
+      "Owner-equivalent rent",
+      "Per-capita income",
+      "Overall cost of living (PCE)"
+    ],
+    "summary": [
+      {
+        "title": "Monthly burden stayed narrower than the public narrative",
+        "body": "Housing and utility spending as a share of personal income stayed within a tighter range than the ownership story would suggest."
+      },
+      {
+        "title": "Renting and buying are different questions",
+        "body": "Tenant rent tracked income more closely than construction costs did, so entry into ownership is the sharper affordability break."
+      }
+    ]
+  },
+  "homeownership": {
+    "constructionChart": [
+      {
+        "year": 2000,
+        "Single-family structures": 100,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 100,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 100,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 100,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 100,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2001,
+        "Single-family structures": 105.04242383752005,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 102.7891156462585,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 101.73965101332911,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 103.25884130053203,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 104.3256614685186,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2002,
+        "Single-family structures": 107.9452832709781,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 106.16367759224903,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 103.26976916169247,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 104.06732534577104,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 108.298651155794,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2003,
+        "Single-family structures": 113.93973810796368,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 110.22881880024738,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 105.21719225960946,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 106.86883739705554,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 111.47938290795435,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2004,
+        "Single-family structures": 123.67383752004277,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 116.35126777983922,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 114.79583751518673,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 111.85589392040323,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 114.47291447291448,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2005,
+        "Single-family structures": 133.02211384286477,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 125.27726242011956,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 124.58049407497403,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 116.70995500641786,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 117.89600361028934,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2006,
+        "Single-family structures": 141.4851683591662,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 138.94248608534323,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 129.47018118430088,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 123.82674861894911,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 122.10299353156495,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2007,
+        "Single-family structures": 142.95163014430784,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 145.50814265099982,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 130.97740918775202,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 129.52788414719458,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 127.31117016831301,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2008,
+        "Single-family structures": 138.51716996258688,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 149.84951556380125,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 136.04669589562096,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 133.64657728868633,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 131.97111768540339,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2009,
+        "Single-family structures": 132.8768038482095,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 151.60997732426307,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 139.10693219234764,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 128.56437873924938,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 134.96464925036352,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2010,
+        "Single-family structures": 130.72721806520576,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 155.3267367553082,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 142.70772806507844,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 132.66014898108793,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 135.27720670577816,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2011,
+        "Single-family structures": 131.66254676643504,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 152.32735518449806,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 148.4848484848485,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 139.51439515491944,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 137.587123301409,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2012,
+        "Single-family structures": 132.7916221272047,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 155.57616986188415,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 153.74429947352667,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 144.73036941742214,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 141.23585552156982,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2013,
+        "Single-family structures": 140.11557990379478,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 160.1504844361987,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 161.19768281302274,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 145.27860087777245,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 145.21887379030235,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2014,
+        "Single-family structures": 149.6275387493319,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 166.6852195423624,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 165.02385857412006,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 151.4482011164658,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 149.79859265573552,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2015,
+        "Single-family structures": 153.36217263495456,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 185.6792413935271,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 168.8694029193739,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 157.25362840573544,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 155.15218372361227,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2016,
+        "Single-family structures": 159.9178246926777,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 195.26695526695528,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 170.48579930625255,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 160.2453283341312,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 160.99550385264672,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2017,
+        "Single-family structures": 167.02298236237309,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 206.14306328592042,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 176.07803778634693,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 166.90672082105863,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 167.14302428588144,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2018,
+        "Single-family structures": 174.18492784607162,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 220.47000618429192,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 186.13561530470307,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 174.47033441616765,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 173.2036303464875,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2019,
+        "Single-family structures": 179.81026189203635,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 224.19088847660277,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 198.5878541369535,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 181.85535344300106,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 179.62192247906532,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2020,
+        "Single-family structures": 187.33965793693213,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 226.28736343022058,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 210.76541123025726,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 193.6084731576531,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 185.22789951361378,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2021,
+        "Single-family structures": 209.37834045964726,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 234.3022057307772,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 259.8982268941595,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 211.77526297657357,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 189.40480369051798,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2022,
+        "Single-family structures": 242.91321485836454,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 256.85837971552263,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 310.25126335992115,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 217.02744408904482,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 200.8440722726437,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2023,
+        "Single-family structures": 251.10903260288615,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 270.59781488352917,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 300.3961755850193,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 229.1657033514031,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 216.80623109194536,
+        "Rent (tenant)Color": "#d2a84c"
+      },
+      {
+        "year": 2024,
+        "Single-family structures": 255.6370256547301,
+        "Single-family structuresColor": "#9b4a26",
+        "Multifamily structures": 274.98247783962074,
+        "Multifamily structuresColor": "#c6922d",
+        "Manufactured homes": 300.8909548711989,
+        "Manufactured homesColor": "#5f7187",
+        "Per-capita income": 239.66981181280866,
+        "Per-capita incomeColor": "#0b7a75",
+        "Rent (tenant)": 227.86942786942785,
+        "Rent (tenant)Color": "#d2a84c"
+      }
+    ],
+    "constructionLines": [
+      "Single-family structures",
+      "Multifamily structures",
+      "Manufactured homes",
+      "Per-capita income",
+      "Rent (tenant)"
+    ],
+    "residentialShareChart": [
+      {
+        "year": 2000,
+        "share": 5.577916618358132,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2001,
+        "share": 5.656372132157964,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2002,
+        "share": 6.048845133272702,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2003,
+        "share": 6.681810972812241,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2004,
+        "share": 7.452480445480142,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2005,
+        "share": 8.08757645111129,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2006,
+        "share": 7.385036489906138,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2007,
+        "share": 5.747382484512838,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2008,
+        "share": 4.105678248885602,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2009,
+        "share": 3.1847269981342956,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2010,
+        "share": 2.949810706570118,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2011,
+        "share": 2.795469270208829,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2012,
+        "share": 3.0529588719874026,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2013,
+        "share": 3.581182339992846,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2014,
+        "share": 3.7601784408475503,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2015,
+        "share": 4.086555039740623,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2016,
+        "share": 4.4129763947296645,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2017,
+        "share": 4.587123382881181,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2018,
+        "share": 4.577263270787083,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2019,
+        "share": 4.4511087199090875,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2020,
+        "share": 4.636281590652449,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2021,
+        "share": 5.209659766658008,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2022,
+        "share": 5.258534436968261,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2023,
+        "share": 4.664880340290162,
+        "shareColor": "#0b7a75"
+      },
+      {
+        "year": 2024,
+        "share": 4.69470516999779,
+        "shareColor": "#0b7a75"
+      }
+    ],
+    "keyMoments": [
+      {
+        "label": "Starting point",
+        "value": "5.6%",
+        "note": "2000"
+      },
+      {
+        "label": "Bubble peak",
+        "value": "8.1%",
+        "note": "2005"
+      },
+      {
+        "label": "Post-GFC trough",
+        "value": "2.8%",
+        "note": "2011"
+      },
+      {
+        "label": "2024 level",
+        "value": "4.7%",
+        "note": "2024"
+      }
+    ],
+    "summary": [
+      {
+        "title": "Ownership is where the dream fractures",
+        "body": "Within the dashboard's broad housing-services affordability measure, 2024 sits at 113.1, while single-family construction costs rose much faster than income and better capture the ownership-entry squeeze."
+      },
+      {
+        "title": "Supply context matters",
+        "body": "Residential investment share shows a boom, collapse, and partial recovery pattern, which helps explain why ownership access feels structurally constrained."
+      }
+    ]
+  },
+  "methodology": {
+    "sources": [
+      "All values are drawn from CSVs in `data/cleaned`, using the same BEA-backed repo datasets already prepared for analysis.",
+      "Income is constructed as total personal income divided by total population from `cleaned_income_with_state.csv`.",
+      "Indexed charts rebase each series to 2000 = 100 so growth rates can be compared directly; several widgets use BEA price indexes rather than market-price series.",
+      "Predictive ranking export is optional; without it, the dashboard falls back to repo-derived descriptive summaries.",
+      "Industry wage-level rankings use actual 2024 values from `annual_wages_per_FTE_by_industry.csv`, collapsed to unique industry labels before display."
+    ],
+    "caveats": [
+      "This is a national and industry-level dashboard. It does not model taxes, debt, household composition, or local housing markets.",
+      "The state widget is context only. It shows per-capita income dispersion, not a full state affordability model.",
+      "No external APIs, web-fetched figures, home-price data, or mortgage assumptions are introduced in this dashboard.",
+      "Run `python scripts/export_dashboard_rankings.py` to refresh predictive ranking panels."
+    ]
+  }
+}

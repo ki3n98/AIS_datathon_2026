@@ -1,105 +1,93 @@
-import { AmericanDreamDashboard } from "@/components/american-dream-dashboard";
-import { getDashboardData } from "@/lib/dashboard-data";
+import data from "@/data/dashboard-data.json";
+import type { DashboardData } from "@/lib/dashboard-data";
+import {
+  DashboardTeaser,
+  EditionLine,
+  EditorialLineChart,
+  FigureBlock,
+  KpiRail,
+  LeadPackage,
+  Masthead,
+  MethodologyNote,
+  SectionDivider,
+  StoryRail,
+  StorySection,
+} from "@/components/editorial";
 
-function withArrow(changeLabel: string) {
-  return changeLabel.trim().startsWith("+") ? `▲ ${changeLabel}` : `▼ ${changeLabel}`;
-}
+const dashboardData = data as DashboardData;
 
-export default async function HomePage() {
-  const data = await getDashboardData();
-
-  const heroKpis = data.overview.kpis.slice(0, 4);
-  const topOpportunity = data.overview.affordabilityRankings.slice(0, 5);
-  const fastestIncome = data.costOfLiving.stateIncomeContext.topStates.slice(0, 5);
-  const industryLeaders = data.industryDivide.predictedFigure.leaders.slice(0, 5);
-
+export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#f3f0ea] px-4 py-5 text-[#111] md:px-10">
-      <div className="mx-auto max-w-7xl border border-black/20 bg-[#fbf9f4] shadow-sm">
-        <header className="border-b border-black/20 px-6 py-5 md:px-10">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] uppercase tracking-[0.18em] text-black/70">
-            <span>The American Dream Report</span>
-            <span>{new Date().toLocaleDateString()}</span>
-          </div>
-          <h1 className="mt-4 text-4xl font-semibold leading-tight md:text-6xl">{data.title}</h1>
-          <p className="mt-3 max-w-4xl text-base text-black/70 md:text-lg">{data.subtitle}</p>
-        </header>
+      <div className="mx-auto max-w-7xl space-y-6 border border-black/20 bg-[#fbf9f4] p-6 shadow-sm md:p-8">
+        <Masthead title={dashboardData.title} subtitle={dashboardData.subtitle} />
+        <EditionLine editionDate={dashboardData.edition.editionDateLabel} />
 
-        <section className="grid border-b border-black/20 md:grid-cols-4">
-          {heroKpis.map((kpi) => (
-            <article key={kpi.label} className="border-r border-black/20 p-5 last:border-r-0">
-              <p className="text-xs uppercase tracking-wide text-black/60">{kpi.label}</p>
-              <p className="mt-2 text-2xl font-semibold">{kpi.value}</p>
-              <p className="mt-1 text-xs text-black/60">{withArrow(kpi.changeLabel)}</p>
-            </article>
-          ))}
-        </section>
+        <LeadPackage verdict={dashboardData.verdict} railItems={dashboardData.overview.affordabilityRankings} />
+        <KpiRail items={dashboardData.overview.kpis} />
 
-        <section className="grid border-b border-black/20 lg:grid-cols-[2fr_1fr]">
-          <article className="border-r border-black/20 p-6 md:p-8">
-            <h2 className="text-3xl font-semibold leading-tight">Opportunity is not spread equally</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-black/75">{data.verdict.summary}</p>
-            <div className="mt-5 grid gap-2 sm:grid-cols-2">
-              {topOpportunity.map((state, idx) => (
-                <div key={state.label} className="flex items-center justify-between border-b border-black/10 py-2 text-sm">
-                  <span className="font-medium">
-                    {idx + 1}. {state.label}
-                  </span>
-                  <span>{state.formattedValue}</span>
-                </div>
-              ))}
-            </div>
-          </article>
+        <SectionDivider
+          kicker="National trend"
+          title="Income growth and cost pressure moved together"
+          deck="The long-run shape of affordability combines income momentum and cost escalation. This figure frames the core tension behind modern household mobility."
+        />
+        <StorySection>
+          <FigureBlock
+            title="Figure 1. Comparative index movement"
+            caption="Indexed series comparing per-capita income and major cost tracks."
+            source={dashboardData.methodology.sources[0] ?? "BEA/NIPA extracts"}
+          >
+            <EditorialLineChart data={dashboardData.overview.comparisonChart} lines={dashboardData.overview.comparisonLines} />
+          </FigureBlock>
+          <StoryRail
+            title="Fastest growth since 2020"
+            items={dashboardData.costOfLiving.stateIncomeContext.topStates}
+            valueLabel="Income growth percentage"
+          />
+        </StorySection>
 
-          <aside className="p-6 md:p-8">
-            <p className="text-xs uppercase tracking-[0.14em] text-black/60">Featured finding</p>
-            <blockquote className="mt-3 text-xl font-medium leading-relaxed text-black/85">“{data.verdict.label}”</blockquote>
-            <p className="mt-6 text-xs uppercase tracking-[0.14em] text-black/60">Method note</p>
-            <p className="mt-2 text-sm text-black/75">{data.methodology.caveats[0]}</p>
-          </aside>
-        </section>
+        <SectionDivider
+          kicker="Cost of living"
+          title="Affordability remains highly geography-sensitive"
+          deck={dashboardData.costOfLiving.insightCards[0]?.body}
+        />
+        <StorySection>
+          <FigureBlock
+            title="Figure 2. Cost-of-living pressure by category"
+            caption="Core inflation-related categories and their trajectory over the period."
+            source={dashboardData.methodology.sources[1] ?? "BEA price indexes"}
+          >
+            <EditorialLineChart data={dashboardData.costOfLiving.chart} lines={dashboardData.costOfLiving.lines} />
+          </FigureBlock>
+          <StoryRail
+            title="Most constrained states"
+            items={dashboardData.costOfLiving.stateIncomeContext.bottomStates}
+            valueLabel="Lower per-capita income"
+          />
+        </StorySection>
 
-        <section className="grid border-b border-black/20 lg:grid-cols-3">
-          <article className="border-r border-black/20 p-6 md:p-8">
-            <h3 className="text-xl font-semibold">Fastest income momentum</h3>
-            <div className="mt-4 space-y-2">
-              {fastestIncome.map((state) => (
-                <div key={state.label} className="flex items-center justify-between border-b border-black/10 py-2 text-sm">
-                  <span>{state.label}</span>
-                  <span className="font-medium">{state.formattedValue}</span>
-                </div>
-              ))}
-            </div>
-          </article>
+        <SectionDivider
+          kicker="Industry divide"
+          title="Industry pathways diverge on earnings power"
+          deck={dashboardData.industryDivide.summary[0]?.body}
+        />
+        <StorySection>
+          <FigureBlock
+            title="Figure 3. Housing burden trajectory"
+            caption="Burden metrics show housing cost pressure rising relative to household earning power."
+            source={dashboardData.methodology.sources[2] ?? "Housing output indexes"}
+          >
+            <EditorialLineChart data={dashboardData.housingBurden.burdenChart} lines={dashboardData.housingBurden.burdenLines} percent />
+          </FigureBlock>
+          <StoryRail
+            title="Predicted industry leaders"
+            items={dashboardData.industryDivide.predictedFigure.leaders}
+            valueLabel={dashboardData.industryDivide.predictedFigure.metricLabel}
+          />
+        </StorySection>
 
-          <article className="border-r border-black/20 p-6 md:p-8">
-            <h3 className="text-xl font-semibold">Predicted industry leaders</h3>
-            <div className="mt-4 space-y-2">
-              {industryLeaders.map((industry) => (
-                <div key={industry.label} className="flex items-center justify-between border-b border-black/10 py-2 text-sm">
-                  <span>{industry.label}</span>
-                  <span className="font-medium">{industry.formattedValue}</span>
-                </div>
-              ))}
-            </div>
-          </article>
-
-          <article className="p-6 md:p-8">
-            <h3 className="text-xl font-semibold">Housing burden</h3>
-            <p className="mt-3 text-sm leading-7 text-black/75">{data.housingBurden.summary[0]?.body}</p>
-          </article>
-        </section>
-
-        <section className="border-b border-black/20 px-6 py-6 md:px-10">
-          <h2 className="text-2xl font-semibold">Explore the full interactive dashboard</h2>
-          <p className="mt-2 text-sm text-black/70">
-            This keeps the analytics-dashboard interactions intact and accessible below the editorial front page.
-          </p>
-        </section>
-
-        <div className="px-3 py-3 md:px-5 md:py-5">
-          <AmericanDreamDashboard data={data} />
-        </div>
+        <MethodologyNote caveats={dashboardData.methodology.caveats} sources={dashboardData.methodology.sources} />
+        <DashboardTeaser summary="Use the research desk to filter, compare, and validate every claim in this feature story." />
       </div>
     </main>
   );
