@@ -806,21 +806,21 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                         <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Income growth</div>
                         <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Top 5 broad industries</div>
                       </div>
-                      <RankedList items={data.overview.spotlightLists.incomeGrowthIndustries} valueLabel="2000 = 100" itemLabel="Industry" />
+                      <RankedList items={data.overview.spotlightLists.incomeGrowthIndustries} valueLabel="2000 = 100" itemLabel="Industry" showBackgroundBars />
                     </div>
                     <div className="space-y-3">
                       <div className="border-b border-[#e4e2e3] pb-2">
                         <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Cost of living</div>
                         <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Top 5 everyday categories</div>
                       </div>
-                      <RankedList items={data.overview.spotlightLists.costGrowthCategories} valueLabel="2000 = 100" itemLabel="Category" />
+                      <RankedList items={data.overview.spotlightLists.costGrowthCategories} valueLabel="2000 = 100" itemLabel="Category" showBackgroundBars />
                     </div>
                     <div className="space-y-3">
                       <div className="border-b border-[#e4e2e3] pb-2">
                         <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Home building costs</div>
                         <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Fastest-rising building types</div>
                       </div>
-                      <RankedList items={data.overview.spotlightLists.homeBuildingGrowth} valueLabel="2000 = 100" itemLabel="Building type" />
+                      <RankedList items={data.overview.spotlightLists.homeBuildingGrowth} valueLabel="2000 = 100" itemLabel="Building type" showBackgroundBars />
                     </div>
                   </div>
                 </WidgetCard>
