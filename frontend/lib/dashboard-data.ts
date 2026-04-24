@@ -610,7 +610,6 @@ export async function getDashboardData(): Promise<DashboardData> {
   };
   const rentOwnerValues: Record<string, Record<number, number>> = {
     "Median industry wage": incomeIndex,
-    "Overall cost of living (PCE)": overviewValues["Overall cost of living (PCE)"],
   };
 
   for (const [source, label] of Object.entries(rentOwnerLabels)) {
@@ -932,20 +931,11 @@ export async function getDashboardData(): Promise<DashboardData> {
     },
     housingBurden: {
       burdenChart: toSeries(incomeYears, housingBurdenValues, [
-        "All housing + utilities",
         "Owner-occupied (imputed)",
         "Tenant rent (cash)",
       ]),
-      burdenLines: ["All housing + utilities", "Owner-occupied (imputed)", "Tenant rent (cash)"],
+      burdenLines: ["Owner-occupied (imputed)", "Tenant rent (cash)"],
       burdenChange: [
-        {
-          label: "All housing + utilities",
-          value: housingBurdenValues["All housing + utilities"][FINAL_YEAR],
-          formattedValue: `${formatPercent(housingBurdenValues["All housing + utilities"][BASE_YEAR])} to ${formatPercent(
-            housingBurdenValues["All housing + utilities"][FINAL_YEAR]
-          )}`,
-          tone: "neutral",
-        },
         {
           label: "Tenant rent (cash)",
           value: housingBurdenValues["Tenant rent (cash)"][FINAL_YEAR],
@@ -967,17 +957,24 @@ export async function getDashboardData(): Promise<DashboardData> {
         "Tenant rent",
         "Owner-equivalent rent",
         "Median industry wage",
-        "Overall cost of living (PCE)",
       ]),
-      rentVsOwnerLines: ["Tenant rent", "Owner-equivalent rent", "Median industry wage", "Overall cost of living (PCE)"],
+      rentVsOwnerLines: ["Tenant rent", "Owner-equivalent rent", "Median industry wage"],
       summary: [
         {
-          title: "Monthly housing strain rose, but not in a straight-line crisis",
-          body: "Housing and utility spending as a share of income stayed within a narrower range than the ownership story might lead people to expect.",
+          title: "Monthly rent burden drifted up, it did not break",
+          body: "Owner-equivalent rent rose from 9.0% to 9.6% of personal income and cash tenant rent from 2.7% to 3.0% — meaningful drift, but far from a sudden crisis.",
         },
         {
-          title: "Renting and buying are different problems",
-          body: "Rent tracked income more closely than home-building costs did, so getting into ownership is where the sharper affordability break shows up.",
+          title: "Rent prices and wages moved in step",
+          body: "At 2000 = 100, tenant rent reached ~228, owner-equivalent rent ~207, and the median industry wage ~215. Rent inflation sits on both sides of the income line, not ahead of it.",
+        },
+        {
+          title: "Building costs ran away from income",
+          body: "Structure-cost indexes for single-family, multifamily, and manufactured homes rose much faster than the ~215 wage index. That is where entry-to-ownership became harder, not in ongoing rent.",
+        },
+        {
+          title: "Residential investment never regained its 2005 share",
+          body: "Residential fixed investment went from 5.6% of personal income (2000) to 8.1% at the 2005 peak, collapsed to 2.8% by 2011, and recovered only to 4.7% in 2024 — supply is still well below the bubble peak.",
         },
       ],
     },

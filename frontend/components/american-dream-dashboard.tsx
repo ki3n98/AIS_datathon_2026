@@ -953,7 +953,7 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                   <div className="grid gap-4 xl:grid-cols-2">
                     <WidgetCard
                       title="Housing burden as a share of personal income"
-                      description="Housing and utility spending shares rather than index growth."
+                      description="Cash tenant rent and imputed owner-equivalent rent as shares of national personal income."
                     >
                       <MultiLineChart
                         data={data.housingBurden.burdenChart}
@@ -973,7 +973,7 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                     </WidgetCard>
                     <WidgetCard
                       title="Tenant rent versus owner-equivalent rent"
-                      description="BEA rent price indexes rebased to 2000 = 100, alongside income and broad PCE."
+                      description="BEA rent price indexes rebased to 2000 = 100, alongside the income growth index."
                     >
                       <MultiLineChart
                         data={data.housingBurden.rentVsOwnerChart}
@@ -982,19 +982,6 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       />
                     </WidgetCard>
                   </div>
-                  <WidgetCard title="Bridge" description="How the two housing readings fit together.">
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                        Renting pressure is about how much income goes to housing month after month. That pressure increased, but the national trend stayed more stable than many people might expect.
-                      </div>
-                      <div className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                        Buying is a different challenge. It depends on building and ownership-related costs that rose much faster than income, which is why buying a home looks like the sharper break.
-                      </div>
-                    </div>
-                  </WidgetCard>
-                  <WidgetCard title="Summary read" description="Clarifying the housing claim.">
-                    <InsightCards items={data.housingBurden.summary} columns={2} />
-                  </WidgetCard>
                   <div className="grid gap-4 xl:grid-cols-2">
                     <WidgetCard title="Construction-cost indexes versus income" description="Structure-cost price indexes compared with the median industry wage and tenant-rent growth; these are not home sale prices.">
                       <MultiLineChart
@@ -1010,6 +997,9 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       <ShareAreaChart data={data.homeownership.residentialShareChart} />
                     </WidgetCard>
                   </div>
+                  <WidgetCard title="Summary read" description="Clarifying the housing claim.">
+                    <InsightCards items={data.housingBurden.summary} columns={2} />
+                  </WidgetCard>
                   <div className="grid gap-4 xl:grid-cols-2">
                     <WidgetCard title="Ownership conclusion" description="Bottom-line dashboard read.">
                       <InsightCards items={data.homeownership.summary} columns={2} />
