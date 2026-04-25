@@ -164,7 +164,7 @@ const FINAL_YEAR = 2024;
 
 const CATEGORY_COLORS = {
   "Median industry wage": "#0b7a75",
-  "Overall cost of living (PCE)": "#7c8796",
+  "Overall cost of living (weighted basket)": "#7c8796",
   Housing: "#c6922d",
   "Rent (tenant)": "#d2a84c",
   Healthcare: "#2a95a0",
@@ -178,6 +178,8 @@ const CATEGORY_COLORS = {
   Construction: "#7f8ea3",
   "Retail trade": "#915235",
   "Accommodation and food services": "#ba7d44",
+  "Higher-education-heavy industries": "#1f4f8d",
+  "Non-higher-education-heavy industries": "#ba7d44",
   "Degree-heavy industries": "#0b7a75",
   "Non-degree-heavy industries": "#c6922d",
   "All housing + utilities": "#0b7a75",
@@ -428,9 +430,34 @@ export async function getDashboardData(): Promise<DashboardData> {
   for (const row of priceRows) {
     pricesByCategory.set(cleanCategory(row.category), row);
   }
+  const spendingByCategory = new Map<string, CsvRow>();
+  for (const row of spendingRows) {
+    spendingByCategory.set(cleanCategory(row.category), row);
+  }
+
+  const excludedWeightedCategories = new Set(["Personal consumption expenditures", "Household consumption expenditures"]);
+  const weightedOverallCostSeries = Object.fromEntries(
+    incomeYears.map((year) => {
+      const items = Array.from(pricesByCategory.entries())
+        .filter(([label]) => !excludedWeightedCategories.has(label))
+        .map(([label, row]) => {
+          const spendingRow = spendingByCategory.get(label);
+          const baseValue = toNumber(row[String(BASE_YEAR)]);
+          const currentValue = toNumber(row[String(year)]);
+          const weight = toNumber(spendingRow?.[String(year)]);
+
+          return {
+            value: baseValue > 0 ? (currentValue / baseValue) * 100 : 0,
+            weight,
+          };
+        })
+        .filter((item) => item.weight > 0 && item.value > 0);
+
+      return [year, weightedAverage(items)];
+    })
+  );
 
   const overviewPicks: Record<string, string> = {
-    "Personal consumption expenditures": "Overall cost of living (PCE)",
     Housing: "Housing",
     "Rental of tenant-occupied nonfarm housing": "Rent (tenant)",
     Health: "Healthcare",
@@ -440,6 +467,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const overviewValues: Record<string, Record<number, number>> = {
     "Median industry wage": incomeIndex,
+    "Overall cost of living (weighted basket)": weightedOverallCostSeries,
   };
 
   for (const [source, label] of Object.entries(overviewPicks)) {
@@ -452,7 +480,7 @@ export async function getDashboardData(): Promise<DashboardData> {
 
   const overviewOrder = [
     "Median industry wage",
-    "Overall cost of living (PCE)",
+    "Overall cost of living (weighted basket)",
     "Housing",
     "Rent (tenant)",
     "Healthcare",
@@ -495,7 +523,7 @@ export async function getDashboardData(): Promise<DashboardData> {
         industry,
         latestValue,
         classifyGrowth(latestValue),
-        latestValue >= overviewValues["Overall cost of living (PCE)"][FINAL_YEAR] ? "Beat broad inflation" : "Lagged broad inflation",
+        latestValue >= overviewValues["Overall cost of living (weighted basket)"][FINAL_YEAR] ? "Beat broad inflation" : "Lagged broad inflation",
         (currentValue) => `${formatIndex(currentValue)} index`
       );
     })
@@ -562,32 +590,44 @@ export async function getDashboardData(): Promise<DashboardData> {
     "Agriculture, forestry, fishing, and hunting",
   ];
 
-  function meanIndex(members: string[]): Record<number, number> {
+  function medianIndex(members: string[]): Record<number, number> {
     return Object.fromEntries(
-      wageYears.map((year) => {
-        const mean =
-          members.reduce((sum, industry) => {
+      wageYears.map((year) => [
+        year,
+        median(
+          members.map((industry) => {
             const values = wagesByIndustry.get(industry);
             const baseline = values?.[BASE_YEAR] ?? 0;
-            if (!values || baseline <= 0) return sum;
-            return sum + ((values[year] ?? 0) / baseline) * 100;
-          }, 0) / members.length;
-        return [year, mean];
-      })
+            if (!values || baseline <= 0) return Number.NaN;
+            return ((values[year] ?? 0) / baseline) * 100;
+          })
+        ),
+      ])
     );
   }
 
-  function meanLevel(members: string[]): number {
-    return members.reduce((sum, industry) => sum + (wagesByIndustry.get(industry)?.[FINAL_YEAR] ?? 0), 0) / members.length;
+  function medianLevel(members: string[]): number {
+    return median(members.map((industry) => wagesByIndustry.get(industry)?.[FINAL_YEAR] ?? Number.NaN));
   }
 
-  const degreeGrowth = meanIndex(degreeHeavy);
-  const nonDegreeGrowth = meanIndex(nonDegreeHeavy);
-
-  const spendingByCategory = new Map<string, CsvRow>();
-  for (const row of spendingRows) {
-    spendingByCategory.set(cleanCategory(row.category), row);
-  }
+  const degreeGrowth = medianIndex(degreeHeavy);
+  const nonDegreeGrowth = medianIndex(nonDegreeHeavy);
+  const costOfLivingValues: Record<string, Record<number, number>> = {
+    ...overviewValues,
+    "Higher-education-heavy industries": degreeGrowth,
+    "Non-higher-education-heavy industries": nonDegreeGrowth,
+  };
+  const costOfLivingOrder = [
+    "Median industry wage",
+    "Higher-education-heavy industries",
+    "Non-higher-education-heavy industries",
+    "Overall cost of living (weighted basket)",
+    "Housing",
+    "Rent (tenant)",
+    "Healthcare",
+    "Higher education",
+    "Groceries",
+  ];
 
   const housingLabels: Record<string, string> = {
     "Housing, utilities, and fuels": "All housing + utilities",
@@ -742,7 +782,7 @@ export async function getDashboardData(): Promise<DashboardData> {
   const topState = statePerCapitaList[0];
   const bottomState = statePerCapitaList[statePerCapitaList.length - 1];
 
-  const pce2024 = overviewValues["Overall cost of living (PCE)"][FINAL_YEAR];
+  const weightedOverall2024 = overviewValues["Overall cost of living (weighted basket)"][FINAL_YEAR];
   const singleFamily2024 = constructionValues["Single-family structures"][FINAL_YEAR];
   const affordability2024 = affordabilityRankings.find((item) => item.label === "Housing");
   const stateRanking = rankingExport?.state ?? null;
@@ -770,7 +810,7 @@ export async function getDashboardData(): Promise<DashboardData> {
         {
           label: "Primary signal",
           value: "Income beat broad prices",
-          note: `The median industry wage index reached ${formatIndex(incomeIndex[FINAL_YEAR])} versus ${formatIndex(pce2024)} for the overall cost-of-living index.`,
+          note: `The median industry wage index reached ${formatIndex(incomeIndex[FINAL_YEAR])} versus ${formatIndex(weightedOverall2024)} for the weighted overall cost-of-living basket.`,
         },
         {
           label: "Pressure point",
@@ -831,8 +871,8 @@ export async function getDashboardData(): Promise<DashboardData> {
       },
     },
     costOfLiving: {
-      chart: toSeries(incomeYears, overviewValues, overviewOrder),
-      lines: overviewOrder,
+      chart: toSeries(incomeYears, costOfLivingValues, costOfLivingOrder),
+      lines: costOfLivingOrder,
       insightCards: [
         {
           title: "Aggregate affordability still exists",
@@ -899,18 +939,18 @@ export async function getDashboardData(): Promise<DashboardData> {
         ],
         wageLevels2024: [
           {
-            label: "Degree-heavy average",
-            value: meanLevel(degreeHeavy),
-            formattedValue: formatMoney(meanLevel(degreeHeavy)),
+            label: "Higher-education-heavy median",
+            value: medianLevel(degreeHeavy),
+            formattedValue: formatMoney(medianLevel(degreeHeavy)),
             tone: "good",
-            note: "2024 mean annual wages per FTE",
+            note: "2024 median annual wages per FTE",
           },
           {
-            label: "Non-degree-heavy average",
-            value: meanLevel(nonDegreeHeavy),
-            formattedValue: formatMoney(meanLevel(nonDegreeHeavy)),
+            label: "Non-higher-education-heavy median",
+            value: medianLevel(nonDegreeHeavy),
+            formattedValue: formatMoney(medianLevel(nonDegreeHeavy)),
             tone: "warn",
-            note: "2024 mean annual wages per FTE",
+            note: "2024 median annual wages per FTE",
           },
         ],
       },
@@ -937,19 +977,21 @@ export async function getDashboardData(): Promise<DashboardData> {
       burdenLines: ["Owner-occupied (imputed)", "Tenant rent (cash)"],
       burdenChange: [
         {
-          label: "Tenant rent (cash)",
+          label: "Tenant rent (cash, w.r.t. income)",
           value: housingBurdenValues["Tenant rent (cash)"][FINAL_YEAR],
           formattedValue: `${formatPercent(housingBurdenValues["Tenant rent (cash)"][BASE_YEAR])} to ${formatPercent(
             housingBurdenValues["Tenant rent (cash)"][FINAL_YEAR]
           )}`,
+          note: "On $100k income: about $2,700/year to $3,000/year",
           tone: "neutral",
         },
         {
-          label: "Owner-occupied (imputed)",
+          label: "Owner-occupied (imputed, w.r.t. income)",
           value: housingBurdenValues["Owner-occupied (imputed)"][FINAL_YEAR],
           formattedValue: `${formatPercent(
             housingBurdenValues["Owner-occupied (imputed)"][BASE_YEAR]
           )} to ${formatPercent(housingBurdenValues["Owner-occupied (imputed)"][FINAL_YEAR])}`,
+          note: "On $100k income: about $9,000/year to $9,600/year",
           tone: "neutral",
         },
       ],
