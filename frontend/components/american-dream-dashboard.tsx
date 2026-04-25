@@ -113,7 +113,7 @@ function useActiveSection(sectionIds: string[]) {
     return () => observer.disconnect();
   }, [sectionIds]);
 
-  return activeSection;
+  return { activeSection, setActiveSection };
 }
 
 function ChartTooltip({
@@ -616,7 +616,7 @@ function ShareAreaChart({ data }: { data: SeriesPoint[] }) {
 
 export function AmericanDreamDashboard({ data }: DashboardProps) {
   const sectionIds = useMemo(() => data.sidebar.map((section) => section.id), [data.sidebar]);
-  const activeSection = useActiveSection(sectionIds);
+  const { activeSection, setActiveSection } = useActiveSection(sectionIds);
   const incomeLine = "Median industry wage";
   const comparisonLines = useMemo(
     () => data.costOfLiving.lines.filter((line) => line !== incomeLine),
@@ -706,6 +706,7 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                   <a
                     key={item.id}
                     href={`#${item.id}`}
+                    onClick={() => setActiveSection(item.id)}
                     className={cn(
                       sidebarStyles.navItem,
                       isActive ? sidebarStyles.navItemActive : sidebarStyles.navItemIdle
