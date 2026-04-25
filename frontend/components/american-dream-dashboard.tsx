@@ -20,6 +20,8 @@ import {
   Car,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   CircleDollarSign,
   Fuel,
   Home,
@@ -236,16 +238,6 @@ function KpiCard({ label, value, changeLabel, note, tone }: DashboardData["overv
         <p className="text-xs leading-5 text-[#5f6978]">{note}</p>
       </div>
     </WidgetCard>
-  );
-}
-
-function SummaryCard({ label, value, note }: DashboardData["overview"]["summaryCards"][number]) {
-  return (
-    <div className="rounded-md border border-[#d9dde3] bg-[#f5f3f4] p-4">
-      <div className="text-[11px] font-medium uppercase tracking-[0.12em] text-[#5f6978]">{label}</div>
-      <div className="mt-2 text-sm font-semibold text-[#1b1c1d]">{value}</div>
-      <p className="mt-1 text-xs leading-5 text-[#5f6978]">{note}</p>
-    </div>
   );
 }
 
@@ -676,6 +668,65 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
       };
     });
   };
+  const overviewSpotlights = useMemo(
+    () => ({
+      income: {
+        label: "Income growth",
+        title: "Wages grew most in a few standout industries.",
+        teaser: "The national headline still holds up better than many people expect.",
+        body: "This is the strongest part of the story. Some broad sectors posted very strong wage growth, which helps explain why the national picture still looks more resilient than people expect.",
+        eyebrow: "Broad picture",
+        statLabel: "Median industry growth",
+        statValue: data.overview.spotlightLists.medianReadout.incomeGrowth,
+        listTitle: "Top 5 broad industries",
+        listLabel: "Industry",
+        items: data.overview.spotlightLists.incomeGrowthIndustries,
+        accent: "border-[#b8dbd6] bg-[#f7fcfb] text-[#0a5c63]",
+      },
+      cost: {
+        label: "Everyday costs",
+        title: "Routine costs rose, but they did not pull away equally.",
+        teaser: "Day-to-day pressure rose, but it tells a milder story than ownership.",
+        body: "This is the day-to-day read. Everyday categories got more expensive, but they still tell a less severe story than the costs tied to getting ahead.",
+        eyebrow: "Everyday life",
+        statLabel: "Median everyday cost growth",
+        statValue: data.overview.spotlightLists.medianReadout.costGrowth,
+        listTitle: "Top 5 everyday categories",
+        listLabel: "Category",
+        items: data.overview.spotlightLists.costGrowthCategories,
+        accent: "border-[#ebd6a1] bg-[#fffcf3] text-[#7d5b12]",
+      },
+      home: {
+        label: "Home building costs",
+        title: "The biggest break shows up in building and buying in.",
+        teaser: "This is where the dashboard shifts from manageable to difficult.",
+        body: "This is where the dashboard turns tougher. The cost of key housing structure types climbed much faster, which helps explain why ownership feels harder than the broad inflation line suggests.",
+        eyebrow: "Getting ahead",
+        statLabel: "Median housing investment",
+        statValue: data.overview.spotlightLists.medianReadout.homeBuilding,
+        listTitle: "Fastest-rising building types",
+        listLabel: "Building type",
+        items: data.overview.spotlightLists.homeBuildingGrowth,
+        accent: "border-[#e3c0b2] bg-[#fdf7f4] text-[#8b4d32]",
+      },
+    }),
+    [
+      data.overview.spotlightLists.costGrowthCategories,
+      data.overview.spotlightLists.homeBuildingGrowth,
+      data.overview.spotlightLists.incomeGrowthIndustries,
+      data.overview.spotlightLists.medianReadout.costGrowth,
+      data.overview.spotlightLists.medianReadout.homeBuilding,
+      data.overview.spotlightLists.medianReadout.incomeGrowth,
+    ]
+  );
+  const [overviewSpotlight, setOverviewSpotlight] = useState<keyof typeof overviewSpotlights>("income");
+  const activeOverviewSpotlight = overviewSpotlights[overviewSpotlight];
+  const overviewSpotlightKeys = Object.keys(overviewSpotlights) as Array<keyof typeof overviewSpotlights>;
+  const overviewSpotlightIndex = overviewSpotlightKeys.indexOf(overviewSpotlight);
+  const cycleOverviewSpotlight = (direction: -1 | 1) => {
+    const nextIndex = (overviewSpotlightIndex + direction + overviewSpotlightKeys.length) % overviewSpotlightKeys.length;
+    setOverviewSpotlight(overviewSpotlightKeys[nextIndex]);
+  };
 
   return (
     <main className="min-h-screen bg-[#fbf9fa] text-[#1b1c1d]">
@@ -816,35 +867,67 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       <div className="mt-1 text-lg font-semibold text-[#041627]">{data.overview.spotlightLists.medianReadout.homeBuilding}</div>
                     </div>
                   </div>
-                  <div className="grid gap-4 xl:grid-cols-3">
-                    <div className="space-y-3">
-                      <div className="border-b border-[#e4e2e3] pb-2">
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Income growth</div>
-                        <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Top 5 broad industries</div>
+                  <div className="mb-4 rounded-md border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <button
+                        type="button"
+                        onClick={() => cycleOverviewSpotlight(-1)}
+                        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#d9dde3] bg-white text-[#44505f] transition-colors hover:border-[#b6c4d3] hover:bg-[#eef3f7]"
+                        aria-label="Previous story step"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </button>
+                      <div className="min-w-0 flex-1 text-center">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5f6978]">
+                          Step {overviewSpotlightIndex + 1} of {overviewSpotlightKeys.length}
+                        </div>
+                        <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">{activeOverviewSpotlight.label}</div>
+                        <p className="mt-1 text-xs leading-5 text-[#5f6978]">{activeOverviewSpotlight.teaser}</p>
                       </div>
-                      <RankedList items={data.overview.spotlightLists.incomeGrowthIndustries} valueLabel="2000 = 100" itemLabel="Industry" showBackgroundBars />
+                      <button
+                        type="button"
+                        onClick={() => cycleOverviewSpotlight(1)}
+                        className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#d9dde3] bg-white text-[#44505f] transition-colors hover:border-[#b6c4d3] hover:bg-[#eef3f7]"
+                        aria-label="Next story step"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <div className="mt-3 flex items-center justify-center gap-2">
+                      {overviewSpotlightKeys.map((key, index) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => setOverviewSpotlight(key)}
+                          aria-label={`Go to step ${index + 1}`}
+                          className={cn(
+                            "h-2.5 rounded-full transition-all",
+                            overviewSpotlight === key ? "w-8 bg-[#0b7a75]" : "w-2.5 bg-[#c8d0da] hover:bg-[#9fb0c2]"
+                          )}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <div className="grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                    <div className={cn("rounded-md border p-5", activeOverviewSpotlight.accent)}>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.12em]">{activeOverviewSpotlight.eyebrow}</div>
+                      <div className="mt-2 text-xl font-semibold leading-8 text-[#1b1c1d]">{activeOverviewSpotlight.title}</div>
+                      <p className="mt-4 text-sm leading-6 text-[#44474c]">{activeOverviewSpotlight.body}</p>
                     </div>
                     <div className="space-y-3">
                       <div className="border-b border-[#e4e2e3] pb-2">
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Cost of living</div>
-                        <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Top 5 everyday categories</div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">{activeOverviewSpotlight.label}</div>
+                        <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">{activeOverviewSpotlight.listTitle}</div>
                       </div>
-                      <RankedList items={data.overview.spotlightLists.costGrowthCategories} valueLabel="2000 = 100" itemLabel="Category" showBackgroundBars />
-                    </div>
-                    <div className="space-y-3">
-                      <div className="border-b border-[#e4e2e3] pb-2">
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Home building costs</div>
-                        <div className="mt-1 text-sm font-semibold text-[#1b1c1d]">Fastest-rising building types</div>
-                      </div>
-                      <RankedList items={data.overview.spotlightLists.homeBuildingGrowth} valueLabel="2000 = 100" itemLabel="Building type" showBackgroundBars />
+                      <RankedList
+                        items={activeOverviewSpotlight.items}
+                        valueLabel="2000 = 100"
+                        itemLabel={activeOverviewSpotlight.listLabel}
+                        showBackgroundBars
+                      />
                     </div>
                   </div>
                 </WidgetCard>
-                <div className="grid gap-3 md:grid-cols-3">
-                  {data.overview.summaryCards.map((item) => (
-                    <SummaryCard key={item.label} {...item} />
-                  ))}
-                </div>
               </SectionBlock>
 
               <SectionBlock
