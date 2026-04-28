@@ -153,8 +153,15 @@ export type DashboardData = {
     summary: InsightCard[];
   };
   methodology: {
+    workflow: {
+      label: string;
+      title: string;
+      body: string;
+      note?: string;
+    }[];
     sources: string[];
     caveats: string[];
+    futureWork: string[];
   };
 };
 
@@ -798,8 +805,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       { id: "overview", label: "Overview", summary: "The core claim and the broad affordability read." },
       { id: "cost-of-living", label: "Income vs Cost of Living", summary: "The first evidence section: income against major price indexes and category affordability." },
       { id: "housing-homeownership", label: "Housing and Homeownership", summary: "Renter strain and the ownership-entry barrier in one continuous housing story." },
-      { id: "industry-divide", label: "Industry Divide", summary: "How labor-market sorting shapes who can still absorb rising costs." },
-      { id: "methodology", label: "Methodology", summary: "Repo-backed sources, transformations, and caveats." },
+      { id: "methodology", label: "Methodology", summary: "Workflow, limitations, future work, and references." },
     ],
     verdict: {
       label: "Mixed",
@@ -1058,22 +1064,56 @@ export async function getDashboardData(): Promise<DashboardData> {
       ],
     },
     methodology: {
+      workflow: [
+        {
+          label: "1. Source",
+          title: "BEA Interactive Data and downloadable annual tables",
+          body: "The project starts from Bureau of Economic Analysis tables downloaded from the BEA Interactive Data application, then stored in `data/original(do not modify)` as Excel workbooks.",
+          note: "BEA source: apps.bea.gov/iTable",
+        },
+        {
+          label: "2. Clean",
+          title: "Pandas cleaning notebook standardizes the raw tables",
+          body: "The repo's `notebooks/Kien/clean.ipynb` uses pandas to read Excel sheets, skip BEA header rows, clean labels, strip footnote markers, and export normalized files into `data/cleaned/*.csv`.",
+          note: "Core pattern: `pd.read_excel(...)` -> tidy columns/labels -> `to_csv(...)`",
+        },
+        {
+          label: "3. Analyze",
+          title: "Cleaned CSVs are transformed into affordability metrics",
+          body: "The analysis layer rebases series to `2000 = 100`, builds weighted cost baskets, computes housing burden shares, and compares income, prices, rent, and home-building costs.",
+          note: "Implemented in the repo notebooks plus `frontend/lib/dashboard-data.ts` and `src/ranking/*`",
+        },
+        {
+          label: "4. Output",
+          title: "The frontend turns those metrics into the dashboard story",
+          body: "The output is this dashboard: KPI cards, line charts, affordability rankings, housing verdicts, and methodology notes. When generated, `outputs/dashboard_rankings.json` adds optional predictive ranking panels.",
+          note: "Main frontend assembly: `frontend/lib/dashboard-data.ts` -> `components/american-dream-dashboard.tsx`",
+        },
+      ],
       sources: [
-        "All values are drawn from CSVs in `data/cleaned`, using the same BEA-backed repo datasets already prepared for analysis.",
-        "The income line uses the median of industry wage indexes from `annual_wages_per_FTE_by_industry.csv`, with each industry rebased to 2000 = 100 before taking the yearly median.",
-        "Indexed charts reset each series to 2000 = 100 so growth can be compared directly; a price index tracks how prices changed over time rather than one family's actual bills.",
+        "Bureau of Economic Analysis (BEA) Interactive Data portal: `https://apps.bea.gov/`, the original source used to access the national income, consumption, and fixed-investment tables behind this project.",
+        "The main cleaned inputs used here are `cleaned_income_with_state.csv`, `annual_price_indexes_for_PCE.csv`, `annual_Personal_Consumption_Expenditures_by_Function.csv`, `annual_price_indexes_for_private_fixed_investment_in_structures.csv`, `annual_private_fixed_investment_in_structures.csv`, and `annual_wages_per_FTE_by_industry.csv`.",
+        "The cleaning trail visible in the repo comes from `notebooks/Kien/clean.ipynb`, which reads BEA Excel workbooks with pandas and writes cleaned outputs into `data/cleaned`.",
+        "The exploratory analysis trail is visible in `notebooks/Kien/EDA.ipynb`, where the repo computes income indexes, category affordability, housing burden, renter-versus-owner comparisons, and construction-cost comparisons.",
+        "Indexed charts reset each series to `2000 = 100` so growth can be compared directly; a price index tracks how prices changed over time rather than one family's actual bills.",
         rankingExport
-          ? "Predictive rankings are loaded from `outputs/dashboard_rankings.json`, generated locally from the repo's American Dream state and industry models."
-          : "Predictive ranking export is optional; without it, the dashboard falls back to repo-derived descriptive summaries.",
-        `Industry wage rankings use actual ${FINAL_YEAR} values from \`annual_wages_per_FTE_by_industry.csv\`, grouped into unique industry labels before display.`,
+          ? "Optional ranking output is loaded from `outputs/dashboard_rankings.json`, generated locally from the repo's American Dream state and industry models."
+          : "Optional predictive ranking export can be generated locally with `scripts/export_dashboard_rankings.py`.",
+        `This dashboard's final output is a repo-backed frontend built from those cleaned tables and transformations, not a separate external data pull at runtime.`,
       ],
       caveats: [
-        "This is a national and industry-level dashboard. It does not include taxes, debt, household makeup, or local housing markets.",
-        "National data can show the direction of affordability pressure while still hiding big differences across regions, households, and renters versus owners.",
-        "No external APIs, web-fetched figures, home-price data, or mortgage assumptions are introduced in this dashboard.",
+        "National and industry-level only; not a household budget model.",
+        "Does not include taxes, debt, mortgage rates, or local housing markets.",
+        "Broad patterns can still hide renter, owner, and regional differences.",
         rankingExport
-          ? `Current ranking snapshots mix horizons by design: state rankings remain 1-year, while industry rankings use a 3-year forecast from ${industryRankingYear} to ${industryRankingYear + (industryRanking?.horizon ?? 3)}.`
-          : "Run `python scripts/export_dashboard_rankings.py` to refresh predictive ranking panels.",
+          ? `Ranking horizons differ: states stay 1-year, industries use a ${industryRanking?.horizon ?? 3}-year forecast.`
+          : "Predictive rankings require a separate local export step.",
+      ],
+      futureWork: [
+        "Automate the notebook cleaning flow into a reproducible pipeline.",
+        "Add stronger household-reality inputs like taxes, mortgage rates, and home sale prices.",
+        "Expand to regional or metro-level affordability differences.",
+        "Use more direct mobility measures, such as median household income or education-specific earnings.",
       ],
     },
   };

@@ -94,25 +94,44 @@ function useActiveSection(sectionIds: string[]) {
       .filter((section): section is HTMLElement => section instanceof HTMLElement);
 
     if (!sections.length) return;
+    let ticking = false;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+    const updateActiveSection = () => {
+      const targetOffset = 140;
+      let closestSection = sections[0];
+      let closestDistance = Number.POSITIVE_INFINITY;
 
-        if (visible?.target?.id) {
-          setActiveSection(visible.target.id);
+      for (const section of sections) {
+        const rect = section.getBoundingClientRect();
+        const distance = Math.abs(rect.top - targetOffset);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestSection = section;
         }
-      },
-      {
-        rootMargin: "-20% 0px -55% 0px",
-        threshold: [0.2, 0.35, 0.6],
       }
-    );
 
-    for (const section of sections) observer.observe(section);
-    return () => observer.disconnect();
+      if (closestSection?.id) {
+        setActiveSection((current) => (current === closestSection.id ? current : closestSection.id));
+      }
+
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(updateActiveSection);
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [sectionIds]);
 
   return { activeSection, setActiveSection };
@@ -227,6 +246,90 @@ function StatusPill({ tone, children }: { tone: Tone; children: React.ReactNode 
     >
       {children}
     </span>
+  );
+}
+
+type WorkflowStep = DashboardData["methodology"]["workflow"][number];
+
+const workflowStageStyles = [
+  {
+    shell: "border-[#c9d7e6] bg-gradient-to-br from-[#f5f9fd] to-white",
+    badge: "bg-[#e7f0f8] text-[#335b86]",
+    accent: "bg-[#6d93bb]",
+    Icon: ScrollText,
+  },
+  {
+    shell: "border-[#d6dfcf] bg-gradient-to-br from-[#f7fbf3] to-white",
+    badge: "bg-[#e8f1dd] text-[#56743a]",
+    accent: "bg-[#89a869]",
+    Icon: Wrench,
+  },
+  {
+    shell: "border-[#eadfcd] bg-gradient-to-br from-[#fdf8ef] to-white",
+    badge: "bg-[#f7ecd6] text-[#8b6320]",
+    accent: "bg-[#d0a35a]",
+    Icon: BarChart3,
+  },
+  {
+    shell: "border-[#d5d7e8] bg-gradient-to-br from-[#f5f5fc] to-white",
+    badge: "bg-[#eaebf8] text-[#4d568f]",
+    accent: "bg-[#7f88c3]",
+    Icon: Check,
+  },
+] as const;
+
+function WorkflowBoard({ steps }: { steps: WorkflowStep[] }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-[#d9dde3] bg-[#f7f8fa] px-4 py-3">
+        <div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Pipeline overview</div>
+          <p className="mt-1 text-sm leading-6 text-[#44474c]">
+            The workflow moves from BEA source data to pandas cleaning, then repo analysis, and finally into this dashboard.
+          </p>
+        </div>
+        <div className="rounded-full border border-[#d9dde3] bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">
+          Source {"->"} Clean {"->"} Analyze {"->"} Output
+        </div>
+      </div>
+      <div className="grid gap-3 xl:grid-cols-4">
+        {steps.map((item, index) => {
+          const stage = workflowStageStyles[index % workflowStageStyles.length];
+
+          return (
+            <div
+              key={item.label}
+              className={cn(
+                "group relative rounded-xl border p-4 transition-all duration-200",
+                stage.shell,
+                "shadow-[0_8px_24px_rgba(4,22,39,0.06)] hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(4,22,39,0.09)]"
+              )}
+            >
+              <div className={cn("absolute left-0 top-0 h-full w-1.5 rounded-l-xl", stage.accent)} />
+              <div className="pl-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className={cn("inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em]", stage.badge)}>
+                    <stage.Icon className="h-3.5 w-3.5" />
+                    {item.label}
+                  </div>
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#7a848f]">Step {index + 1}</div>
+                </div>
+                <div className="mt-3 text-[17px] font-semibold leading-7 text-[#1b1c1d]">{item.title}</div>
+                <p className="mt-2 text-sm leading-6 text-[#44474c]">{item.body}</p>
+                {item.note ? <div className="mt-3 rounded-md border border-white/80 bg-white/75 px-3 py-2 text-xs leading-5 text-[#6b7280]">{item.note}</div> : null}
+              </div>
+              {index < steps.length - 1 ? (
+                <div className="mt-3 flex justify-center xl:absolute xl:-right-[18px] xl:top-1/2 xl:mt-0 xl:-translate-y-1/2">
+                  <div className="rounded-full border border-[#d9dde3] bg-white p-1.5 text-[#5f6978] shadow-sm">
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
@@ -505,68 +608,6 @@ function CostOfLivingLineSelector({
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>
-  );
-}
-
-function RankingColumn({
-  title,
-  items,
-  fillClassName,
-  metricLabel,
-  maxValue,
-}: {
-  title: string;
-  items: RankedMetric[];
-  fillClassName: string;
-  metricLabel: string;
-  maxValue: number;
-}) {
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between border-b border-[#e4e2e3] pb-2">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">{title}</div>
-        <div className="text-[11px] font-medium text-[#5f6978]">{metricLabel}</div>
-      </div>
-      <div className="space-y-2">
-        {items.map((item) => (
-          <div key={`${title}-${item.label}`} className="space-y-1.5 rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] px-3 py-2.5">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
-                {item.note ? <div className="text-xs text-[#5f6978]">{item.note}</div> : null}
-              </div>
-              <div className="text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-white">
-              <div
-                className={cn("h-full rounded-full", fillClassName)}
-                style={{ width: `${Math.max((item.value / maxValue) * 100, 8)}%` }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function IndustryRankingBars({
-  leaders,
-  laggards,
-  metricLabel,
-}: {
-  leaders: RankedMetric[];
-  laggards: RankedMetric[];
-  metricLabel: string;
-}) {
-  const allItems = [...leaders, ...laggards];
-  const maxValue = Math.max(...allItems.map((item) => item.value), 1);
-
-  return (
-    <div className="grid gap-4 xl:grid-cols-2">
-      <RankingColumn title="Top 5 industries" items={leaders} fillClassName="bg-[#0b7a75]" metricLabel={metricLabel} maxValue={maxValue} />
-      <RankingColumn title="Bottom 5 industries" items={laggards} fillClassName="bg-[#b46a43]" metricLabel={metricLabel} maxValue={maxValue} />
-    </div>
   );
 }
 
@@ -1228,97 +1269,47 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
               </SectionBlock>
 
               <SectionBlock
-                id="industry-divide"
-                kicker="Industry Divide"
-                title="Affordability now depends more on the kind of job a person has than the national average suggests."
-                description="After looking at rising costs, the next question is who can absorb them. This section compares a clearly labeled 3-year forecast from the 2024 baseline with actual 2024 wage levels, so forecasts and observed outcomes stay separate."
-              >
-                <div className="grid gap-4">
-                  <div className="grid gap-4 xl:grid-cols-2">
-                    <WidgetCard
-                      title="Predicted industry ranking"
-                      description="Three-year forecast using 2024 and older data to rank industries on future American Dream score."
-                      action={data.industryDivide.predictedFigure.benchmarkLabel}
-                    >
-                      <IndustryRankingBars
-                        leaders={data.industryDivide.predictedFigure.leaders}
-                        laggards={data.industryDivide.predictedFigure.laggards}
-                        metricLabel={data.industryDivide.predictedFigure.metricLabel}
-                      />
-                    </WidgetCard>
-                    <WidgetCard
-                      title="Actual 2024 wage ranking"
-                      description="Observed wage-per-FTE leaders and laggards from the cleaned industry wage data."
-                      action={data.industryDivide.historicalFigure.benchmarkLabel}
-                    >
-                      <IndustryRankingBars
-                        leaders={data.industryDivide.historicalFigure.leaders}
-                        laggards={data.industryDivide.historicalFigure.laggards}
-                        metricLabel={data.industryDivide.historicalFigure.metricLabel}
-                      />
-                    </WidgetCard>
-                  </div>
-                  <div className="grid gap-4 xl:grid-cols-2">
-                    <WidgetCard title="Higher-education-heavy versus non-higher-education-heavy" description="Growth indexes and median 2024 income levels tell different parts of the story.">
-                      <div className="grid gap-3">
-                        <div className="grid gap-3 sm:grid-cols-2">
-                          {data.industryDivide.degreeComparison.growth2024.map((item) => (
-                            <div key={item.label} className={cn("rounded-sm border border-[#e4e2e3] p-3", toneRowStyles[item.tone])}>
-                              <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
-                              <div className="mt-2 text-2xl font-semibold text-[#041627]">{item.formattedValue}</div>
-                              <div className="mt-1 text-xs text-[#5f6978]">{item.note}</div>
-                            </div>
-                          ))}
-                        </div>
-                        <div className="grid gap-2">
-                          {data.industryDivide.degreeComparison.wageLevels2024.map((item) => (
-                            <div
-                              key={item.label}
-                              className={cn(
-                                "flex items-center justify-between rounded-sm border border-[#e4e2e3] px-3 py-2",
-                                toneRowStyles[item.tone]
-                              )}
-                            >
-                              <div>
-                                <div className="text-sm font-medium text-[#1b1c1d]">{item.label}</div>
-                                <div className="text-xs text-[#5f6978]">{item.note}</div>
-                              </div>
-                              <div className="text-sm font-semibold text-[#041627]">{item.formattedValue}</div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </WidgetCard>
-                    <WidgetCard title="Interpretation" description="What the labor split implies for the dashboard story.">
-                      <InsightCards items={data.industryDivide.summary} columns={2} />
-                    </WidgetCard>
-                  </div>
-                </div>
-              </SectionBlock>
-
-              <SectionBlock
                 id="methodology"
                 kicker="Methodology"
                 title="This dashboard uses only the data and analysis already in the repo."
                 description="The page reuses the cleaned datasets and existing analysis logic, then turns those results into clearer sections. Here, a price index means how prices changed over time, and the national view should be read as a broad signal rather than a stand-in for every local reality."
               >
-                <div className="grid gap-4 xl:grid-cols-2">
-                  <WidgetCard title="Sources" description="Repo-backed data inputs and transformations." action={<ScrollText className="h-4 w-4 text-[#5f6978]" />}>
-                    <div className="grid gap-2">
-                      {data.methodology.sources.map((item) => (
-                        <div key={item} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                          {item}
-                        </div>
-                      ))}
-                    </div>
+                <div className="grid gap-4">
+                  <WidgetCard title="Workflow" description="How the data moves from BEA into this dashboard.">
+                    <WorkflowBoard steps={data.methodology.workflow} />
                   </WidgetCard>
-                  <WidgetCard title="Caveats" description="What is intentionally excluded from the dashboard." action={<Home className="h-4 w-4 text-[#5f6978]" />}>
-                    <div className="grid gap-2">
-                      {data.methodology.caveats.map((item) => (
-                        <div key={item} className="rounded-sm border border-[#e4e2e3] bg-[#f7f8fa] p-3 text-sm leading-6 text-[#44474c]">
-                          {item}
-                        </div>
-                      ))}
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    <WidgetCard title="Limitations" description="What this dashboard still cannot fully capture." action={<Home className="h-4 w-4 text-[#5f6978]" />}>
+                      <div className="space-y-3">
+                        {data.methodology.caveats.map((item, index) => (
+                          <div key={item} className="rounded-md border border-[#e4e2e3] bg-[#f7f8fa] p-3">
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Limitation {index + 1}</div>
+                            <div className="mt-1 text-sm leading-6 text-[#44474c]">{item}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </WidgetCard>
+                    <WidgetCard title="Future Work" description="What would make the next version stronger.">
+                      <div className="space-y-3">
+                        {data.methodology.futureWork.map((item, index) => (
+                          <div key={item} className="rounded-md border border-[#e4e2e3] bg-[#f7f8fa] p-3">
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Next step {index + 1}</div>
+                            <div className="mt-1 text-sm leading-6 text-[#44474c]">{item}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </WidgetCard>
+                  </div>
+                  <WidgetCard title="References" description="Repo-backed data inputs and processing trail." action={<ScrollText className="h-4 w-4 text-[#5f6978]" />}>
+                    <div className="rounded-md border border-[#e4e2e3] bg-[#fbfbfa] px-4 py-3">
+                      <div className="space-y-3">
+                        {data.methodology.sources.map((item, index) => (
+                          <div key={item} className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 border-b border-[#ebe8e5] pb-3 last:border-b-0 last:pb-0">
+                            <div className="pt-0.5 text-sm font-semibold text-[#5f6978]">[{index + 1}]</div>
+                            <div className="text-sm leading-6 text-[#44474c]">{item}</div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </WidgetCard>
                 </div>
