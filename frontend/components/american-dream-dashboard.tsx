@@ -36,6 +36,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { StateDreamMap } from "@/components/state-dream-map";
 import type { DashboardData, RankedMetric, SeriesPoint, Tone } from "@/lib/dashboard-data";
 import { cn } from "@/lib/utils";
 
@@ -768,7 +769,6 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
     const nextIndex = (overviewSpotlightIndex + direction + overviewSpotlightKeys.length) % overviewSpotlightKeys.length;
     setOverviewSpotlight(overviewSpotlightKeys[nextIndex]);
   };
-
   return (
     <main className="min-h-screen bg-[#fbf9fa] text-[#1b1c1d]">
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -1265,6 +1265,54 @@ export function AmericanDreamDashboard({ data }: DashboardProps) {
                       </div>
                     </div>
                   </WidgetCard>
+                </div>
+              </SectionBlock>
+
+              <SectionBlock
+                id="state-lens"
+                kicker="State Lens"
+                title="Where you live changes how comfortable the American Dream still feels."
+                description="This section adapts the state-based map page into a cleaner dashboard step: choose a state, compare its income position, and read an example comfort budget that makes the numbers feel more concrete."
+              >
+                <div className="grid gap-4">
+                  <WidgetCard title="Story in one glance" description="A state-level lens on the same affordability question.">
+                    <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
+                      <div className="rounded-md border border-[#c9d7e6] bg-[#f2f7fb] p-4">
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#335b86]">Why this section exists</div>
+                        <div className="mt-2 text-lg font-semibold leading-8 text-[#1b1c1d]">
+                          National averages can say the Dream is still partly reachable, while the state-level experience still feels very different from place to place.
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-[#44474c]">{data.stateLens.explainer}</p>
+                      </div>
+                      <div className="grid gap-3">
+                        <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Metric</div>
+                          <p className="mt-1 text-sm leading-6 text-[#44474c]">{data.stateLens.metricLabel}</p>
+                        </div>
+                        <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Year</div>
+                          <p className="mt-1 text-sm leading-6 text-[#44474c]">{data.stateLens.yearLabel}</p>
+                        </div>
+                        <div className="rounded-sm border border-[#d9dde3] bg-[#f7f8fa] p-3">
+                          <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5f6978]">Use it like this</div>
+                          <p className="mt-1 text-sm leading-6 text-[#44474c]">Pick a state below, then compare its current income footing with the example budget that follows.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </WidgetCard>
+
+                  <WidgetCard title="Step 1: Pick a state and read the Dream note card" description="Adapted from the state-map page: a chosen state, its tone, and an example comfort target.">
+                    <StateDreamMap profiles={data.stateLens.profiles} />
+                  </WidgetCard>
+
+                  <div className="grid gap-4 xl:grid-cols-2">
+                    <WidgetCard title="Step 2: States where the Dream still looks strongest" description="Highest 2024 per-capita personal income.">
+                      <RankedList items={data.stateLens.leaders} valueLabel="Income" itemLabel="State" showBackgroundBars />
+                    </WidgetCard>
+                    <WidgetCard title="Step 3: States where the Dream looks more strained" description="Lowest 2024 per-capita personal income.">
+                      <RankedList items={data.stateLens.laggards} valueLabel="Income" itemLabel="State" showBackgroundBars />
+                    </WidgetCard>
+                  </div>
                 </div>
               </SectionBlock>
 

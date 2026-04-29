@@ -80,6 +80,23 @@ export type InsightCard = {
   body: string;
 };
 
+export type BudgetSlice = {
+  label: string;
+  value: string;
+};
+
+export type StateDreamProfile = {
+  state: string;
+  actualIncome: string;
+  actualIncomeValue: number;
+  comfortableIncome: string;
+  comfortableIncomeValue: number;
+  tone: Tone;
+  tierLabel: string;
+  message: string;
+  monthlyBudget: BudgetSlice[];
+};
+
 export type DashboardData = {
   title: string;
   subtitle: string;
@@ -117,6 +134,14 @@ export type DashboardData = {
       topStates: RankedMetric[];
       bottomStates: RankedMetric[];
     };
+  };
+  stateLens: {
+    yearLabel: string;
+    metricLabel: string;
+    explainer: string;
+    profiles: StateDreamProfile[];
+    leaders: RankedMetric[];
+    laggards: RankedMetric[];
   };
   industryDivide: {
     predictedFigure: {
@@ -378,9 +403,56 @@ function toIndexMetric(label: string, value: number, tone: Tone, note: string): 
   };
 }
 
+function buildStateDreamProfile(
+  state: string,
+  actualIncomeValue: number,
+  maxIncomeValue: number
+): StateDreamProfile {
+  const ratio = maxIncomeValue > 0 ? actualIncomeValue / maxIncomeValue : 0.5;
+  const comfortableIncomeValue = 80_000 + ratio * 90_000;
+  const tone: Tone =
+    ratio >= 0.8 ? "good" : ratio >= 0.55 ? "neutral" : ratio >= 0.3 ? "warn" : "bad";
+  const tierLabel =
+    ratio >= 0.8
+      ? "Thriving"
+      : ratio >= 0.55
+        ? "Steady"
+        : ratio >= 0.3
+          ? "Hustling"
+          : "Strained";
+  const message =
+    ratio >= 0.8
+      ? `${state} looks like a stronger launch point for stability, savings, and long-term planning.`
+      : ratio >= 0.55
+        ? `${state} still looks workable, but the path forward depends more on careful budgeting and steady income.`
+        : ratio >= 0.3
+          ? `${state} still leaves room for progress, but the American Dream starts to look more effort-heavy than automatic.`
+          : `${state} looks like the kind of place where keeping up can crowd out the classic Dream milestones.`;
+  const monthlyBudget = [
+    { label: "Housing", value: formatMoney((comfortableIncomeValue / 12) * 0.3) },
+    { label: "Transport", value: formatMoney((comfortableIncomeValue / 12) * 0.15) },
+    { label: "Essentials", value: formatMoney((comfortableIncomeValue / 12) * 0.3) },
+    { label: "Savings", value: formatMoney((comfortableIncomeValue / 12) * 0.15) },
+    { label: "Flex", value: formatMoney((comfortableIncomeValue / 12) * 0.1) },
+  ];
+
+  return {
+    state,
+    actualIncome: formatMoney(actualIncomeValue),
+    actualIncomeValue,
+    comfortableIncome: formatMoney(comfortableIncomeValue),
+    comfortableIncomeValue,
+    tone,
+    tierLabel,
+    message,
+    monthlyBudget,
+  };
+}
+
 export async function getDashboardData(): Promise<DashboardData> {
-  const [incomeRows, priceRows, spendingRows, wageRows, constructionRows, residentialRows, rankingExport] = await Promise.all([
+  const [incomeRows, regionalIncomeRows, priceRows, spendingRows, wageRows, constructionRows, residentialRows, rankingExport] = await Promise.all([
     readCsv("cleaned_income_with_state.csv"),
+    readCsv("cleaned_income_with_region.csv"),
     readCsv("annual_price_indexes_for_PCE.csv"),
     readCsv("annual_Personal_Consumption_Expenditures_by_Function.csv"),
     readCsv("annual_wages_per_FTE_by_industry.csv"),
@@ -766,21 +838,11 @@ export async function getDashboardData(): Promise<DashboardData> {
     incomeYears.map((year) => [year, (toNumber(residential?.[String(year)]) / totalIncomeByYear[year]) * 100])
   );
 
-  const statePerCapita2024 = incomeRows
-    .filter((row) => row.Region && row.GeoName && !row.GeoName.includes("United States"))
-    .reduce<Record<string, { income?: number; population?: number }>>((acc, row) => {
-      const state = row.GeoName;
-      const entry = acc[state] ?? {};
-      if (toNumber(row.LineCode) === 1) entry.income = toNumber(row[String(FINAL_YEAR)]);
-      if (toNumber(row.LineCode) === 2) entry.population = toNumber(row[String(FINAL_YEAR)]);
-      acc[state] = entry;
-      return acc;
-    }, {});
-
-  const statePerCapitaList = Object.entries(statePerCapita2024)
-    .map(([label, entry]) => ({
-      label,
-      value: entry.income && entry.population ? (entry.income * 1_000_000) / entry.population : 0,
+  const statePerCapitaList = regionalIncomeRows
+    .filter((row) => toNumber(row.year) === FINAL_YEAR)
+    .map((row) => ({
+      label: cleanCategory(row.state),
+      value: toNumber(row["Personal Income (dollar)"] ?? row.value),
     }))
     .filter((entry) => entry.value > 0)
     .sort((a, b) => b.value - a.value);
@@ -788,6 +850,10 @@ export async function getDashboardData(): Promise<DashboardData> {
   const medianState = statePerCapitaList[Math.floor(statePerCapitaList.length / 2)];
   const topState = statePerCapitaList[0];
   const bottomState = statePerCapitaList[statePerCapitaList.length - 1];
+  const maxStateIncomeValue = topState?.value ?? 0;
+  const stateDreamProfiles = statePerCapitaList.map((item) =>
+    buildStateDreamProfile(item.label, item.value, maxStateIncomeValue)
+  );
 
   const weightedOverall2024 = overviewValues["Overall cost of living (weighted basket)"][FINAL_YEAR];
   const singleFamily2024 = constructionValues["Single-family structures"][FINAL_YEAR];
@@ -805,6 +871,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       { id: "overview", label: "Overview", summary: "The core claim and the broad affordability read." },
       { id: "cost-of-living", label: "Income vs Cost of Living", summary: "The first evidence section: income against major price indexes and category affordability." },
       { id: "housing-homeownership", label: "Housing and Homeownership", summary: "Renter strain and the ownership-entry barrier in one continuous housing story." },
+      { id: "state-lens", label: "State Lens", summary: "A state-by-state read on how comfortable the Dream still looks across the country." },
       { id: "methodology", label: "Methodology", summary: "Workflow, limitations, future work, and references." },
     ],
     verdict: {
@@ -908,8 +975,32 @@ export async function getDashboardData(): Promise<DashboardData> {
               value: item.value,
               formattedValue: formatMoney(item.value),
               tone: "warn",
-            })),
+        })),
       },
+    },
+    stateLens: {
+      yearLabel: String(FINAL_YEAR),
+      metricLabel: "2024 per-capita personal income",
+      explainer:
+        "This section adapts the map-style state view into a dashboard lens: pick a state, compare its income position, and read an estimated comfort budget for the American Dream in that environment.",
+      profiles: stateDreamProfiles,
+      leaders: statePerCapitaList.slice(0, 5).map((item) => ({
+        label: item.label,
+        value: item.value,
+        formattedValue: formatMoney(item.value),
+        tone: "good",
+        note: "2024 per-capita personal income",
+      })),
+      laggards: statePerCapitaList
+        .slice(-5)
+        .reverse()
+        .map((item) => ({
+          label: item.label,
+          value: item.value,
+          formattedValue: formatMoney(item.value),
+          tone: "warn",
+          note: "2024 per-capita personal income",
+        })),
     },
     industryDivide: {
       predictedFigure: {
@@ -1092,7 +1183,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       ],
       sources: [
         "Bureau of Economic Analysis (BEA) Interactive Data portal: `https://apps.bea.gov/`, the original source used to access the national income, consumption, and fixed-investment tables behind this project.",
-        "The main cleaned inputs used here are `cleaned_income_with_state.csv`, `annual_price_indexes_for_PCE.csv`, `annual_Personal_Consumption_Expenditures_by_Function.csv`, `annual_price_indexes_for_private_fixed_investment_in_structures.csv`, `annual_private_fixed_investment_in_structures.csv`, and `annual_wages_per_FTE_by_industry.csv`.",
+        "The main cleaned inputs used here are `cleaned_income_with_state.csv`, `cleaned_income_with_region.csv`, `annual_price_indexes_for_PCE.csv`, `annual_Personal_Consumption_Expenditures_by_Function.csv`, `annual_price_indexes_for_private_fixed_investment_in_structures.csv`, `annual_private_fixed_investment_in_structures.csv`, and `annual_wages_per_FTE_by_industry.csv`.",
         "The cleaning trail visible in the repo comes from `notebooks/Kien/clean.ipynb`, which reads BEA Excel workbooks with pandas and writes cleaned outputs into `data/cleaned`.",
         "The exploratory analysis trail is visible in `notebooks/Kien/EDA.ipynb`, where the repo computes income indexes, category affordability, housing burden, renter-versus-owner comparisons, and construction-cost comparisons.",
         "Indexed charts reset each series to `2000 = 100` so growth can be compared directly; a price index tracks how prices changed over time rather than one family's actual bills.",
