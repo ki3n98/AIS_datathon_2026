@@ -190,7 +190,7 @@ export type DashboardData = {
   };
 };
 
-const DATA_DIR = path.join(process.cwd(), "..", "data", "cleaned");
+const DATA_DIR = path.join(process.cwd(), "data", "cleaned");
 const BASE_YEAR = 2000;
 const FINAL_YEAR = 2024;
 
@@ -1159,13 +1159,13 @@ export async function getDashboardData(): Promise<DashboardData> {
         {
           label: "1. Source",
           title: "BEA Interactive Data and downloadable annual tables",
-          body: "The project starts from Bureau of Economic Analysis tables downloaded from the BEA Interactive Data application, then stored in `data/original(do not modify)` as Excel workbooks.",
+          body: "The project starts from Bureau of Economic Analysis tables downloaded from the BEA Interactive Data application, then stored in `frontend/data/original(do not modify)` as Excel workbooks.",
           note: "BEA source: apps.bea.gov/iTable",
         },
         {
           label: "2. Clean",
           title: "Pandas cleaning notebook standardizes the raw tables",
-          body: "The repo's `notebooks/Kien/clean.ipynb` uses pandas to read Excel sheets, skip BEA header rows, clean labels, strip footnote markers, and export normalized files into `data/cleaned/*.csv`.",
+          body: "The repo's `notebooks/Kien/clean.ipynb` uses pandas to read Excel sheets, skip BEA header rows, clean labels, strip footnote markers, and export normalized files into `frontend/data/cleaned/*.csv`.",
           note: "Core pattern: `pd.read_excel(...)` -> tidy columns/labels -> `to_csv(...)`",
         },
         {
@@ -1184,7 +1184,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       sources: [
         "Bureau of Economic Analysis (BEA) Interactive Data portal: `https://apps.bea.gov/`, the original source used to access the national income, consumption, and fixed-investment tables behind this project.",
         "The main cleaned inputs used here are `cleaned_income_with_state.csv`, `cleaned_income_with_region.csv`, `annual_price_indexes_for_PCE.csv`, `annual_Personal_Consumption_Expenditures_by_Function.csv`, `annual_price_indexes_for_private_fixed_investment_in_structures.csv`, `annual_private_fixed_investment_in_structures.csv`, and `annual_wages_per_FTE_by_industry.csv`.",
-        "The cleaning trail visible in the repo comes from `notebooks/Kien/clean.ipynb`, which reads BEA Excel workbooks with pandas and writes cleaned outputs into `data/cleaned`.",
+        "The cleaning trail visible in the repo comes from `notebooks/Kien/clean.ipynb`, which reads BEA Excel workbooks with pandas and writes cleaned outputs into `frontend/data/cleaned`.",
         "The exploratory analysis trail is visible in `notebooks/Kien/EDA.ipynb`, where the repo computes income indexes, category affordability, housing burden, renter-versus-owner comparisons, and construction-cost comparisons.",
         "Indexed charts reset each series to `2000 = 100` so growth can be compared directly; a price index tracks how prices changed over time rather than one family's actual bills.",
         rankingExport
